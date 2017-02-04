@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
+var opn = require('opn');
 
 var app = express();
 
@@ -30,6 +31,7 @@ function normalizePort(val) {
   return false;
 }
 
-app.listen(app.get('port'), function() {
+opn('http://localhost:'+app.get('port'));
+app.listen(app.get('port'), function () {
   console.log('Server started at: http://localhost:' + app.get('port') + '/');
 });
