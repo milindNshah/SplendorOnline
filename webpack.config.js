@@ -11,11 +11,22 @@ var config = {
     filename: 'bundle.js'
   },
   module : {
-    loaders : [
+    rules : [
       {
         test : /\.jsx?/,
         include : APP_DIR,
         loader : 'babel-loader'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
+      {
+        test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10000
+        }
       }
     ]
   }
