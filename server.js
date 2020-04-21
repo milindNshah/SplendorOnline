@@ -1,7 +1,9 @@
-var express = require('express');
-var path = require('path');
 var bodyParser = require('body-parser');
+var express = require('express');
+// var http = require('http');
 var opn = require('opn');
+var path = require('path');
+var socketIO = require('socket.io');
 
 var app = express();
 
@@ -32,6 +34,16 @@ function normalizePort(val) {
 }
 
 opn('http://localhost:'+app.get('port'));
-app.listen(app.get('port'), function () {
+var server = app.listen(app.get('port'), function () {
   console.log('Server started at: http://localhost:' + app.get('port') + '/');
 });
+var io = socketIO(server);
+
+// Add the WebSocket handlers
+io.on('connection', function(socket) {
+  "io connected";
+});
+
+setInterval(function() {
+  io.sockets.emit('message', 'hi!');
+}, 1000);
