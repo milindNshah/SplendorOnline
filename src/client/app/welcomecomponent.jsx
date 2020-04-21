@@ -2,11 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-
-var socket = io();
-socket.on('message', function(data) {
-  console.log(data);
-});
+import {Link} from 'react-router-dom';
 
 class WelcomeComponent extends React.Component {
   render() {
@@ -23,7 +19,7 @@ class WelcomeComponent extends React.Component {
         <InputGroup>
           <FormControl placeholder="Ex. NormalHuman"></FormControl>
         </InputGroup>
-        <Button variant="success" onClick={onCreateRoom}>Create Game</Button>
+        <Button variant="success" onClick={onCreateRoom}><Link to="/room">Create Game</Link></Button>
         <p> Room Code </p>
         <InputGroup>
           <FormControl placeholder="Ex. AB3D"></FormControl>
@@ -32,7 +28,6 @@ class WelcomeComponent extends React.Component {
       </div>
     );
   }
-
 }
 
 export default WelcomeComponent;

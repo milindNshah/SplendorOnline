@@ -6,6 +6,7 @@
   "scripts": {
     "test": "karma start",
     "build": "webpack -p",
+    "clean": "find server/ -name '*.js' -exec rm {} \\; & find server/ -name '*.js.map' -exec rm {} \\; & find . -maxdepth 1 -name 'server.js' -exec rm {} \\; & find . -maxdepth 1 -name 'server.js.map' -exec rm {} \\;",
     "start": "webpack -d --watch & ts-node-dev --respawn server.ts",
     "dev": "webpack -d --watch & ts-node-dev --respawn server.ts",
     "prod": "tsc && node server.js"
@@ -22,6 +23,7 @@
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.0",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2",
     "socket.io": "^2.3.0",
     "style-loader": "^1.1.4",
     "url-loader": "^4.1.0",

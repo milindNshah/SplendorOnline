@@ -1,21 +1,28 @@
 "use strict";
+import { GlobalUtils } from '../globalUtils';
 
 export class User {
-    socketID: string;
-    name: string;
-    isReady: boolean;
+    id: string;
     isHost: boolean;
-    playerID: string;
+    isReady: boolean;
+    name: string;
+    socketID: string;
 
-    constructor(name: string, socketID: string) {
+    constructor(name: string, socketID: string, isHost?: boolean) {
+        this.id = this.createUserID();
         this.name = name;
         this.socketID = socketID;
         this.isReady = false;
-        this.isHost = false;
-        this.playerID = this.createPlayerID(name, socketID);
+        this.isHost = isHost ?? false;
     }
 
-    createPlayerID(name: string, socketID: string): string {
-        return "";
+    createUserID(): string {
+        return GlobalUtils.generateID();
+    }
+}
+
+export class UserService {
+    static createNewUser(name: string, socketID: string, isHost?: boolean): User {
+        return new User(name, socketID, isHost);
     }
 }
