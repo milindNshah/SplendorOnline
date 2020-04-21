@@ -3,3 +3,5 @@ node_modules/
 src/client/public/
 *.log*
 .DS_Store
+server.js
+server.js.map
