@@ -4,4 +4,5 @@ src/client/public/
 *.log*
 .DS_Store
 server.js
-server.js.map
+server/**/*.js
+*.js.map

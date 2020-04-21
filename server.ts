@@ -3,6 +3,7 @@ import express from 'express';
 import open from 'open';
 import path from 'path';
 import socketIO from 'socket.io';
+import { GlobalUtils } from './server/globalutils';
 
 const app = express();
 
@@ -38,8 +39,9 @@ const server = app.listen(app.get('port'), function () {
 });
 const io = socketIO(server);
 
-io.on('connection', function (_socket) {
-    "io connected";
+io.on('connection', function (socket) {
+    // socket.on('new_player', function())
+    console.log(GlobalUtils.generateID("something"));
 });
 
 setInterval(function () {
