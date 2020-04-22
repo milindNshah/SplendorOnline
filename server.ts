@@ -2,8 +2,8 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import open from 'open';
 import path from 'path';
-import { intializeSocket } from './server/socket';
-import { SocketEvents } from './server/socketEvents';
+import { intializeSocket } from './server/utils/SocketUtils';
+import { SocketEvents } from './server/utils/SocketEvents';
 
 const app = express();
 

@@ -1,6 +1,7 @@
 "use strict";
-import { JoinRoomParams, Room, RoomService } from './models/Room';
-import { getIO } from './socket';
+import { JoinRoomParams, Room } from '../models/Room'
+import * as RoomService from '../services/RoomService'
+import { getIO } from './SocketUtils'
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {

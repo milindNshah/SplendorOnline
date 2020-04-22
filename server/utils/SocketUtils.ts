@@ -1,3 +1,4 @@
+"use strict"
 import socketIO from 'socket.io';
 
 let serverSocket: SocketIO.Server;

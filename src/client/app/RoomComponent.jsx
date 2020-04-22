@@ -26,6 +26,7 @@ class RoomComponent extends React.Component {
     })
 
     const currentPlayer = playersInfo.get(this.socket.id)
+    console.log("client: ", currentPlayer);
 
     this.setState({
       roomCode: room.code,

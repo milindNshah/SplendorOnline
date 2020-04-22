@@ -1,5 +1,5 @@
 "use strict";
-import { GlobalUtils } from '../globalUtils';
+import { GlobalUtils } from '../utils/GlobalUtils';
 
 export class User {
     id: string;
