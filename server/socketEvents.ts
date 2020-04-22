@@ -9,7 +9,7 @@ export class SocketEvents {
     socket.on('createNewRoom', function (userName: string) {
       const room: Room = RoomService.createNewRoom(userName, socket.id);
       socket.join(room.code);
-      io.sockets.in(room.code).emit("joinedRoom", "Client "+socket.id+"joined the room"+room.code);
+      io.sockets.in(room.code).emit("joinedRoom", room);
     });
 
     socket.on('joinRoom', function (data: JoinRoomParams) {
@@ -20,7 +20,7 @@ export class SocketEvents {
         data.roomCode
       );
       socket.join(room.code);
-      io.sockets.in(room.code).emit("joinedRoom", "Client "+socket.id+"joined the room"+room.code);
+      io.sockets.in(room.code).emit("joinedRoom", room);
     });
   }
 }

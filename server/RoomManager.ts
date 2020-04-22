@@ -11,3 +11,7 @@ export function addRoom(room: Room): Map<string, Room> {
 export function getRoomByCode(roomCode: string): Room {
   return rooms.get(roomCode) ?? null;
 }
+
+export function getAllRooms(): Map<string, Room> {
+  return rooms;
+}

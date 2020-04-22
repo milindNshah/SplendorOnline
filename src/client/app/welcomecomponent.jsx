@@ -3,12 +3,7 @@ import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import Form from 'react-bootstrap/Form';
 import { Link } from 'react-router-dom';
-
-var socket = io();
-
-socket.on('joinedRoom', function (data) {
-  console.log("client:", data);
-});
+import { socket } from './socket';
 
 class WelcomeComponent extends React.Component {
   constructor (props) {
@@ -33,12 +28,10 @@ class WelcomeComponent extends React.Component {
   }
 
   onCreateRoom() {
-    // console.log('clicked create game button', this.state.userName, this.state.roomCode);
     socket.emit('createNewRoom', this.state.userName);
   }
 
   onJoinRoom() {
-    console.log('clicked join room button');
     socket.emit('joinRoom', { userName: this.state.userName, roomCode: this.state.roomCode })
   }
 

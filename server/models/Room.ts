@@ -41,12 +41,14 @@ export class RoomService {
     const host: User = UserService.createNewUser(userName, socketID, true);
     const room: Room = new Room(host);
     RoomManager.addRoom(room);
+    console.log("allRooms: ", RoomManager.getAllRooms());
     return room;
   }
 
   static joinRoom(userName: string, socketID: string, roomCode: string) {
     const user: User = UserService.createNewUser(userName, socketID);
     let room: Room = RoomManager.getRoomByCode(roomCode);
+    // TODO: Deal with invalid room number.
     room = room.addPlayer(user);
     return room;
   }
