@@ -9,6 +9,7 @@ export function addRoom(room: Room): Map<string, Room> {
 }
 
 export function getRoomByCode(roomCode: string): Room {
+  roomCode = roomCode.toUpperCase();
   return rooms.get(roomCode) ?? null;
 }
 
@@ -19,7 +20,21 @@ export function getAllRooms(): Map<string, Room> {
 export function checkValidRoomCode(roomCode: string): boolean {
   const valid = getRoomByCode(roomCode);
   if (valid === null) {
-    throw new Error("Invalid Room Code");
+    // TODO: Shouldn't crash server, send error to client
+    // throw new Error("Invalid Room Code");
   }
   return true;
+}
+
+export function removePlayerFromRooms(playerID: string): Room[] {
+  const modifiedRooms: Room[] = [];
+
+  rooms.forEach((room)=> {
+    if(room.hasPlayer(playerID)) {
+      room.removePlayer(playerID)
+      modifiedRooms.push(room);
+    }
+  });
+
+  return modifiedRooms;
 }

@@ -23,7 +23,7 @@ class RoomComponent extends React.Component {
   }
 
   componentDidMount() {
-    this.socket.on('joinedRoom', this.onRoomUpdate);
+    this.socket.on('updateRoom', this.onRoomUpdate);
     this.socket.on('clientPlayerID', this.setClientPlayerID);
   }
 

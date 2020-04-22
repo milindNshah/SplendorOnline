@@ -31,12 +31,13 @@ export class Room {
   }
 
   createRoomCode(): string {
-    return GlobalUtils.generateID(2);
+    return GlobalUtils.generateAlphanumericID();
   }
 
   addPlayer(newPlayer: Player): this {
     if(this.players.size >= 4) {
-      throw new Error("Can't add more than 4 players to a room");
+      // TODO: shouldn't crash server, return error to client
+      // throw new Error("Can't add more than 4 players to a room");
     }
     const nameExists = Array.from(this.players.values())
       .map((existingPlayer) => {
@@ -45,10 +46,21 @@ export class Room {
         return acc || cur;
       }, false)
     if (nameExists) {
-      throw new Error("Can't join a room with same name as another player");
+      // throw new Error("Can't join a room with same name as another player");
     }
 
     this.players.set(newPlayer.id, newPlayer);
+    return this;
+  }
+
+  hasPlayer(playerID: string): boolean {
+    return this.players.has(playerID);
+  }
+
+  removePlayer(playerID: string): this {
+    if(this.hasPlayer(playerID)) {
+      this.players.delete(playerID);
+    }
     return this;
   }
 }

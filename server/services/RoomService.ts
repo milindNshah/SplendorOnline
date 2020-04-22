@@ -13,7 +13,6 @@ export function createNewRoom(userName: string, socketID: string): PlayerRoom {
 
 export function joinRoom(userName: string, socketID: string, roomCode: string): PlayerRoom {
   const player: Player = PlayerService.createNewPlayer(userName, socketID, false);
-  // TODO: Propagate error handling correctly.
   RoomManager.checkValidRoomCode(roomCode);
   let room: Room = RoomManager.getRoomByCode(roomCode);
   room = room.addPlayer(player);
