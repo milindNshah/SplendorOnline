@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import open from 'open';
 import path from 'path';
-import socketIO from 'socket.io';
+import { intializeSocket } from './server/socket';
 import { SocketEvents } from './server/socketEvents';
 
 const app = express();
@@ -47,7 +47,7 @@ const server = app.listen(app.get('port'), function () {
   console.log('Server started at: http://localhost:' + app.get('port') + '/');
 });
 
-const io = socketIO(server);
+const io = intializeSocket(server);
 io.on('connection', function (socket) {
-  SocketEvents.initRoomEvents(io, socket);
+  SocketEvents.initRoomEvents(socket);
 });
