@@ -7,13 +7,12 @@ export class SocketEvents {
     const io: SocketIO.Server = getIO();
 
     socket.on('createNewRoom', function (userName: string) {
-      const room: Room = RoomService.createNewRoom(userName, socket.id);
+      const room = RoomService.createNewRoom(userName, socket.id);
       socket.join(room.code);
       io.sockets.in(room.code).emit("joinedRoom", room);
     });
 
     socket.on('joinRoom', function (data: JoinRoomParams) {
-      console.log("server: %s %s %s", socket.id, data.roomCode, data.userName);
       const room: Room = RoomService.joinRoom(
         data.userName,
         socket.id,
@@ -22,5 +21,9 @@ export class SocketEvents {
       socket.join(room.code);
       io.sockets.in(room.code).emit("joinedRoom", room);
     });
+
+    // TODO: Maybe send a specific event just to the requester
+    // io.to(socketId).emit('hey', 'I just met you');
+    // Send info: playerName/playerID so I can arrange by that instead of by socketID.
   }
 }

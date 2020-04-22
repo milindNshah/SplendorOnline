@@ -20,9 +20,3 @@ export class User {
         return GlobalUtils.generateID();
     }
 }
-
-export class UserService {
-    static createNewUser(name: string, socketID: string, isHost?: boolean): User {
-        return new User(name, socketID, isHost);
-    }
-}
