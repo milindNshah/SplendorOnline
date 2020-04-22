@@ -67,11 +67,15 @@ class RoomComponent extends React.Component {
   }
 
   createPlayerRow(player) {
+    const isReady = player.isReady
+      ? (<span><i className="fa fa-check"></i></span>)
+      : (<span><i className="fa fa-times"></i></span>)
+
     return (
       <div className="row" key={player.id}>
-        <div className="col">{player.isHost}</div>
+        <div className="col">{player.isHost ? "True" : "False"}</div>
         <div className="col">{player.user.name}</div>
-        <div className="col">{player.isReady}</div>
+        <div className="col">{isReady}</div>
       </div>
     )
   }

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'font-awesome/css/font-awesome.min.css'
 
 class AppComponent extends React.Component {
   render() {
