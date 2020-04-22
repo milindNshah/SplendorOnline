@@ -1,12 +1,14 @@
 
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { socket } from './socket';
 
 class RoomComponent extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      copiedCode: false,
       playerID: '',
       roomCode: '',
       playersInfo: [{}],
@@ -15,8 +17,9 @@ class RoomComponent extends React.Component {
     this.socket = socket;
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
     this.setClientPlayerID = this.setClientPlayerID.bind(this);
-    this.createPlayerTable = this.createPlayerTable.bind(this);
+    this.renderPlayerTable = this.renderPlayerTable.bind(this);
     this.createPlayerRow = this.createPlayerRow.bind(this);
+    this.onCopyCode = this.onCopyCode.bind(this);
   }
 
   componentDidMount() {
@@ -38,13 +41,25 @@ class RoomComponent extends React.Component {
     });
   }
 
+  onCopyCode() {
+    this.setState({
+      copiedCode: true,
+    });
+    const timer = setTimeout(() => {
+      this.setState({
+        copiedCode: false,
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }
+
   setClientPlayerID(playerID) {
     this.setState({
       playerID: playerID,
     });
   }
 
-  createPlayerTable() {
+  renderPlayerTable() {
     const size = this.state.playersInfo.size;
     if (size === null || size === undefined || size <= 0) {
       return;
@@ -71,9 +86,13 @@ class RoomComponent extends React.Component {
       ? (<span><i className="fa fa-check"></i></span>)
       : (<span><i className="fa fa-times"></i></span>)
 
+    const isHost = player.isHost
+      ? (<span><i className="fa fa-circle"></i></span>)
+      : (<span></span>)
+
     return (
       <div className="row" key={player.id}>
-        <div className="col">{player.isHost ? "True" : "False"}</div>
+        <div className="col">{isHost}</div>
         <div className="col">{player.user.name}</div>
         <div className="col">{isReady}</div>
       </div>
@@ -81,16 +100,25 @@ class RoomComponent extends React.Component {
   }
 
   render() {
+    const CopiedCodeDialog = () => (<div>Copied to clipboard!</div>)
+
     return (
       <div>
         <div>
           <p>Room Code</p>
-          <Button variant="outline-dark">{this.state.roomCode}</Button>
+          <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
+            <Button variant="outline-dark">{this.state.roomCode}</Button>
+          </CopyToClipboard>
+          {
+            this.state.copiedCode
+              ? <CopiedCodeDialog/>
+              : null
+          }
           <p>PlayerID: {this.state.playerID}</p>
         </div>
         <div>
           <h1>Player Info</h1>
-          {this.createPlayerTable()}
+          {this.renderPlayerTable()}
         </div>
       </div>
     );
