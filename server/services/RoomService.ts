@@ -1,22 +1,21 @@
 "use strict"
-
-import { Room } from '../models/Room'
-import { User } from '../models/User'
-import * as UserService from '../services/UserService'
+import { Room, PlayerRoom } from '../models/Room'
+import { Player } from '../models/Player'
+import * as PlayerService from '../services/PlayerService'
 import * as RoomManager from '../RoomManager'
 
-export function createNewRoom(userName: string, socketID: string): Room {
-  const host: User = UserService.createNewUser(userName, socketID, true);
+export function createNewRoom(userName: string, socketID: string): PlayerRoom {
+  const host: Player = PlayerService.createNewPlayer(userName, socketID, true);
   const room: Room = new Room(host);
   RoomManager.addRoom(room);
-  return room;
+  return { player: host, room: room };
 }
 
-export function joinRoom(userName: string, socketID: string, roomCode: string): Room {
-  const user: User = UserService.createNewUser(userName, socketID, false);
+export function joinRoom(userName: string, socketID: string, roomCode: string): PlayerRoom {
+  const player: Player = PlayerService.createNewPlayer(userName, socketID, false);
+  // TODO: Propagate error handling correctly.
+  RoomManager.checkValidRoomCode(roomCode);
   let room: Room = RoomManager.getRoomByCode(roomCode);
-  // TODO: Deal with invalid room number.
-  room = room.addPlayer(user);
-  // TODO: Deal with player with already existing name in the same room.
-  return room;
+  room = room.addPlayer(player);
+  return { player: player, room: room };
 }

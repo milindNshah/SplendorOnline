@@ -7,31 +7,42 @@ class RoomComponent extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      playerID: '',
       roomCode: '',
       playersInfo: {},
       player: {},
     }
     this.socket = socket;
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
+    this.setClientPlayerID = this.setClientPlayerID.bind(this);
   }
 
   componentDidMount() {
     this.socket.on('joinedRoom', this.onRoomUpdate);
+    this.socket.on('clientPlayerID', this.setClientPlayerID);
   }
 
-  onRoomUpdate(room) {
+  onRoomUpdate({room, players}) {
+    console.log(players)
     const playersInfo = new Map();
-    room.players.forEach((someone) => {
-      playersInfo.set(someone.socketID, someone);
+    players.forEach((someone) => {
+      playersInfo.set(someone.id, someone);
     })
 
-    const currentPlayer = playersInfo.get(this.socket.id)
+    const currentPlayer = playersInfo.get(this.state.playerID)
     console.log("client: ", currentPlayer);
 
     this.setState({
       roomCode: room.code,
-      playersInfo: playersInfo,
-      player: currentPlayer,
+      // playersInfo: playersInfo,
+      // player: currentPlayer,
+    });
+  }
+
+  setClientPlayerID(playerID) {
+    console.log(playerID);
+    this.setState({
+      playerID: playerID,
     });
   }
 
@@ -40,6 +51,7 @@ class RoomComponent extends React.Component {
       <div>
         <p>Room Code</p>
         <Button variant="outline-dark">{this.state.roomCode}</Button>
+        <p>PlayerID: {this.state.playerID}</p>
       </div>
     );
   }

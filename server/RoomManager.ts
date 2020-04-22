@@ -15,3 +15,11 @@ export function getRoomByCode(roomCode: string): Room {
 export function getAllRooms(): Map<string, Room> {
   return rooms;
 }
+
+export function checkValidRoomCode(roomCode: string): boolean {
+  const valid = getRoomByCode(roomCode);
+  if (valid === null) {
+    throw new Error("Invalid Room Code");
+  }
+  return true;
+}

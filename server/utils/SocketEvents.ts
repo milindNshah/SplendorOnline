@@ -1,5 +1,5 @@
 "use strict";
-import { JoinRoomParams, Room } from '../models/Room'
+import { JoinRoomParams, Room, PlayerRoom } from '../models/Room'
 import * as RoomService from '../services/RoomService'
 import { getIO } from './SocketUtils'
 
@@ -8,23 +8,30 @@ export class SocketEvents {
     const io: SocketIO.Server = getIO();
 
     socket.on('createNewRoom', function (userName: string) {
-      const room = RoomService.createNewRoom(userName, socket.id);
+      const playerRoom: PlayerRoom = RoomService.createNewRoom(userName, socket.id);
+      const room = playerRoom.room;
+      const player = playerRoom.player;
       socket.join(room.code);
-      io.sockets.in(room.code).emit("joinedRoom", room);
+      io.to(socket.id).emit("clientPlayerID", player.id);
+
+      // TODO: figure out why room.players sends blank object on client.
+      const players = Array.from(room.players.values());
+      io.sockets.in(room.code).emit("joinedRoom", {room: room, players: players});
     });
 
     socket.on('joinRoom', function (data: JoinRoomParams) {
-      const room: Room = RoomService.joinRoom(
+      const playerRoom: PlayerRoom = RoomService.joinRoom(
         data.userName,
         socket.id,
         data.roomCode
       );
+      const room = playerRoom.room;
+      const player = playerRoom.player;
       socket.join(room.code);
-      io.sockets.in(room.code).emit("joinedRoom", room);
-    });
+      io.to(socket.id).emit("clientPlayerID", player.id);
 
-    // TODO: Maybe send a specific event just to the requester
-    // io.to(socketId).emit('hey', 'I just met you');
-    // Send info: playerName/playerID so I can arrange by that instead of by socketID.
+      const players = Array.from(room.players.values());
+      io.sockets.in(room.code).emit("joinedRoom", {room: room, players: players});
+    });
   }
 }
