@@ -1,5 +1,6 @@
 "use strict";
-import { User, UserService } from '../models/User';
+import { User } from '../models/User';
+import * as UserService from '../UserService';
 import { GlobalUtils } from '../globalUtils';
 import * as RoomManager from '../RoomManager';
 
@@ -41,15 +42,15 @@ export class RoomService {
     const host: User = UserService.createNewUser(userName, socketID, true);
     const room: Room = new Room(host);
     RoomManager.addRoom(room);
-    console.log("allRooms: ", RoomManager.getAllRooms());
     return room;
   }
 
-  static joinRoom(userName: string, socketID: string, roomCode: string) {
-    const user: User = UserService.createNewUser(userName, socketID);
+  static joinRoom(userName: string, socketID: string, roomCode: string): Room {
+    const user: User = UserService.createNewUser(userName, socketID, false);
     let room: Room = RoomManager.getRoomByCode(roomCode);
     // TODO: Deal with invalid room number.
     room = room.addPlayer(user);
+    // TODO: Deal with player with already existing name in the same room.
     return room;
   }
 }

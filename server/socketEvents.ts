@@ -7,13 +7,12 @@ export class SocketEvents {
     const io: SocketIO.Server = getIO();
 
     socket.on('createNewRoom', function (userName: string) {
-      const room: Room = RoomService.createNewRoom(userName, socket.id);
+      const room = RoomService.createNewRoom(userName, socket.id);
       socket.join(room.code);
       io.sockets.in(room.code).emit("joinedRoom", room);
     });
 
     socket.on('joinRoom', function (data: JoinRoomParams) {
-      console.log("server: %s %s %s", socket.id, data.roomCode, data.userName);
       const room: Room = RoomService.joinRoom(
         data.userName,
         socket.id,
