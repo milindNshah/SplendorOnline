@@ -1,6 +1,7 @@
 "use strict";
 import { GlobalUtils } from '../utils/GlobalUtils';
 import { Player } from './Player';
+import { UserServiceError } from '../utils/Errors';
 
 export interface JoinRoomParams {
   userName: string,
@@ -47,7 +48,7 @@ export class Room {
 
   async addPlayer(newPlayer: Player): Promise<this> {
     if (!this.canJoinRoom()) {
-      throw new Error(`Can't add more than 4 players to room ${this.code}.`);
+      throw new UserServiceError(`Can't add more than 4 players to room ${this.code}.`);
     }
 
     const nameExists = Array.from(this.players.values())
@@ -57,7 +58,7 @@ export class Room {
         return acc || cur;
       }, false)
     if (nameExists) {
-      throw new Error(`Can't join a room with same name: "${newPlayer.user.name}" as another player`);
+      throw new UserServiceError(`Can't join a room with same name: "${newPlayer.user.name}" as another player`);
     }
 
     this.players.set(newPlayer.id, newPlayer);

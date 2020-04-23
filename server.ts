@@ -2,8 +2,9 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import open from 'open';
 import path from 'path';
-import { intializeSocket } from './server/utils/SocketUtils';
+import * as Socket from './server/utils/Socket';
 import { SocketEvents } from './server/utils/SocketEvents';
+import * as ErrorHandler from './server/utils/ErrorHandler';
 
 const app = express();
 
@@ -47,7 +48,15 @@ const server = app.listen(app.get('port'), function () {
   console.log('Server started at: http://localhost:' + app.get('port') + '/');
 });
 
-const io = intializeSocket(server);
+const io = Socket.intializeSocket(server);
 io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
+});
+
+process.on('uncaughtException', async (err) => {
+  await ErrorHandler.handleError(err);
+});
+
+process.on('unhandledRejection', async (err) => {
+  await ErrorHandler.handleError(err);
 });

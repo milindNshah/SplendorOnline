@@ -1,15 +1,17 @@
 "use strict";
+import { serialize } from 'bson';
 import { JoinRoomParams, LeaveRoomParams, ReadyRoomParams, Room, PlayerRoom } from '../models/Room'
 import { Player } from '../models/Player'
 import * as RoomService from '../services/RoomService'
 import * as PlayerManager from '../PlayerManager'
 import * as RoomManager from '../RoomManager'
-import { getIO } from './SocketUtils'
-import { serialize } from 'bson';
+import * as Socket from './Socket'
+import * as ErrorHandler from './ErrorHandler';
+import { InvalidInputError, UserServiceError } from './Errors';
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
-    const io: SocketIO.Server = getIO();
+    const io: SocketIO.Server = Socket.getIO();
 
     socket.on('createNewRoom', async function (userName: string) {
       try {
@@ -21,7 +23,7 @@ export class SocketEvents {
         io.to(socket.id).emit("clientPlayerID", player.id);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        console.log(err);
+        await ErrorHandler.handleError(err);
       }
     });
 
@@ -39,7 +41,7 @@ export class SocketEvents {
         io.to(socket.id).emit("clientPlayerID", player.id);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        console.log(err);
+        await ErrorHandler.handleError(err);
       }
     });
 
@@ -48,12 +50,12 @@ export class SocketEvents {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
         if (!player) {
-          throw new Error(`Player with ID: ${data.playerID} doesn't exist`);
+          throw new InvalidInputError(`Player with ID: ${data.playerID} doesn't exist`);
         }
         player.toggleIsReady(data.isPlayerReady);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        console.log(err);
+        await ErrorHandler.handleError(err);
       }
     });
 
@@ -62,12 +64,12 @@ export class SocketEvents {
         const room: Room = await RoomManager.getRoomByCode(roomCode);
         const canStartGame: boolean = room.canStartGame();
         if (!canStartGame) {
-          throw new Error(`Cannot start game for room: ${room.code}`);
+          throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
         room.toggleGameStarted(true);
         io.sockets.in(room.code).emit("gameStarted");
       } catch (err) {
-        console.log(err);
+        await ErrorHandler.handleError(err);
       }
     })
 
@@ -85,7 +87,7 @@ export class SocketEvents {
         });
         await PlayerManager.removePlayer(player);
       } catch (err) {
-        console.log(err)
+        await ErrorHandler.handleError(err);
       }
     });
 
@@ -94,7 +96,7 @@ export class SocketEvents {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
         if (!player) {
-          throw new Error(`Cannot get playerID: ${data.playerID} from room: ${room.code}`);
+          throw new InvalidInputError(`Cannot get playerID: ${data.playerID} from room: ${room.code}`);
         }
 
         await RoomManager.removePlayerFromRoom(room, player);
@@ -102,7 +104,7 @@ export class SocketEvents {
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
         await PlayerManager.removePlayer(player);
       } catch (err) {
-        console.log(err)
+        await ErrorHandler.handleError(err);
       }
     })
   }

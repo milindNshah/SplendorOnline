@@ -1,6 +1,7 @@
 "use strict"
 import { Room } from './models/Room';
 import { Player } from './models/Player';
+import { InvalidInputError } from './utils/Errors';
 
 const rooms: Map<string, Room> = new Map();
 
@@ -16,32 +17,40 @@ export function getAllRooms(): Map<string, Room> {
 export async function getRoomByCode(roomCode: string): Promise<Room> {
   roomCode = roomCode.toUpperCase();
   const room: Room = rooms.get(roomCode);
-  if(room === undefined || room === null || !room) {
-    throw new Error(`Room code: ${roomCode} wasn't found`);
+  if (room === undefined || room === null || !room) {
+    throw new InvalidInputError(`Room code: ${roomCode} wasn't found`);
   }
   return room;
 }
 
 export async function removePlayerFromRooms(player: Player): Promise<Room[]> {
   const modifiedRooms: Room[] = [];
-  for(let room of Array.from(rooms.values())) {
-    if(room.hasPlayer(player.id)) {
-      await removePlayerFromRoom(room, player);
-      modifiedRooms.push(room);
+  try {
+    for (let room of Array.from(rooms.values())) {
+      if (room.hasPlayer(player.id)) {
+        await removePlayerFromRoom(room, player);
+        modifiedRooms.push(room);
+      }
     }
+    return modifiedRooms;
+  } catch (err) {
+    return err;
   }
-  return modifiedRooms;
 }
 
 export async function removePlayerFromRoom(room: Room, player: Player): Promise<Room> {
-  await room.removePlayer(player.id);
-  if(player.isHost)  {
-    await room.makeNewHost();
+  try {
+    await room.removePlayer(player.id);
+    if (player.isHost) {
+      await room.makeNewHost();
+    }
+    if (room.players.size <= 0) {
+      await removeRoom(room);
+    }
+    return room;
+  } catch (err) {
+    throw (err);
   }
-  if(room.players.size <= 0) {
-    await removeRoom(room);
-  }
-  return room;
 }
 
 /* Helper Functions */
