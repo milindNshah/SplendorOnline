@@ -7,6 +7,11 @@ export interface JoinRoomParams {
   roomCode: string,
 }
 
+export interface LeaveRoomParams {
+  roomCode: string,
+  playerID: string,
+}
+
 export interface PlayerRoom {
   player: Player,
   room: Room,
@@ -55,6 +60,31 @@ export class Room {
 
   hasPlayer(playerID: string): boolean {
     return this.players.has(playerID);
+  }
+
+  getPlayer(playerID: string): Player {
+    return this.hasPlayer(playerID)
+      ? this.players.get(playerID)
+      : null;
+  }
+
+  isPlayerHost(playerID: string): boolean {
+    return this.host.id === playerID;
+  }
+
+  switchHost(newHost: Player): this {
+    this.host = newHost;
+    return this;
+  }
+
+  makeNewHost(): this {
+    if(this.players.size <= 0) {
+      return this;
+    }
+    const newHost: Player = this.players.values().next().value;
+    newHost.toggleIsHost(true);
+    this.switchHost(newHost);
+    return this;
   }
 
   removePlayer(playerID: string): this {

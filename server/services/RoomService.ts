@@ -13,8 +13,7 @@ export function createNewRoom(userName: string, socketID: string): PlayerRoom {
 
 export function joinRoom(userName: string, socketID: string, roomCode: string): PlayerRoom {
   const player: Player = PlayerService.createNewPlayer(userName, socketID, false);
-  RoomManager.checkValidRoomCode(roomCode);
-  let room: Room = RoomManager.getRoomByCode(roomCode);
-  room = room.addPlayer(player);
+  const room = RoomManager.getValidatedRoomFromCode(roomCode);
+  room.addPlayer(player);
   return { player: player, room: room };
 }

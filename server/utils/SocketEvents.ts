@@ -1,5 +1,5 @@
 "use strict";
-import { JoinRoomParams, Room, PlayerRoom } from '../models/Room'
+import { JoinRoomParams, LeaveRoomParams, Room, PlayerRoom } from '../models/Room'
 import { Player } from '../models/Player'
 import * as RoomService from '../services/RoomService'
 import * as PlayerManager from '../PlayerManager'
@@ -11,12 +11,13 @@ export class SocketEvents {
     const io: SocketIO.Server = getIO();
 
     socket.on('disconnect', function () {
-      const player: Player = PlayerManager.getPlayerBySocketID(socket.id);
+      const player: Player = PlayerManager.getValidatedPlayerBySocketID(socket.id);
       // Possible if client didn't join/create a room.
-      if(player === null) {
+      if (player === null) {
         return;
       }
-      const modifiedRooms: Room[] = RoomManager.removePlayerFromRooms(player.id);
+
+      const modifiedRooms: Room[] = RoomManager.removePlayerFromRooms(player);
       modifiedRooms.forEach((room) => {
         io.sockets.in(room.code).emit("updateRoom", {
           room: room,
@@ -25,6 +26,25 @@ export class SocketEvents {
       });
       PlayerManager.removePlayer(player);
     });
+
+    socket.on('leftRoom', function (data: LeaveRoomParams) {
+      const room: Room = RoomManager.getValidatedRoomFromCode(data.roomCode);
+      if(!room) {
+        throw new Error("invalid room code given somehow");
+      }
+      const player:Player = room.getPlayer(data.playerID);
+      if(!player) {
+        throw new Error("failed to get player somehow");
+      }
+
+      RoomManager.removePlayerFromRoom(room, player);
+      socket.leave(room.code);
+      io.sockets.in(room.code).emit("updateRoom", {
+        room: room,
+        players: Array.from(room.players.values())
+      })
+      PlayerManager.removePlayer(player);
+    })
 
     socket.on('createNewRoom', function (userName: string) {
       const playerRoom: PlayerRoom = RoomService.createNewRoom(userName, socket.id);

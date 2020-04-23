@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { socket } from './socket';
 
@@ -16,6 +17,7 @@ class RoomComponent extends React.Component {
     }
     this.socket = socket;
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
+    this.onLeaveRoom = this.onLeaveRoom.bind(this);
     this.setClientPlayerID = this.setClientPlayerID.bind(this);
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
     this.createPlayerRow = this.createPlayerRow.bind(this);
@@ -38,6 +40,13 @@ class RoomComponent extends React.Component {
       roomCode: room.code,
       playersInfo: playersInfo,
       player: currentPlayer,
+    });
+  }
+
+  onLeaveRoom() {
+    this.socket.emit('leftRoom', {
+      roomCode: this.state.roomCode,
+      playerID: this.state.playerID,
     });
   }
 
@@ -119,6 +128,9 @@ class RoomComponent extends React.Component {
         <div>
           <h1>Player Info</h1>
           {this.renderPlayerTable()}
+        </div>
+        <div>
+          <Button variant="outline-danger" onClick={this.onLeaveRoom}><Link to="/">Leave Room</Link></Button>
         </div>
       </div>
     );
