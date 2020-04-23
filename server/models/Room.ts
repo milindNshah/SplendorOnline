@@ -86,7 +86,7 @@ export class Room {
     return this;
   }
 
-  removePlayer(playerID: string): this {
+  async removePlayer(playerID: string): Promise<this> {
     if (this.hasPlayer(playerID)) {
       this.players.delete(playerID);
     }

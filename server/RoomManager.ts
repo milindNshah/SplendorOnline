@@ -34,7 +34,7 @@ export async function removePlayerFromRooms(player: Player): Promise<Room[]> {
 }
 
 export async function removePlayerFromRoom(room: Room, player: Player): Promise<Room> {
-  room.removePlayer(player.id);
+  await room.removePlayer(player.id);
   if(player.isHost)  {
     await room.makeNewHost();
   }
