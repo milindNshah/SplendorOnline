@@ -75,7 +75,20 @@ export class SocketEvents {
       //   throw new Error("failed to get player somehow");
       // }
       player.toggleIsReady(data.isPlayerReady);
+      room.modifyCanStartGame();
       io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
+
+    socket.on('startGame', function(roomCode: string) {
+      const room: Room = RoomManager.getValidatedRoomFromCode(roomCode);
+      // if(!room) {
+      //   throw new Error("invalid room code given somehow");
+      // }
+      const canStartGame: boolean = room.canStartGame;
+      if(!canStartGame) {
+        io.sockets.in(room.code).emit("unableStartGame")
+        return;
+      }
+    })
   }
 }

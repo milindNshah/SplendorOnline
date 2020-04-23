@@ -9,9 +9,11 @@ class RoomComponent extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      canStartGame: false,
       copiedCode: false,
       playerID: '',
       roomCode: '',
+      pressedStartGame: false,
       playersInfo: [{}],
       player: {},
     }
@@ -25,6 +27,7 @@ class RoomComponent extends React.Component {
     this.onCopyCode = this.onCopyCode.bind(this);
     this.onReady = this.onReady.bind(this);
     this.onUnReady = this.onUnReady.bind(this);
+    this.onStartGame = this.onStartGame.bind(this);
   }
 
   componentDidMount() {
@@ -38,9 +41,11 @@ class RoomComponent extends React.Component {
     const currentPlayer = playersInfo.get(this.state.playerID)
 
     this.setState({
+      canStartGame: room.canStartGame,
       roomCode: room.code,
       playersInfo: playersInfo,
       player: currentPlayer,
+      pressedStartGame: false,
     });
   }
 
@@ -58,6 +63,13 @@ class RoomComponent extends React.Component {
       playerID: this.state.playerID,
       isPlayerReady: false,
     });
+  }
+
+  onStartGame() {
+    this.setState({
+      pressedStartGame: true,
+    })
+    this.socket.emit('startGame', this.state.roomCode);
   }
 
   onLeaveRoom() {
@@ -134,6 +146,24 @@ class RoomComponent extends React.Component {
     return button;
   }
 
+  renderUnableStartGameReason() {
+    let message;
+    if(!this.state.pressedStartGame) {
+      return null;
+    }
+
+    if(this.state.playersInfo.size < 2) {
+      message = (<div>Need atleast 2 players to start a game</div>)
+    } else if (this.state.playersInfo.size > 4) {
+      message = (<div>A room can only have 4 players</div>)
+    } else if(!this.state.canStartGame) {
+      message = (<div>All players must be ready</div>)
+    } else {
+      message = null
+    }
+    return message;
+  }
+
   render() {
     const CopiedCodeDialog = () => (<div>Copied to clipboard!</div>)
 
@@ -157,6 +187,8 @@ class RoomComponent extends React.Component {
         </div>
         <div>
           {this.renderPlayerButton()}
+          {this.state.canStartGame ? "True" : "False"}
+          {this.renderUnableStartGameReason()}
         </div>
         <div>
           <Button variant="outline-danger" onClick={this.onLeaveRoom}><Link to="/">Leave Room</Link></Button>

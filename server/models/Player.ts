@@ -12,7 +12,7 @@ export class Player {
   constructor (socketID: string, user: User, isHost?: boolean) {
     this.id = this.createPlayerID();
     this.isHost = isHost ?? false;
-    this.isReady = false;
+    this.isReady = isHost ?? false;
     this.socketID = socketID;
     this.user = user;
   }
