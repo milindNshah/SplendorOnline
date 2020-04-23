@@ -10,8 +10,8 @@ class RoomComponent extends React.Component {
     super(props)
     this.state = {
       copiedCode: false,
-      playerID: '',
-      roomCode: '',
+      playerID: this.props.location.state.playerID,
+      roomCode: this.props.location.state.roomCode,
       pressedStartGame: false,
       playersInfo: [{}],
       player: {},
@@ -19,7 +19,6 @@ class RoomComponent extends React.Component {
     this.socket = socket;
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
     this.onLeaveRoom = this.onLeaveRoom.bind(this);
-    this.setClientPlayerID = this.setClientPlayerID.bind(this);
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
     this.renderPlayerRow = this.renderPlayerRow.bind(this);
     this.renderPlayerButton = this.renderPlayerButton.bind(this);
@@ -33,7 +32,6 @@ class RoomComponent extends React.Component {
 
   componentDidMount() {
     this.socket.on('updateRoom', this.onRoomUpdate);
-    this.socket.on('clientPlayerID', this.setClientPlayerID);
   }
 
   onRoomUpdate(data) {
@@ -89,12 +87,6 @@ class RoomComponent extends React.Component {
       });
     }, 1500);
     return () => clearTimeout(timer);
-  }
-
-  setClientPlayerID(playerID) {
-    this.setState({
-      playerID: playerID,
-    });
   }
 
   renderPlayerTable() {

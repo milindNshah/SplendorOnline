@@ -21,9 +21,10 @@ export class SocketEvents {
 
         socket.join(room.code);
         io.to(socket.id).emit("clientPlayerID", player.id);
+        io.to(socket.id).emit("allowNavigateToRoom", { playerID: player.id, roomCode: room.code });
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     });
 
@@ -39,9 +40,10 @@ export class SocketEvents {
 
         socket.join(room.code);
         io.to(socket.id).emit("clientPlayerID", player.id);
+        io.to(socket.id).emit("allowNavigateToRoom");
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     });
 
@@ -55,7 +57,7 @@ export class SocketEvents {
         player.toggleIsReady(data.isPlayerReady);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     });
 
@@ -69,7 +71,7 @@ export class SocketEvents {
         room.toggleGameStarted(true);
         io.sockets.in(room.code).emit("gameStarted");
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     })
 
@@ -87,7 +89,7 @@ export class SocketEvents {
         });
         await PlayerManager.removePlayer(player);
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     });
 
@@ -104,7 +106,7 @@ export class SocketEvents {
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
         await PlayerManager.removePlayer(player);
       } catch (err) {
-        await ErrorHandler.handleError(err);
+        await ErrorHandler.handleError(err, io, socket.id);
       }
     })
   }

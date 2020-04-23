@@ -2,7 +2,6 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import Form from 'react-bootstrap/Form';
-import { Link } from 'react-router-dom';
 import { socket } from './socket';
 
 class WelcomeComponent extends React.Component {
@@ -12,9 +11,19 @@ class WelcomeComponent extends React.Component {
       userName: '',
       roomCode: '',
     }
+    this.socket = socket;
+    this.onAllowNavigateToRoom = this.onAllowNavigateToRoom.bind(this)
     this.onFormChange = this.onFormChange.bind(this)
     this.onCreateRoom = this.onCreateRoom.bind(this)
     this.onJoinRoom = this.onJoinRoom.bind(this)
+  }
+
+  componentDidMount() {
+    this.socket.on('allowNavigateToRoom', this.onAllowNavigateToRoom);
+  }
+
+  onAllowNavigateToRoom(data) {
+    this.props.history.push('/room', data);
   }
 
   onFormChange(e) {
@@ -28,11 +37,11 @@ class WelcomeComponent extends React.Component {
   }
 
   onCreateRoom() {
-    socket.emit('createNewRoom', this.state.userName);
+    this.socket.emit('createNewRoom', this.state.userName);
   }
 
   onJoinRoom() {
-    socket.emit('joinRoom', { userName: this.state.userName, roomCode: this.state.roomCode })
+    this.socket.emit('joinRoom', { userName: this.state.userName, roomCode: this.state.roomCode })
   }
 
   render() {
@@ -45,12 +54,12 @@ class WelcomeComponent extends React.Component {
           <Form.Group>
             <Form.Label>Enter a name</Form.Label>
             <FormControl type="text" placeholder="Ex. NormalHuman11" name="userName" onChange={this.onFormChange} value={this.state.userName} />
-            <Button variant="success"><Link to="/room" onClick={this.onCreateRoom}>Create Game</Link></Button>
+            <Button variant="success" onClick={this.onCreateRoom}>Create Game</Button>
           </Form.Group>
           <Form.Group>
             <Form.Label><p> Room Code </p></Form.Label>
             <FormControl type="text" placeholder="Ex. AB3D" name="roomCode" onChange={this.onFormChange} value={this.state.roomCode} />
-            <Button variant="success"><Link to="/room" onClick={this.onJoinRoom}>Join Game</Link></Button>
+            <Button variant="success" onClick={this.onJoinRoom}>Join Game</Button>
           </Form.Group>
         </Form>
       </div>
