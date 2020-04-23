@@ -20,8 +20,11 @@ class RoomComponent extends React.Component {
     this.onLeaveRoom = this.onLeaveRoom.bind(this);
     this.setClientPlayerID = this.setClientPlayerID.bind(this);
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
-    this.createPlayerRow = this.createPlayerRow.bind(this);
+    this.renderPlayerRow = this.renderPlayerRow.bind(this);
+    this.renderPlayerButton = this.renderPlayerButton.bind(this);
     this.onCopyCode = this.onCopyCode.bind(this);
+    this.onReady = this.onReady.bind(this);
+    this.onUnReady = this.onUnReady.bind(this);
   }
 
   componentDidMount() {
@@ -40,6 +43,22 @@ class RoomComponent extends React.Component {
       roomCode: room.code,
       playersInfo: playersInfo,
       player: currentPlayer,
+    });
+  }
+
+  onReady() {
+    this.socket.emit('playerReady', {
+      roomCode: this.state.roomCode,
+      playerID: this.state.playerID,
+      isPlayerReady: true,
+    });
+  }
+
+  onUnReady() {
+    this.socket.emit('playerReady', {
+      roomCode: this.state.roomCode,
+      playerID: this.state.playerID,
+      isPlayerReady: false,
     });
   }
 
@@ -75,7 +94,7 @@ class RoomComponent extends React.Component {
     }
 
     const rows = Array.from(this.state.playersInfo.values()).map((player) => {
-      return this.createPlayerRow(player);
+      return this.renderPlayerRow(player);
     })
 
     return (
@@ -90,7 +109,7 @@ class RoomComponent extends React.Component {
     );
   }
 
-  createPlayerRow(player) {
+  renderPlayerRow(player) {
     const isReady = player.isReady
       ? (<span><i className="fa fa-check"></i></span>)
       : (<span><i className="fa fa-times"></i></span>)
@@ -106,6 +125,15 @@ class RoomComponent extends React.Component {
         <div className="col">{isReady}</div>
       </div>
     )
+  }
+
+  renderPlayerButton() {
+    const button = this.state.player.isHost
+      ? (<Button variant="primary" onClick={this.onStartGame}>Start Game</Button>)
+      : this.state.player.isReady
+        ? (<Button variant="primary" onClick={this.onUnReady}>Ready</Button>)
+        : (<Button variant="outline-primary" onClick={this.onReady}>Ready</Button>)
+    return button;
   }
 
   render() {
@@ -128,6 +156,9 @@ class RoomComponent extends React.Component {
         <div>
           <h1>Player Info</h1>
           {this.renderPlayerTable()}
+        </div>
+        <div>
+          {this.renderPlayerButton()}
         </div>
         <div>
           <Button variant="outline-danger" onClick={this.onLeaveRoom}><Link to="/">Leave Room</Link></Button>

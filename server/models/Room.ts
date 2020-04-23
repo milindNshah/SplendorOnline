@@ -12,6 +12,12 @@ export interface LeaveRoomParams {
   playerID: string,
 }
 
+export interface ReadyRoomParams {
+  roomCode: string,
+  playerID: string,
+  isPlayerReady: boolean,
+}
+
 export interface PlayerRoom {
   player: Player,
   room: Room,
@@ -20,13 +26,11 @@ export interface PlayerRoom {
 export class Room {
   id: string;
   code: string;
-  host: Player;
   players: Map<string, Player>;
 
   constructor (host: Player) {
     this.id = this.createRoomID();
     this.code = this.createRoomCode();
-    this.host = host;
     this.players = new Map();
     this.players.set(host.id, host);
   }
@@ -68,22 +72,12 @@ export class Room {
       : null;
   }
 
-  isPlayerHost(playerID: string): boolean {
-    return this.host.id === playerID;
-  }
-
-  switchHost(newHost: Player): this {
-    this.host = newHost;
-    return this;
-  }
-
   makeNewHost(): this {
     if(this.players.size <= 0) {
       return this;
     }
     const newHost: Player = this.players.values().next().value;
     newHost.toggleIsHost(true);
-    this.switchHost(newHost);
     return this;
   }
 

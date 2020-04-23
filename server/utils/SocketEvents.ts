@@ -1,5 +1,5 @@
 "use strict";
-import { JoinRoomParams, LeaveRoomParams, Room, PlayerRoom } from '../models/Room'
+import { JoinRoomParams, LeaveRoomParams, ReadyRoomParams, Room, PlayerRoom } from '../models/Room'
 import { Player } from '../models/Player'
 import * as RoomService from '../services/RoomService'
 import * as PlayerManager from '../PlayerManager'
@@ -29,13 +29,13 @@ export class SocketEvents {
 
     socket.on('leftRoom', function (data: LeaveRoomParams) {
       const room: Room = RoomManager.getValidatedRoomFromCode(data.roomCode);
-      if(!room) {
-        throw new Error("invalid room code given somehow");
-      }
-      const player:Player = room.getPlayer(data.playerID);
-      if(!player) {
-        throw new Error("failed to get player somehow");
-      }
+      // if(!room) {
+      //   throw new Error("invalid room code given somehow");
+      // }
+      const player: Player = room.getPlayer(data.playerID);
+      // if(!player) {
+      //   throw new Error("failed to get player somehow");
+      // }
 
       RoomManager.removePlayerFromRoom(room, player);
       socket.leave(room.code);
@@ -71,6 +71,22 @@ export class SocketEvents {
 
       const players = Array.from(room.players.values());
       io.sockets.in(room.code).emit("updateRoom", { room: room, players: players });
+    });
+
+    socket.on('playerReady', function (data: ReadyRoomParams) {
+      const room: Room = RoomManager.getValidatedRoomFromCode(data.roomCode);
+      // if(!room) {
+      //   throw new Error("invalid room code given somehow");
+      // }
+      const player: Player = room.getPlayer(data.playerID);
+      // if(!player) {
+      //   throw new Error("failed to get player somehow");
+      // }
+      player.toggleIsReady(data.isPlayerReady);
+      io.sockets.in(room.code).emit("updateRoom", {
+        room: room,
+        players: Array.from(room.players.values())
+      })
     });
   }
 }
