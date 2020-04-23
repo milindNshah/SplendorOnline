@@ -45,12 +45,12 @@ class WelcomeComponent extends React.Component {
           <Form.Group>
             <Form.Label>Enter a name</Form.Label>
             <FormControl type="text" placeholder="Ex. NormalHuman11" name="userName" onChange={this.onFormChange} value={this.state.userName} />
-            <Button variant="success" onClick={this.onCreateRoom}><Link to="/room">Create Game</Link></Button>
+            <Button variant="success"><Link to="/room" onClick={this.onCreateRoom}>Create Game</Link></Button>
           </Form.Group>
           <Form.Group>
             <Form.Label><p> Room Code </p></Form.Label>
             <FormControl type="text" placeholder="Ex. AB3D" name="roomCode" onChange={this.onFormChange} value={this.state.roomCode} />
-            <Button variant="success" onClick={this.onJoinRoom}><Link to="/room">Join Game</Link></Button>
+            <Button variant="success"><Link to="/room" onClick={this.onJoinRoom}>Join Game</Link></Button>
           </Form.Group>
         </Form>
       </div>

@@ -79,7 +79,6 @@ export class SocketEvents {
       //   throw new Error("failed to get player somehow");
       // }
       player.toggleIsReady(data.isPlayerReady);
-      room.modifyCanStartGame();
       io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
 
@@ -88,9 +87,9 @@ export class SocketEvents {
       // if(!room) {
       //   throw new Error("invalid room code given somehow");
       // }
-      const canStartGame: boolean = room.canStartGame;
+      const canStartGame: boolean = room.canStartGame();
       if(!canStartGame) {
-        // throw new Error to client...
+        // throw new Error to client to figure out why not.
         return;
       }
       room.toggleGameStarted(true);

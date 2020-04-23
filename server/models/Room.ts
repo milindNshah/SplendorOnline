@@ -26,13 +26,11 @@ export interface PlayerRoom {
 export class Room {
   id: string;
   code: string;
-  canStartGame: boolean;
   gameStarted: boolean;
   players: Map<string, Player>;
 
   constructor (host: Player) {
     this.id = this.createRoomID();
-    this.canStartGame = false;
     this.code = this.createRoomCode();
     this.gameStarted = false;
     this.players = new Map();
@@ -65,7 +63,6 @@ export class Room {
     }
 
     this.players.set(newPlayer.id, newPlayer);
-    this.modifyCanStartGame();
     return this;
   }
 
@@ -95,7 +92,6 @@ export class Room {
     if (this.hasPlayer(playerID)) {
       this.players.delete(playerID);
     }
-    this.modifyCanStartGame();
     return this;
   }
 
@@ -115,14 +111,14 @@ export class Room {
     return this;
   }
 
-  modifyCanStartGame(): this {
+  // Keep in sync with RoomComponent.jsx->canStartGame() on Client.
+  canStartGame(): boolean {
     const allPlayersReady: boolean = Array.from(this.players.values())
       .map((player: Player) => {
         return player.isReady || player.isHost;
       }).reduce((acc: boolean, cur: boolean) => {
         return acc && cur;
       }, true);
-    this.canStartGame = allPlayersReady && this.players.size >= 2 && this.players.size <= 4;
-    return this;
+    return allPlayersReady && this.players.size >= 2 && this.players.size <= 4;
   }
 }

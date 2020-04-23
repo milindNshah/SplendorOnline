@@ -9,7 +9,6 @@ class RoomComponent extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      canStartGame: false,
       copiedCode: false,
       playerID: '',
       roomCode: '',
@@ -28,6 +27,8 @@ class RoomComponent extends React.Component {
     this.onReady = this.onReady.bind(this);
     this.onUnReady = this.onUnReady.bind(this);
     this.onStartGame = this.onStartGame.bind(this);
+    this.areAllPlayersReady = this.areAllPlayersReady.bind(this);
+    this.canStartGame = this.canStartGame.bind(this);
   }
 
   componentDidMount() {
@@ -41,7 +42,6 @@ class RoomComponent extends React.Component {
     const currentPlayer = playersInfo.get(this.state.playerID)
 
     this.setState({
-      canStartGame: room.canStartGame,
       roomCode: room.code,
       playersInfo: playersInfo,
       player: currentPlayer,
@@ -147,21 +147,36 @@ class RoomComponent extends React.Component {
   }
 
   renderUnableStartGameReason() {
-    let message;
     if(!this.state.pressedStartGame) {
       return null;
     }
+    let message;
+    const areAllPlayersReady = this.areAllPlayersReady();
 
     if(this.state.playersInfo.size < 2) {
       message = (<div>Need atleast 2 players to start a game</div>)
     } else if (this.state.playersInfo.size > 4) {
       message = (<div>A room can only have 4 players</div>)
-    } else if(!this.state.canStartGame) {
+    } else if(!areAllPlayersReady) {
       message = (<div>All players must be ready</div>)
     } else {
       message = null
     }
     return message;
+  }
+
+  // Keep in sync with Room.ts->canStartGame() on Server.
+  areAllPlayersReady() {
+    return Array.from(this.state.playersInfo.values())
+      .map((player) => {
+        return player.isReady || player.isHost;
+      }).reduce((acc, cur) => {
+        return acc && cur
+      }, true);
+  }
+  canStartGame() {
+    const allPlayersReady = this.areAllPlayersReady()
+    return allPlayersReady && this.state.playersInfo.size >= 2 && this.state.playersInfo.size <= 4;
   }
 
   render() {
@@ -187,7 +202,7 @@ class RoomComponent extends React.Component {
         </div>
         <div>
           {this.renderPlayerButton()}
-          {this.state.canStartGame ? "True" : "False"}
+          {this.canStartGame() ? "True" : "False"}
           {this.renderUnableStartGameReason()}
         </div>
         <div>
