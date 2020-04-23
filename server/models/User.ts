@@ -12,16 +12,16 @@ export class User {
     this.gamesWon = 0;
   }
 
-  createUserID(): string {
+  private createUserID(): string {
     return GlobalUtils.generateID();
   }
 
-  changeName(name: string): this {
+  private changeName(name: string): this {
     this.name = name;
     return this;
   }
 
-  incrementGamesWon(): this {
+  private incrementGamesWon(): this {
     this.gamesWon += 1;
     return this;
   }

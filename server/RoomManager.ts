@@ -9,52 +9,43 @@ export function addRoom(room: Room): Map<string, Room> {
   return rooms;
 }
 
-export function removeRoom(room: Room): Map<string, Room> {
-  rooms.delete(room.code);
-  return rooms;
-}
-
 export function getAllRooms(): Map<string, Room> {
   return rooms;
 }
 
-export function getValidatedRoomFromCode(roomCode: string): Room {
-  const room = getRoomByCode(roomCode);
-  if (room === null) {
-    return null;
-    // TODO: Shouldn't crash server, send error to client
-    // throw new Error("Invalid Room Code");
+export async function getRoomByCode(roomCode: string): Promise<Room> {
+  roomCode = roomCode.toUpperCase();
+  const room: Room = rooms.get(roomCode);
+  if(room === undefined || room === null || !room) {
+    throw new Error(`Room code: ${roomCode} wasn't found`);
   }
   return room;
 }
 
-export function removePlayerFromRooms(player: Player): Room[] {
+export async function removePlayerFromRooms(player: Player): Promise<Room[]> {
   const modifiedRooms: Room[] = [];
-
-  rooms.forEach((room)=> {
+  for(let room of Array.from(rooms.values())) {
     if(room.hasPlayer(player.id)) {
-      removePlayerFromRoom(room, player);
+      await removePlayerFromRoom(room, player);
       modifiedRooms.push(room);
     }
-  });
-
+  }
   return modifiedRooms;
 }
 
-export function removePlayerFromRoom(room: Room, player: Player): Room {
+export async function removePlayerFromRoom(room: Room, player: Player): Promise<Room> {
   room.removePlayer(player.id);
   if(player.isHost)  {
-    room.makeNewHost();
+    await room.makeNewHost();
   }
   if(room.players.size <= 0) {
-    removeRoom(room);
-    return room;
+    await removeRoom(room);
   }
   return room;
 }
 
 /* Helper Functions */
-function getRoomByCode(roomCode: string): Room {
-  roomCode = roomCode.toUpperCase();
-  return rooms.get(roomCode) ?? null;
+async function removeRoom(room: Room): Promise<Map<string, Room>> {
+  rooms.delete(room.code);
+  return rooms;
 }

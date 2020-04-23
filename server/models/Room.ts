@@ -45,12 +45,11 @@ export class Room {
     return GlobalUtils.generateAlphanumericID();
   }
 
-  addPlayer(newPlayer: Player): this {
+  async addPlayer(newPlayer: Player): Promise<this> {
     if (!this.canJoinRoom()) {
-      return;
-      // TODO: shouldn't crash server, return error to client
-      // throw new Error("Can't add more than 4 players to a room");
+      throw new Error(`Can't add more than 4 players to room ${this.code}.`);
     }
+
     const nameExists = Array.from(this.players.values())
       .map((existingPlayer) => {
         return existingPlayer.user.name === newPlayer.user.name;
@@ -58,8 +57,7 @@ export class Room {
         return acc || cur;
       }, false)
     if (nameExists) {
-      return;
-      // throw new Error("Can't join a room with same name as another player");
+      throw new Error(`Can't join a room with same name: "${newPlayer.user.name}" as another player`);
     }
 
     this.players.set(newPlayer.id, newPlayer);
@@ -76,12 +74,12 @@ export class Room {
       : null;
   }
 
-  makeNewHost(): this {
+  async makeNewHost(): Promise<this> {
     if (this.players.size <= 0) {
       return this;
     }
     const newHost: Player = this.players.values().next().value;
-    if(newHost !== null) {
+    if (newHost && newHost !== null && newHost !== undefined) {
       newHost.toggleIsHost(true);
       newHost.toggleIsReady(true);
     }
@@ -97,10 +95,10 @@ export class Room {
 
   canJoinRoom(): boolean {
     let canStillJoin: boolean = true;
-    if(this.players.size >= 4) {
+    if (this.players.size >= 4) {
       canStillJoin = false;
     }
-    if(this.gameStarted) {
+    if (this.gameStarted) {
       canStillJoin = false;
     }
     return canStillJoin;

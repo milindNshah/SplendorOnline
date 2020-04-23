@@ -11,89 +11,99 @@ export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
     const io: SocketIO.Server = getIO();
 
-    socket.on('disconnect', function () {
-      const player: Player = PlayerManager.getValidatedPlayerBySocketID(socket.id);
-      // Possible if client didn't join/create a room.
-      if (player === null) {
-        return;
-      }
+    socket.on('createNewRoom', async function (userName: string) {
+      try {
+        const playerRoom: PlayerRoom = await RoomService.createNewRoom(userName.trim(), socket.id);
+        const room: Room = playerRoom.room;
+        const player: Player = playerRoom.player;
 
-      const modifiedRooms: Room[] = RoomManager.removePlayerFromRooms(player);
-      modifiedRooms.forEach((room) => {
+        socket.join(room.code);
+        io.to(socket.id).emit("clientPlayerID", player.id);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
-      });
-      PlayerManager.removePlayer(player);
+      } catch (err) {
+        console.log(err);
+      }
     });
 
-    socket.on('leftRoom', function (data: LeaveRoomParams) {
-      const room: Room = RoomManager.getValidatedRoomFromCode(data.roomCode);
-      // if(!room) {
-      //   throw new Error("invalid room code given somehow");
-      // }
-      const player: Player = room.getPlayer(data.playerID);
-      // if(!player) {
-      //   throw new Error("failed to get player somehow");
-      // }
+    socket.on('joinRoom', async function (data: JoinRoomParams) {
+      try {
+        const playerRoom: PlayerRoom = await RoomService.joinRoom(
+          data.roomCode,
+          data.userName,
+          socket.id,
+        );
+        const room: Room = playerRoom.room;
+        const player: Player = playerRoom.player;
 
-      RoomManager.removePlayerFromRoom(room, player);
-      socket.leave(room.code);
-      io.sockets.in(room.code).emit("updateRoom", serialize(room));
-      PlayerManager.removePlayer(player);
+        socket.join(room.code);
+        io.to(socket.id).emit("clientPlayerID", player.id);
+        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    socket.on('playerReady', async function (data: ReadyRoomParams) {
+      try {
+        const room: Room = await RoomManager.getRoomByCode(data.roomCode);
+        const player: Player = room.getPlayer(data.playerID);
+        if (!player) {
+          throw new Error(`Player with ID: ${data.playerID} doesn't exist`);
+        }
+        player.toggleIsReady(data.isPlayerReady);
+        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    socket.on('startGame', async function (roomCode: string) {
+      try {
+        const room: Room = await RoomManager.getRoomByCode(roomCode);
+        const canStartGame: boolean = room.canStartGame();
+        if (!canStartGame) {
+          throw new Error(`Cannot start game for room: ${room.code}`);
+        }
+        room.toggleGameStarted(true);
+        io.sockets.in(room.code).emit("gameStarted");
+      } catch (err) {
+        console.log(err);
+      }
     })
 
-    socket.on('createNewRoom', function (userName: string) {
-      const playerRoom: PlayerRoom = RoomService.createNewRoom(userName, socket.id);
-      const room: Room = playerRoom.room;
-      const player: Player = playerRoom.player;
-      socket.join(room.code);
-      io.to(socket.id).emit("clientPlayerID", player.id);
+    socket.on('disconnect', async function () {
+      try {
+        const player: Player = PlayerManager.getPlayerBySocketID(socket.id);
+        // Possible if client didn't join/create a room.
+        if (!player || player === null || player === undefined) {
+          return;
+        }
 
-      io.sockets.in(room.code).emit("updateRoom", serialize(room));
-    });
-
-    socket.on('joinRoom', function (data: JoinRoomParams) {
-      const playerRoom: PlayerRoom = RoomService.joinRoom(
-        data.userName,
-        socket.id,
-        data.roomCode
-      );
-      if(playerRoom === null) {
-        return;
-        // TODO: Should pass error to client
+        const modifiedRooms: Room[] = await RoomManager.removePlayerFromRooms(player);
+        modifiedRooms.forEach((room) => {
+          io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        });
+        await PlayerManager.removePlayer(player);
+      } catch (err) {
+        console.log(err)
       }
-      const room: Room = playerRoom.room;
-      const player: Player = playerRoom.player;
-      socket.join(room.code);
-      io.to(socket.id).emit("clientPlayerID", player.id);
-
-      io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
 
-    socket.on('playerReady', function (data: ReadyRoomParams) {
-      const room: Room = RoomManager.getValidatedRoomFromCode(data.roomCode);
-      // if(!room) {
-      //   throw new Error("invalid room code given somehow");
-      // }
-      const player: Player = room.getPlayer(data.playerID);
-      // if(!player) {
-      //   throw new Error("failed to get player somehow");
-      // }
-      player.toggleIsReady(data.isPlayerReady);
-      io.sockets.in(room.code).emit("updateRoom", serialize(room));
-    });
+    socket.on('leftRoom', async function (data: LeaveRoomParams) {
+      try {
+        const room: Room = await RoomManager.getRoomByCode(data.roomCode);
+        const player: Player = room.getPlayer(data.playerID);
+        if (!player) {
+          throw new Error(`Cannot get playerID: ${data.playerID} from room: ${room.code}`);
+        }
 
-    socket.on('startGame', function(roomCode: string) {
-      const room: Room = RoomManager.getValidatedRoomFromCode(roomCode);
-      // if(!room) {
-      //   throw new Error("invalid room code given somehow");
-      // }
-      const canStartGame: boolean = room.canStartGame();
-      if(!canStartGame) {
-        // throw new Error to client to figure out why not.
-        return;
+        await RoomManager.removePlayerFromRoom(room, player);
+        socket.leave(room.code);
+        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        await PlayerManager.removePlayer(player);
+      } catch (err) {
+        console.log(err)
       }
-      room.toggleGameStarted(true);
-      io.sockets.in(room.code).emit("gameStarted");
     })
   }
 }
