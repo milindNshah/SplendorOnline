@@ -27,12 +27,14 @@ export class Room {
   id: string;
   code: string;
   canStartGame: boolean;
+  gameStarted: boolean;
   players: Map<string, Player>;
 
   constructor (host: Player) {
     this.id = this.createRoomID();
     this.canStartGame = false;
     this.code = this.createRoomCode();
+    this.gameStarted = false;
     this.players = new Map();
     this.players.set(host.id, host);
   }
@@ -46,7 +48,8 @@ export class Room {
   }
 
   addPlayer(newPlayer: Player): this {
-    if (this.players.size >= 4) {
+    if (!this.canJoinRoom()) {
+      return;
       // TODO: shouldn't crash server, return error to client
       // throw new Error("Can't add more than 4 players to a room");
     }
@@ -57,6 +60,7 @@ export class Room {
         return acc || cur;
       }, false)
     if (nameExists) {
+      return;
       // throw new Error("Can't join a room with same name as another player");
     }
 
@@ -92,6 +96,22 @@ export class Room {
       this.players.delete(playerID);
     }
     this.modifyCanStartGame();
+    return this;
+  }
+
+  canJoinRoom(): boolean {
+    let canStillJoin: boolean = true;
+    if(this.players.size >= 4) {
+      canStillJoin = false;
+    }
+    if(this.gameStarted) {
+      canStillJoin = false;
+    }
+    return canStillJoin;
+  }
+
+  toggleGameStarted(startGame: boolean): this {
+    this.gameStarted = startGame;
     return this;
   }
 

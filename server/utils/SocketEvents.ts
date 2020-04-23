@@ -57,6 +57,10 @@ export class SocketEvents {
         socket.id,
         data.roomCode
       );
+      if(playerRoom === null) {
+        return;
+        // TODO: Should pass error to client
+      }
       const room: Room = playerRoom.room;
       const player: Player = playerRoom.player;
       socket.join(room.code);
@@ -86,9 +90,11 @@ export class SocketEvents {
       // }
       const canStartGame: boolean = room.canStartGame;
       if(!canStartGame) {
-        io.sockets.in(room.code).emit("unableStartGame")
+        // throw new Error to client...
         return;
       }
+      room.toggleGameStarted(true);
+      io.sockets.in(room.code).emit("gameStarted");
     })
   }
 }

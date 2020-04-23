@@ -12,8 +12,11 @@ export function createNewRoom(userName: string, socketID: string): PlayerRoom {
 }
 
 export function joinRoom(userName: string, socketID: string, roomCode: string): PlayerRoom {
-  const player: Player = PlayerService.createNewPlayer(userName, socketID, false);
   const room = RoomManager.getValidatedRoomFromCode(roomCode);
+  if (!room.canJoinRoom()) {
+    return null; // TODO: Should pass error instead.
+  }
+  const player: Player = PlayerService.createNewPlayer(userName, socketID, false);
   room.addPlayer(player);
   return { player: player, room: room };
 }
