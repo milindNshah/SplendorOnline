@@ -1,6 +1,6 @@
-
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import { deserialize } from 'bson';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { socket } from './socket';
@@ -32,11 +32,9 @@ class RoomComponent extends React.Component {
     this.socket.on('clientPlayerID', this.setClientPlayerID);
   }
 
-  onRoomUpdate({ room, players }) {
-    const playersInfo = new Map();
-    players.forEach((someone) => {
-      playersInfo.set(someone.id, someone);
-    })
+  onRoomUpdate(data) {
+    const room = deserialize(Buffer.from(data));
+    const playersInfo = new Map(Object.entries(room.players));
     const currentPlayer = playersInfo.get(this.state.playerID)
 
     this.setState({
@@ -148,7 +146,7 @@ class RoomComponent extends React.Component {
           </CopyToClipboard>
           {
             this.state.copiedCode
-              ? <CopiedCodeDialog/>
+              ? <CopiedCodeDialog />
               : null
           }
           <p>PlayerID: {this.state.playerID}</p>

@@ -5,6 +5,7 @@ import * as RoomService from '../services/RoomService'
 import * as PlayerManager from '../PlayerManager'
 import * as RoomManager from '../RoomManager'
 import { getIO } from './SocketUtils'
+import { serialize } from 'bson';
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
@@ -19,10 +20,7 @@ export class SocketEvents {
 
       const modifiedRooms: Room[] = RoomManager.removePlayerFromRooms(player);
       modifiedRooms.forEach((room) => {
-        io.sockets.in(room.code).emit("updateRoom", {
-          room: room,
-          players: Array.from(room.players.values())
-        });
+        io.sockets.in(room.code).emit("updateRoom", serialize(room));
       });
       PlayerManager.removePlayer(player);
     });
@@ -39,10 +37,7 @@ export class SocketEvents {
 
       RoomManager.removePlayerFromRoom(room, player);
       socket.leave(room.code);
-      io.sockets.in(room.code).emit("updateRoom", {
-        room: room,
-        players: Array.from(room.players.values())
-      })
+      io.sockets.in(room.code).emit("updateRoom", serialize(room));
       PlayerManager.removePlayer(player);
     })
 
@@ -53,9 +48,7 @@ export class SocketEvents {
       socket.join(room.code);
       io.to(socket.id).emit("clientPlayerID", player.id);
 
-      // TODO: figure out why room.players sends blank object on client.
-      const players = Array.from(room.players.values());
-      io.sockets.in(room.code).emit("updateRoom", { room: room, players: players });
+      io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
 
     socket.on('joinRoom', function (data: JoinRoomParams) {
@@ -69,8 +62,7 @@ export class SocketEvents {
       socket.join(room.code);
       io.to(socket.id).emit("clientPlayerID", player.id);
 
-      const players = Array.from(room.players.values());
-      io.sockets.in(room.code).emit("updateRoom", { room: room, players: players });
+      io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
 
     socket.on('playerReady', function (data: ReadyRoomParams) {
@@ -83,10 +75,7 @@ export class SocketEvents {
       //   throw new Error("failed to get player somehow");
       // }
       player.toggleIsReady(data.isPlayerReady);
-      io.sockets.in(room.code).emit("updateRoom", {
-        room: room,
-        players: Array.from(room.players.values())
-      })
+      io.sockets.in(room.code).emit("updateRoom", serialize(room));
     });
   }
 }
