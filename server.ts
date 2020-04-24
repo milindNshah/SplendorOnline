@@ -6,6 +6,7 @@ import * as Socket from './server/utils/Socket';
 import { SocketEvents } from './server/utils/SocketEvents';
 import * as ErrorHandler from './server/utils/ErrorHandler';
 import * as CardManager from './server/managers/CardManager';
+import { CardTier, Card } from './server/models/Card';
 
 const app = express();
 
@@ -54,8 +55,10 @@ io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
 });
 
-console.log(CardManager.generateAllCards());
-console.log(CardManager.getTier1Cards());
+// CardManager.generateAllCards;
+const cards = CardManager.generateAllCards();
+// console.log(cards);
+
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);

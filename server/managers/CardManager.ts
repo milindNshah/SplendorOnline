@@ -20,16 +20,26 @@ export function getAllCards(): Map<string, Card> {
   return cards;
 }
 
-export function getTier1Cards(): Map<string, Card> {
-  return getTierCards(CardTier.TIER1);
+export function getCardsByTier(tier: CardTier): Map<string, Card> {
+  return Array.from(cards.values())
+    .filter((card: Card) => {
+      return card.tier === tier
+    }).reduce(function (tier1Cards: Map<string, Card>, card: Card) {
+      return tier1Cards.set(card.id, card);
+    }, new Map());
 }
 
-export function getTier2Cards(): Map<string, Card> {
-  return getTierCards(CardTier.TIER2);
-}
-
-export function getTier3Cards(): Map<string, Card> {
-  return getTierCards(CardTier.TIER3);
+export function shuffleCards(unshuffledCards: Map<string, Card>): Map<string, Card> {
+  let cardIDs = Array.from(unshuffledCards.keys());
+  let toShuffle: number = cardIDs.length;
+  let swapPosition: number;
+  while (toShuffle) {
+    swapPosition = Math.floor(Math.random() * toShuffle--);
+    [cardIDs[toShuffle], cardIDs[swapPosition]] = [cardIDs[swapPosition], cardIDs[toShuffle]];
+  }
+  return cardIDs.reduce((shuffledCards: Map<string, Card>, cardID: string) => {
+    return shuffledCards.set(cardID, unshuffledCards.get(cardID))
+  }, new Map())
 }
 
 /* Helper functions */
@@ -52,13 +62,4 @@ function generateCardStructuresFromInputCardStructures(): CardStructure[] {
       requiredGemStones: requiredGemStoneMap,
     }
   })
-}
-
-function getTierCards(tier: CardTier): Map<string, Card> {
-  return Array.from(cards.values())
-    .filter((card: Card) => {
-      return card.tier === tier
-    }).reduce(function (tier1Cards: Map<string, Card>, card: Card) {
-      return tier1Cards.set(card.id, card);
-    }, new Map());
 }
