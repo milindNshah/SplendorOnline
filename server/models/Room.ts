@@ -47,8 +47,12 @@ export class Room {
   }
 
   async addPlayer(newPlayer: Player): Promise<this> {
-    if (!this.canJoinRoom()) {
-      throw new UserServiceError(`Can't add more than 4 players to room ${this.code}.`);
+    if (this.gameStarted) {
+      throw new UserServiceError(`Game has already started for Room:.`);
+    }
+
+    if (!this.canAddPlayer()) {
+      throw new UserServiceError(`Room ${this.code} is full (${this.players.size}/4.)`);
     }
 
     const nameExists = Array.from(this.players.values())
@@ -94,15 +98,8 @@ export class Room {
     return this;
   }
 
-  canJoinRoom(): boolean {
-    let canStillJoin: boolean = true;
-    if (this.players.size >= 4) {
-      canStillJoin = false;
-    }
-    if (this.gameStarted) {
-      canStillJoin = false;
-    }
-    return canStillJoin;
+  canAddPlayer(): boolean {
+    return this.players.size < 4;
   }
 
   toggleGameStarted(startGame: boolean): this {

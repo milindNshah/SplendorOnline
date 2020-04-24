@@ -4,20 +4,27 @@ import { deserialize } from 'bson';
 import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { socket } from './socket';
+import { Error } from './errors'
 
 class RoomComponent extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       copiedCode: false,
-      playerID: this.props.location.state.playerID,
-      roomCode: this.props.location.state.roomCode,
+      playerID: this.props.location.state
+        ? this.props.location.state.playerID
+        : '',
+      roomCode: this.props.location.state
+        ? this.props.location.state.roomCode
+        : '',
       pressedStartGame: false,
       playersInfo: [{}],
       player: {},
     }
+
     this.socket = socket;
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
+    this.onClientRequestError = this.onClientRequestError.bind(this)
     this.onLeaveRoom = this.onLeaveRoom.bind(this);
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
     this.renderPlayerRow = this.renderPlayerRow.bind(this);
@@ -32,12 +39,23 @@ class RoomComponent extends React.Component {
 
   componentDidMount() {
     this.socket.on('updateRoom', this.onRoomUpdate);
+    this.socket.on('ClientRequestError', this.onClientRequestError);
+    this.socket.emit('requestRoomUpdate', this.state.roomCode);
+  }
+
+  componentWillUnmount() {
+    this.socket.off('updateRoom', this.onRoomUpdate);
+    this.socket.off('ClientRequestError', this.onClientRequestError);
   }
 
   onRoomUpdate(data) {
     const room = deserialize(Buffer.from(data));
     const playersInfo = new Map(Object.entries(room.players));
     const currentPlayer = playersInfo.get(this.state.playerID)
+    // TODO: Eventually need to fix so that refresh actually does work.
+    if(!currentPlayer) {
+      this.props.history.push('/')
+    }
 
     this.setState({
       roomCode: room.code,
@@ -45,6 +63,12 @@ class RoomComponent extends React.Component {
       player: currentPlayer,
       pressedStartGame: false,
     });
+  }
+
+  onClientRequestError(err) {
+    if(err.name === Error.ROOM_DOES_NOT_EXIST) {
+      this.props.history.push('/')
+    }
   }
 
   onReady() {
@@ -130,6 +154,10 @@ class RoomComponent extends React.Component {
   }
 
   renderPlayerButton() {
+    if(!this.state.player) {
+      return;
+    }
+
     const button = this.state.player.isHost
       ? (<Button variant="primary" onClick={this.onStartGame}>Start Game</Button>)
       : this.state.player.isReady
@@ -139,17 +167,17 @@ class RoomComponent extends React.Component {
   }
 
   renderUnableStartGameReason() {
-    if(!this.state.pressedStartGame) {
+    if (!this.state.pressedStartGame) {
       return null;
     }
     let message;
     const areAllPlayersReady = this.areAllPlayersReady();
 
-    if(this.state.playersInfo.size < 2) {
+    if (this.state.playersInfo.size < 2) {
       message = (<div>Need atleast 2 players to start a game</div>)
     } else if (this.state.playersInfo.size > 4) {
-      message = (<div>A room can only have 4 players</div>)
-    } else if(!areAllPlayersReady) {
+      message = (<div>A room can only have at most 4 players</div>)
+    } else if (!areAllPlayersReady) {
       message = (<div>All players must be ready</div>)
     } else {
       message = null

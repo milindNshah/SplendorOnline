@@ -1,7 +1,7 @@
 "use strict"
 import { Room } from './models/Room';
 import { Player } from './models/Player';
-import { InvalidInputError } from './utils/Errors';
+import { InvalidRoomCodeError } from './utils/Errors';
 
 const rooms: Map<string, Room> = new Map();
 
@@ -15,10 +15,14 @@ export function getAllRooms(): Map<string, Room> {
 }
 
 export async function getRoomByCode(roomCode: string): Promise<Room> {
+  roomCode = roomCode.trim()
+  if (roomCode === undefined || roomCode === null || !roomCode) {
+    throw new InvalidRoomCodeError(`Room code cannot be empty`);
+  }
   roomCode = roomCode.toUpperCase();
   const room: Room = rooms.get(roomCode);
   if (room === undefined || room === null || !room) {
-    throw new InvalidInputError(`Room code: ${roomCode} wasn't found`);
+    throw new InvalidRoomCodeError(`Invalid room code: ${roomCode}`);
   }
   return room;
 }

@@ -7,5 +7,5 @@ export async function  createNewUser(name: string): Promise<User> {
   if (!name || name.trim().length === 0) {
     throw new InvalidInputError("User name cannot be empty");
   }
-  return new User(name);
+  return new User(name.trim());
 }

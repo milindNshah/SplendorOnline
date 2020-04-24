@@ -15,14 +15,12 @@ export class SocketEvents {
 
     socket.on('createNewRoom', async function (userName: string) {
       try {
-        const playerRoom: PlayerRoom = await RoomService.createNewRoom(userName.trim(), socket.id);
+        const playerRoom: PlayerRoom = await RoomService.createNewRoom(userName, socket.id);
         const room: Room = playerRoom.room;
         const player: Player = playerRoom.player;
 
         socket.join(room.code);
-        io.to(socket.id).emit("clientPlayerID", player.id);
         io.to(socket.id).emit("allowNavigateToRoom", { playerID: player.id, roomCode: room.code });
-        io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -39,8 +37,16 @@ export class SocketEvents {
         const player: Player = playerRoom.player;
 
         socket.join(room.code);
-        io.to(socket.id).emit("clientPlayerID", player.id);
-        io.to(socket.id).emit("allowNavigateToRoom");
+        io.to(socket.id).emit("allowNavigateToRoom", { playerID: player.id, roomCode: room.code });
+      } catch (err) {
+        await ErrorHandler.handleError(err, io, socket.id);
+      }
+    });
+
+    socket.on('requestRoomUpdate', async function(roomCode: string) {
+      try {
+        const room : Room = await RoomManager.getRoomByCode(roomCode);
+        socket.join(room.code);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);

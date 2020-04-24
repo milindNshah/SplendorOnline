@@ -10,9 +10,11 @@ class WelcomeComponent extends React.Component {
     this.state = {
       userName: '',
       roomCode: '',
+      errorMessage: null,
     }
     this.socket = socket;
     this.onAllowNavigateToRoom = this.onAllowNavigateToRoom.bind(this)
+    this.onClientRequestError = this.onClientRequestError.bind(this)
     this.onFormChange = this.onFormChange.bind(this)
     this.onCreateRoom = this.onCreateRoom.bind(this)
     this.onJoinRoom = this.onJoinRoom.bind(this)
@@ -20,10 +22,22 @@ class WelcomeComponent extends React.Component {
 
   componentDidMount() {
     this.socket.on('allowNavigateToRoom', this.onAllowNavigateToRoom);
+    this.socket.on('ClientRequestError', this.onClientRequestError);
+  }
+
+  componentWillUnmount() {
+    this.socket.off('allowNavigateToRoom', this.onAllowNavigateToRoom);
+    this.socket.off('ClientRequestError', this.onClientRequestError);
   }
 
   onAllowNavigateToRoom(data) {
     this.props.history.push('/room', data);
+  }
+
+  onClientRequestError(err) {
+    this.setState({
+      errorMessage: err,
+    });
   }
 
   onFormChange(e) {
@@ -45,6 +59,11 @@ class WelcomeComponent extends React.Component {
   }
 
   render() {
+    const ErrorMessage = () => (this.state.errorMessage
+      ? <div>{this.state.errorMessage.name}: {this.state.errorMessage.message}</div>
+      : null
+    );
+
     return (
       <div>
         <h1>Welcome to Splendor</h1>
@@ -62,6 +81,7 @@ class WelcomeComponent extends React.Component {
             <Button variant="success" onClick={this.onJoinRoom}>Join Game</Button>
           </Form.Group>
         </Form>
+        <ErrorMessage/>
       </div>
     );
   }
