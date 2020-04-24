@@ -2,7 +2,7 @@
 
 import { Room } from "../models/Room";
 import { Game } from "../models/Game";
-import { InvalidInputError } from "../utils/Errors";
+import { InvalidInputError } from "../models/Errors";
 import * as GameManager from "../managers/GameManager";
 
 export async function createNewGame(room: Room): Promise<Game> {

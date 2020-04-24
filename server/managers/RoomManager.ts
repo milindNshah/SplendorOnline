@@ -1,7 +1,7 @@
 "use strict"
 import { Room } from '../models/Room';
 import { Player } from '../models/Player';
-import { InvalidRoomCodeError } from '../utils/Errors';
+import { InvalidRoomCodeError } from '../models/Errors';
 
 const rooms: Map<string, Room> = new Map();
 

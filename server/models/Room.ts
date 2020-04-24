@@ -1,7 +1,7 @@
 "use strict";
 import { GlobalUtils } from '../utils/GlobalUtils';
 import { Player } from './Player';
-import { UserServiceError } from '../utils/Errors';
+import { UserServiceError } from './Errors';
 
 export interface JoinRoomParams {
   userName: string,

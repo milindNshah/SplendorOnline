@@ -1,6 +1,6 @@
 "use strict"
 import { Game } from "../models/Game"
-import { InvalidInputError } from "../utils/Errors";
+import { InvalidInputError } from "../models/Errors";
 
 const games: Map<string, Game> = new Map();
 

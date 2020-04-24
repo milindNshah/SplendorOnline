@@ -1,7 +1,7 @@
 "use strict"
 
 import { User } from '../models/User'
-import { InvalidInputError } from '../utils/Errors';
+import { InvalidInputError } from '../models/Errors';
 
 export async function  createNewUser(name: string): Promise<User> {
   if (!name || name.trim().length === 0) {

@@ -7,7 +7,7 @@ import * as PlayerManager from '../managers/PlayerManager'
 import * as RoomManager from '../managers/RoomManager'
 import * as Socket from './Socket'
 import * as ErrorHandler from './ErrorHandler';
-import { InvalidInputError, UserServiceError } from './Errors';
+import { InvalidInputError, UserServiceError } from '../models/Errors';
 import { Game } from '../models/Game';
 import * as GameService from '../services/GameService'
 import * as GameManager from '../managers/GameManager'
