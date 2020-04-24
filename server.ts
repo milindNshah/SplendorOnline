@@ -5,6 +5,7 @@ import path from 'path';
 import * as Socket from './server/utils/Socket';
 import { SocketEvents } from './server/utils/SocketEvents';
 import * as ErrorHandler from './server/utils/ErrorHandler';
+import * as CardManager from './server/managers/CardManager';
 
 const app = express();
 
@@ -52,6 +53,8 @@ const io = Socket.intializeSocket(server);
 io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
 });
+
+CardManager.generateAllCards();
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);

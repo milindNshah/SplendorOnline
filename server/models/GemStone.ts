@@ -1,8 +1,7 @@
 export enum GemStone {
-  CHOCOLATE = 'chocolate',
+  CHOCOLATE= 'chocolate',
   DIAMOND = 'diamond',
   EMERALD = 'emerald',
-  GOLD = 'gold',
   RUBY = 'ruby',
   SAPPHIRE = 'sapphire',
 }

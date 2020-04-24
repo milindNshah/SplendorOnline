@@ -8,6 +8,13 @@ export enum CardTier {
   TIER3 = 3,
 }
 
+export interface CardStructure {
+  pointValue: number,
+  gemStoneValue: CardGemStone,
+  tier: CardTier,
+  requiredGemStones: Map<GemStone, number>,
+}
+
 export class Card {
   id: string;
   pointValue: number;
