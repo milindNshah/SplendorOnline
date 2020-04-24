@@ -3,11 +3,14 @@ import { serialize } from 'bson';
 import { JoinRoomParams, LeaveRoomParams, ReadyRoomParams, Room, PlayerRoom } from '../models/Room'
 import { Player } from '../models/Player'
 import * as RoomService from '../services/RoomService'
-import * as PlayerManager from '../PlayerManager'
-import * as RoomManager from '../RoomManager'
+import * as PlayerManager from '../managers/PlayerManager'
+import * as RoomManager from '../managers/RoomManager'
 import * as Socket from './Socket'
 import * as ErrorHandler from './ErrorHandler';
 import { InvalidInputError, UserServiceError } from './Errors';
+import { Game } from '../models/Game';
+import * as GameService from '../services/GameService'
+import * as GameManager from '../managers/GameManager'
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
@@ -43,9 +46,9 @@ export class SocketEvents {
       }
     });
 
-    socket.on('requestRoomUpdate', async function(roomCode: string) {
+    socket.on('requestRoomUpdate', async function (roomCode: string) {
       try {
-        const room : Room = await RoomManager.getRoomByCode(roomCode);
+        const room: Room = await RoomManager.getRoomByCode(roomCode);
         socket.join(room.code);
         io.sockets.in(room.code).emit("updateRoom", serialize(room));
       } catch (err) {
@@ -67,15 +70,42 @@ export class SocketEvents {
       }
     });
 
-    socket.on('startGame', async function (roomCode: string) {
+    socket.on('leftRoom', async function (data: LeaveRoomParams) {
+      try {
+        const room: Room = await RoomManager.getRoomByCode(data.roomCode);
+        const player: Player = room.getPlayer(data.playerID);
+        if (!player) {
+          throw new InvalidInputError(`Cannot get playerID: ${data.playerID} from room: ${room.code}`);
+        }
+
+        await RoomManager.removePlayerFromRoom(room, player);
+        socket.leave(room.code);
+        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        await PlayerManager.removePlayer(player);
+      } catch (err) {
+        await ErrorHandler.handleError(err, io, socket.id);
+      }
+    })
+
+    socket.on('startNewGame', async function (roomCode: string) {
       try {
         const room: Room = await RoomManager.getRoomByCode(roomCode);
         const canStartGame: boolean = room.canStartGame();
         if (!canStartGame) {
           throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
-        room.toggleGameStarted(true);
-        io.sockets.in(room.code).emit("gameStarted");
+        const game: Game = await GameService.createNewGame(room);
+        io.sockets.in(room.code).emit("gameStarted", { gameID: game.id });
+      } catch (err) {
+        await ErrorHandler.handleError(err, io, socket.id);
+      }
+    })
+
+    socket.on('requestGameUpdate', async function (gameID: string) {
+      try {
+        const game: Game = await GameManager.getGameByID(gameID);
+        const room: Room = game.room;
+        io.sockets.in(room.code).emit("updateGame", serialize(game));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -98,22 +128,5 @@ export class SocketEvents {
         await ErrorHandler.handleError(err, io, socket.id);
       }
     });
-
-    socket.on('leftRoom', async function (data: LeaveRoomParams) {
-      try {
-        const room: Room = await RoomManager.getRoomByCode(data.roomCode);
-        const player: Player = room.getPlayer(data.playerID);
-        if (!player) {
-          throw new InvalidInputError(`Cannot get playerID: ${data.playerID} from room: ${room.code}`);
-        }
-
-        await RoomManager.removePlayerFromRoom(room, player);
-        socket.leave(room.code);
-        io.sockets.in(room.code).emit("updateRoom", serialize(room));
-        await PlayerManager.removePlayer(player);
-      } catch (err) {
-        await ErrorHandler.handleError(err, io, socket.id);
-      }
-    })
   }
 }

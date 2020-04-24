@@ -1,12 +1,11 @@
 import React from 'react';
 import { render } from 'react-dom';
 import WelcomeComponent from './WelcomeComponent.jsx';
-import RoomComponent from './RoomComponent.jsx';
+import RoomGameComponent from './RoomGameComponent.jsx';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  useHistory,
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,7 +16,7 @@ class AppComponent extends React.Component {
     return (
         <Switch>
           <Route exact path='/' component={WelcomeComponent}/>
-          <Route path='/room' component={RoomComponent}/>
+          <Route path='/room' component={RoomGameComponent}/>
         </Switch>
     );
   }

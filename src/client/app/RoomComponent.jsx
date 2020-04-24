@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import { deserialize } from 'bson';
-import { Link } from 'react-router-dom';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { socket } from './socket';
 import { Error } from './errors'
@@ -11,12 +10,8 @@ class RoomComponent extends React.Component {
     super(props)
     this.state = {
       copiedCode: false,
-      playerID: this.props.location.state
-        ? this.props.location.state.playerID
-        : '',
-      roomCode: this.props.location.state
-        ? this.props.location.state.roomCode
-        : '',
+      playerID: this.props.playerID,
+      roomCode: this.props.roomCode,
       pressedStartGame: false,
       playersInfo: [{}],
       player: {},
@@ -58,7 +53,6 @@ class RoomComponent extends React.Component {
     }
 
     this.setState({
-      roomCode: room.code,
       playersInfo: playersInfo,
       player: currentPlayer,
       pressedStartGame: false,
@@ -91,7 +85,7 @@ class RoomComponent extends React.Component {
     this.setState({
       pressedStartGame: true,
     })
-    this.socket.emit('startGame', this.state.roomCode);
+    this.socket.emit('startNewGame', this.state.roomCode);
   }
 
   onLeaveRoom() {
@@ -99,6 +93,7 @@ class RoomComponent extends React.Component {
       roomCode: this.state.roomCode,
       playerID: this.state.playerID,
     });
+    this.props.history.push('/')
   }
 
   onCopyCode() {
@@ -226,7 +221,7 @@ class RoomComponent extends React.Component {
           {this.renderUnableStartGameReason()}
         </div>
         <div>
-          <Button variant="outline-danger" onClick={this.onLeaveRoom}><Link to="/">Leave Room</Link></Button>
+          <Button variant="outline-danger" onClick={this.onLeaveRoom}>Leave Room</Button>
         </div>
       </div>
     );

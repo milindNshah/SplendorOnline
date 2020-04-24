@@ -2,7 +2,7 @@
 import { Room, PlayerRoom } from '../models/Room'
 import { Player } from '../models/Player'
 import * as PlayerService from '../services/PlayerService'
-import * as RoomManager from '../RoomManager'
+import * as RoomManager from '../managers/RoomManager'
 
 export async function createNewRoom(userName: string, socketID: string): Promise<PlayerRoom> {
   try {

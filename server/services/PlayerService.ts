@@ -3,7 +3,7 @@
 import { User } from '../models/User'
 import * as UserService from '../services/UserService'
 import { Player } from '../models/Player'
-import * as PlayerManger from '../PlayerManager'
+import * as PlayerManger from '../managers/PlayerManager'
 
 export async function createNewPlayer(name: string, socketID: string, isHost?: boolean): Promise<Player> {
   try {

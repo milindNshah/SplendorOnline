@@ -1,5 +1,5 @@
 "use strict"
-import { Player } from './models/Player';
+import { Player } from '../models/Player';
 
 const players: Map<string, Player> = new Map();
 
