@@ -54,7 +54,8 @@ io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
 });
 
-CardManager.generateAllCards();
+console.log(CardManager.generateAllCards());
+console.log(CardManager.getTier1Cards());
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);

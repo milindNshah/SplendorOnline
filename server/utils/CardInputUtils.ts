@@ -15,21 +15,41 @@ export interface IInputRequiredGemStones {
   required: number,
 }
 
+// TODO: Probably write a script converting the .xslx to this format.
 export const inputCardStructures: IInputCardStructure[] = [
   {
     pointValue: 0,
     gemStoneValue: CardGemStone.DIAMOND,
     tier: CardTier.TIER1,
-    requiredGemStones: [{ gemStone: GemStone.SAPPHIRE, required: 3 }],
+    requiredGemStones: [
+      { gemStone: GemStone.SAPPHIRE, required: 3 },
+    ],
+  },
+  {
+    pointValue: 1,
+    gemStoneValue: CardGemStone.SAPPHIRE,
+    tier: CardTier.TIER1,
+    requiredGemStones: [
+      { gemStone: GemStone.RUBY, required: 4 },
+    ],
   },
   {
     pointValue: 2,
     gemStoneValue: CardGemStone.EMERALD,
     tier: CardTier.TIER2,
-    requiredGemStones:
-      [{ gemStone: GemStone.DIAMOND, required: 4 },
+    requiredGemStones: [
+      { gemStone: GemStone.DIAMOND, required: 4 },
       { gemStone: GemStone.SAPPHIRE, required: 2 },
-      { gemStone: GemStone.CHOCOLATE, required: 2 }
-      ],
-  }
+      { gemStone: GemStone.CHOCOLATE, required: 1 },
+    ],
+  },
+  {
+    pointValue: 5,
+    gemStoneValue: CardGemStone.CHOCOLATE,
+    tier: CardTier.TIER3,
+    requiredGemStones: [
+      { gemStone: GemStone.DIAMOND, required: 3 },
+      { gemStone: GemStone.RUBY, required: 7 },
+    ],
+  },
 ];
