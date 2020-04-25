@@ -1,6 +1,8 @@
 "use strict"
 import { GlobalUtils } from '../utils/GlobalUtils'
-import { GemStone, CardGemStone } from './GemStone'
+import { CardGemStone } from './GemStone'
+
+const NOBLE_POINT_VALUE = 3;
 
 export class Noble {
   id: string;
@@ -8,11 +10,10 @@ export class Noble {
   requiredCards: Map<CardGemStone, number>;
 
   constructor (
-    pointValue: number,
     requiredCards: Map<CardGemStone, number>,
   ) {
     this.id = this.createNobleID();
-    this.pointValue = pointValue;
+    this.pointValue = NOBLE_POINT_VALUE;
     this.requiredCards = requiredCards;
   }
 

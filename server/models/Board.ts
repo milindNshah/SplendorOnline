@@ -31,6 +31,18 @@ export class Board {
     this.setupNobles();
   }
 
+  setupGemStones(): void {
+    const numStones: number = this.numPlayers === 4
+      ? 7 : this.numPlayers === 3
+        ? 5 : 4;
+    this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
+    this.availableGemStones.set(GemStone.DIAMOND, numStones);
+    this.availableGemStones.set(GemStone.EMERALD, numStones);
+    this.availableGemStones.set(GemStone.RUBY, numStones);
+    this.availableGemStones.set(GemStone.SAPPHIRE, numStones);
+    this.availableGemStones.set(GemStone.GOLD, 5);
+  }
+
   setupCards(): void {
     this.remainingTieredCards = Object.keys(CardTier)
       .filter(key => isNaN(Number(key)))
@@ -70,18 +82,6 @@ export class Board {
           }, new Map());
         return activeCards.set(tier, activeCardsForTier);
       }, new Map())
-  }
-
-  setupGemStones(): void {
-    const numStones: number = this.numPlayers === 4
-      ? 7 : this.numPlayers === 3
-        ? 5 : 4;
-    this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
-    this.availableGemStones.set(GemStone.DIAMOND, numStones);
-    this.availableGemStones.set(GemStone.EMERALD, numStones);
-    this.availableGemStones.set(GemStone.RUBY, numStones);
-    this.availableGemStones.set(GemStone.SAPPHIRE, numStones);
-    this.availableGemStones.set(GemStone.GOLD, 5);
   }
 
   setupNobles(): void {

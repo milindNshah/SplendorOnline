@@ -1,6 +1,7 @@
 import * as fs from 'fs';
+
 const inFile = "splendorGemStonesInput.csv";
-const outFile = "splendorGemStoneOutput.txt"
+const outFile = "splendorGemStoneOutput.txt";
 const gemNames = ["DIAMOND", "SAPPHIRE", "EMERALD", "RUBY", "CHOCOLATE"];
 const TIER_OFFSET = 0;
 const POINT_OFFSET = 6;
@@ -18,7 +19,7 @@ const allGemStones =
     .join("\n")
 
 function convertFromLineToObject(line: string[]): string {
-  const outputString = `{
+  return `{
       pointValue: ${getPointValue(line)},
       gemStoneType: ${getGemStoneType(line)},
       tier: ${getTier(line)},
@@ -26,7 +27,6 @@ function convertFromLineToObject(line: string[]): string {
         ${getRequiredGemStones(line)}
       ],
     },`;
-  return outputString;
 }
 
 function getTier(line: string[]): string {
