@@ -57,7 +57,44 @@ io.on('connection', function (socket) {
 
 // CardManager.generateAllCards;
 const cards = CardManager.generateAllCards();
-// console.log(cards);
+// let remainingTieredCards: Map<CardTier, Map<string, Card>>;
+// let activeTieredCards: Map<CardTier, Map<string, Card>>;
+// function setupCards(): void {
+//   remainingTieredCards = Object.keys(CardTier)
+//     .filter(key => isNaN(Number(key)))
+//     .map((key: string) => CardTier[key as keyof typeof CardTier])
+//     .reduce((map: Map<CardTier, Map<string, Card>>, cardTier: CardTier) => {
+//       return map.set(
+//         cardTier,
+//         CardManager.shuffleCards(new Map(CardManager.getCardsByTier(cardTier)))
+//       )
+//     }, new Map())
+//   // TODO: Check if right number of cards per Tier.
+//   activeTieredCards = Array.from(remainingTieredCards.keys())
+//     .reduce((
+//       activeCards: Map<CardTier, Map<string, Card>>,
+//       tier: CardTier
+//     ) => {
+//       const remainingCardsForTier: Map<string, Card> = remainingTieredCards.get(tier);
+//       const activeCardsForTier = Array.from(remainingCardsForTier.keys())
+//       .slice(0, 4)
+//       .reduce((
+//         map: Map<string, Card>,
+//         cardID: string,
+//       ) => {
+//         const card: Card = remainingCardsForTier.get(cardID);
+//         remainingCardsForTier.delete(cardID)
+//         return map.set(cardID, card);
+//       }, new Map());
+//       return activeCards.set(tier, activeCardsForTier);
+//     }, new Map())
+// }
+// setupCards();
+// console.log(activeTieredCards);
+// console.log(remainingTieredCards.get(CardTier.TIER1).size)
+// console.log(remainingTieredCards.get(CardTier.TIER2).size)
+// console.log(remainingTieredCards.get(CardTier.TIER3).size)
+// console.log(cards.size);
 
 
 process.on('uncaughtException', async (err) => {

@@ -3,6 +3,9 @@ import { GlobalUtils } from '../utils/GlobalUtils'
 import { CardTier, Card } from './Card';
 import { GemStone } from './GemStone';
 import * as CardManager from '../managers/CardManager';
+import { CardGenerationError } from './Errors';
+
+const NUM_CARDS_PER_TIER = 4;
 
 export class Board {
   id: string;
@@ -38,18 +41,41 @@ export class Board {
           CardManager.shuffleCards(new Map(CardManager.getCardsByTier(cardTier)))
         )
       }, new Map())
-    // TODO: Check if right number of cards per Tier.
-    // TODO: Create activeTieredCards after randomly shuffling in each tier above.
-    const smth = Array.from(this.remainingTieredCards.keys())
-      .map((tier: CardTier) => {
-        // TODO: move from remaining to active.
-      })
+
+    if (this.remainingTieredCards.get(CardTier.TIER1).size !== 40) {
+      throw new CardGenerationError(`Invalid number of cards generated for CardTier: ${CardTier.TIER1}`)
+    }
+    if (this.remainingTieredCards.get(CardTier.TIER2).size !== 30) {
+      throw new CardGenerationError(`Invalid number of cards generated for CardTier: ${CardTier.TIER2}`)
+    }
+    if (this.remainingTieredCards.get(CardTier.TIER3).size !== 20) {
+      throw new CardGenerationError(`Invalid number of cards generated for CardTier: ${CardTier.TIER3}`)
+    }
+
+    this.activeTieredCards = Array.from(this.remainingTieredCards.keys())
+      .reduce((
+        activeCards: Map<CardTier, Map<string, Card>>,
+        tier: CardTier
+      ) => {
+        const remainingCardsForTier: Map<string, Card> = this.remainingTieredCards.get(tier);
+        const activeCardsForTier = Array.from(remainingCardsForTier.keys())
+          .slice(0, NUM_CARDS_PER_TIER)
+          .reduce((
+            map: Map<string, Card>,
+            cardID: string,
+          ) => {
+            const card: Card = remainingCardsForTier.get(cardID);
+            remainingCardsForTier.delete(cardID)
+            return map.set(cardID, card);
+          }, new Map());
+        return activeCards.set(tier, activeCardsForTier);
+      }, new Map())
   }
 
   setupGemStones(): void {
     const numStones: number = this.numPlayers === 4
       ? 7 : this.numPlayers === 3
-      ? 5 : 4;
+        ? 5 : 4;
     this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
     this.availableGemStones.set(GemStone.DIAMOND, numStones);
     this.availableGemStones.set(GemStone.EMERALD, numStones);

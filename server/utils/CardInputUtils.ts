@@ -15,7 +15,6 @@ export interface IInputRequiredGemStones {
   required: number,
 }
 
-// TODO: Probably write a script converting the .xslx to this format.
 export const inputCardStructures: IInputCardStructure[] = [
   {
     pointValue: 0,

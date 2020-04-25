@@ -4,6 +4,7 @@ import { Card, CardStructure, CardTier } from "../models/Card"
 import * as CardService from "../services/CardService"
 import { GemStone } from "../models/GemStone";
 import { IInputCardStructure, IInputRequiredGemStones, inputCardStructures } from "../utils/CardInputUtils";
+import { CardGenerationError } from "../models/Errors";
 
 const cards: Map<string, Card> = new Map();
 
@@ -13,6 +14,9 @@ export function generateAllCards(): Map<string, Card> {
     const card: Card = CardService.createNewCard(generatedCardStructure);
     cards.set(card.id, card);
   })
+  if(cards.size !== 90) {
+    throw new CardGenerationError("Generating the cards failed. There are too few");
+  }
   return cards;
 }
 

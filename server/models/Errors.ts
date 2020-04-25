@@ -4,6 +4,7 @@ export enum ErrorType {
   INVALID_INPUT = 'InvalidInput',
   ROOM_DOES_NOT_EXIST = 'RoomDoesNotExist',
   USER_SERVICE = 'UserService',
+  CARD_GENERATION_ERROR = 'CardGenerationError',
 }
 
 export class BaseError extends Error {
@@ -31,10 +32,18 @@ export class UserServiceError extends BaseError {
   }
 }
 
-export class InvalidRoomCodeError extends BaseError {
+export class InvalidRoomCodeError extends InvalidInputError {
   constructor (...args: string[]) {
     super(...args);
     this.name = ErrorType.ROOM_DOES_NOT_EXIST;
+    this.isOperational = true;
+  }
+}
+
+export class CardGenerationError extends BaseError {
+  constructor (...args: string[]) {
+    super(...args);
+    this.name = ErrorType.CARD_GENERATION_ERROR;
     this.isOperational = true;
   }
 }
