@@ -12,6 +12,7 @@ class GameComponent extends React.Component {
       errorMessage: null,
       players: [{}],
       player: {},
+      board: {},
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
@@ -30,19 +31,16 @@ class GameComponent extends React.Component {
   }
 
   onGameUpdate(data) {
-    // console.log(data);
     const game = deserialize(Buffer.from(data));
-    console.log(game);
-    // console.log(JSON.parse(game))
-    // console.log(JSON.parse(room))
-    // console.log(JSON.parse(board))
-    // const players = new Map(Object.entries(game.room.players));
-    // const currentPlayer = players.get(this.state.playerID);
+    const players = new Map(Object.entries(game.room.players));
+    const currentPlayer = players.get(this.state.playerID);
+    const board = new Map(Object.entries(game.board))
 
-    // this.setState({
-    //   players: players,
-    //   player: currentPlayer,
-    // });
+    this.setState({
+      board: board,
+      players: players,
+      player: currentPlayer,
+    });
   }
 
   onClientRequestError(err) {
