@@ -10,7 +10,7 @@ export async function handleError(err: any, io?: SocketIO.Server, socketID?: str
       });
     }
   } else {
-    console.error(`An unexpected error occurred: ${err}`);
+    console.error(`An unexpected error occurred: ${err}: ${err.stack}`);
     io.emit(`ServerError`, "An unexpected error occured.");
     process.exit(1);
   }

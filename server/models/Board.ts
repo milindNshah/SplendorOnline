@@ -22,7 +22,11 @@ export class Board {
 
   constructor (numPlayers: number) {
     this.id = this.createBoardID();
+    this.availableGemStones = new Map();
     this.numPlayers = numPlayers;
+    this.remainingTieredCards = new Map();
+    this.activeTieredCards = new Map();
+    this.activeNobles = new Map();
     this.setupBoard();
   }
 
