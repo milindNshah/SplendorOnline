@@ -16,4 +16,24 @@ export class GlobalUtils {
     }
     return result;
   }
+
+  static shuffle(unshuffled: string[]): string[] {
+    let unshuffledCopy: string[] = [...unshuffled];
+    let toShuffle: number = unshuffledCopy.length;
+    let swapPosition: number;
+    while (toShuffle) {
+      swapPosition = Math.floor(Math.random() * toShuffle--);
+      [unshuffledCopy[toShuffle], unshuffledCopy[swapPosition]] =
+        [unshuffledCopy[swapPosition], unshuffledCopy[toShuffle]];
+    }
+    return unshuffledCopy;
+  }
+
+  static shuffleMap<T>(unshuffledMap: Map<string, T>): Map<string, T> {
+    return this.shuffle(
+      Array.from(unshuffledMap.keys())
+    ).reduce((shuffeldMap: Map<string, T>, id: string) => {
+      return shuffeldMap.set(id, unshuffledMap.get(id))
+    }, new Map())
+  }
 }

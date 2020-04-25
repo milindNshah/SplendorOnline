@@ -5,6 +5,7 @@ export enum ErrorType {
   ROOM_DOES_NOT_EXIST = 'RoomDoesNotExist',
   USER_SERVICE = 'UserService',
   CARD_GENERATION_ERROR = 'CardGenerationError',
+  NOBLE_GENERATION_ERROR = 'NobleGenerationError',
 }
 
 export class BaseError extends Error {
@@ -44,6 +45,14 @@ export class CardGenerationError extends BaseError {
   constructor (...args: string[]) {
     super(...args);
     this.name = ErrorType.CARD_GENERATION_ERROR;
+    this.isOperational = true;
+  }
+}
+
+export class NobleGenerationError extends BaseError {
+  constructor (...args: string[]) {
+    super(...args);
+    this.name = ErrorType.NOBLE_GENERATION_ERROR;
     this.isOperational = true;
   }
 }

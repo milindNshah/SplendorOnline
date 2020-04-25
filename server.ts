@@ -8,6 +8,7 @@ import * as ErrorHandler from './server/utils/ErrorHandler';
 import * as CardManager from './server/managers/CardManager';
 import * as NobleManager from './server/managers/NobleManager';
 import { CardTier, Card } from './server/models/Card';
+import { GlobalUtils } from './server/utils/GlobalUtils';
 
 const app = express();
 
@@ -58,7 +59,16 @@ io.on('connection', function (socket) {
 
 // CardManager.generateAllCards;
 const cards = CardManager.generateAllCards();
-const nobles = NobleManager.generateAllNobles();
+// const someCards = Array.from(cards.keys())
+//   .slice(0, 6)
+//   .reduce((map: Map<string, Card>, cardId: string) => {
+//     return map.set(cardId, cards.get(cardId))
+//   }, new Map())
+// const shuffled1 = GlobalUtils.shuffleMap(someCards);
+// const shuffled2 = GlobalUtils.shuffleMap(someCards);
+// console.log(someCards);
+// console.log(shuffled1);
+// console.log(shuffled2);
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);

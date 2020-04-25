@@ -3,9 +3,14 @@ import { GlobalUtils } from '../utils/GlobalUtils'
 import { CardTier, Card } from './Card';
 import { GemStone } from './GemStone';
 import * as CardManager from '../managers/CardManager';
+import * as NobleManager from '../managers/NobleManager';
 import { CardGenerationError } from './Errors';
+import { Noble } from './Noble';
 
 const NUM_CARDS_PER_TIER = 4;
+const NUM_GEM_STONES_TWO_PLAYER = 4;
+const NUM_GEM_STONES_THREE_PLAYER = 5;
+const NUM_GEM_STONES_FOUR_PLAYER = 7;
 
 export class Board {
   id: string;
@@ -13,6 +18,7 @@ export class Board {
   numPlayers: number;
   remainingTieredCards: Map<CardTier, Map<string, Card>>;
   activeTieredCards: Map<CardTier, Map<string, Card>>;
+  activeNobles: Map<string, Noble>
 
   constructor (numPlayers: number) {
     this.id = this.createBoardID();
@@ -33,8 +39,8 @@ export class Board {
 
   setupGemStones(): void {
     const numStones: number = this.numPlayers === 4
-      ? 7 : this.numPlayers === 3
-        ? 5 : 4;
+      ? NUM_GEM_STONES_FOUR_PLAYER : this.numPlayers === 3
+        ? NUM_GEM_STONES_THREE_PLAYER : NUM_GEM_STONES_TWO_PLAYER;
     this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
     this.availableGemStones.set(GemStone.DIAMOND, numStones);
     this.availableGemStones.set(GemStone.EMERALD, numStones);
@@ -85,7 +91,8 @@ export class Board {
   }
 
   setupNobles(): void {
-    // TODO: Setup after cards.
+    const numNobles: number = this.numPlayers + 1;
+    const nobles = new Map(NobleManager.getAllNobles());
   }
 
 
