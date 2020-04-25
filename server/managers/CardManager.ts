@@ -35,10 +35,6 @@ export function getCardsByTier(tier: CardTier): Map<string, Card> {
 }
 
 export function shuffleCards(unshuffledCards: Map<string, Card>): Map<string, Card> {
-  // const shuffledCards: string[] = GlobalUtils.shuffle(Array.from(unshuffledCards.keys()));
-  // return shuffledCards.reduce((shuffledCards: Map<string, Card>, cardID: string) => {
-  //   return shuffledCards.set(cardID, unshuffledCards.get(cardID))
-  // }, new Map())
   return GlobalUtils.shuffleMap(unshuffledCards);
 }
 

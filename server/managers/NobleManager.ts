@@ -5,6 +5,7 @@ import { CardGemStone } from "../models/GemStone";
 import { IInputNobleStructure, IInputRequiredCards, inputNobleStructures } from "../utils/NobleInputUtils";
 import * as NobleService from "../services/NobleService";
 import { NobleGenerationError } from "../models/Errors";
+import { GlobalUtils } from "../utils/GlobalUtils";
 
 const nobles: Map<string, Noble> = new Map();
 
@@ -25,9 +26,9 @@ export function getAllNobles(): Map<string, Noble> {
   return nobles;
 }
 
-// export function shuffleNobles(unshuffledNobles: Map<string, Noble>): Map<string, Noble> {
-//   let nobleIDs = Array.from(unshuffledNobles.keys());
-// }
+export function shuffleNobles(unshuffledNobles: Map<string, Noble>): Map<string, Noble> {
+  return GlobalUtils.shuffleMap(unshuffledNobles);
+}
 
 /* Helper Functions */
 function generateNobleRequiredCardsFromInputNobleStructures(): Map<CardGemStone, number>[] {

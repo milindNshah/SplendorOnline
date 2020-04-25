@@ -92,8 +92,16 @@ export class Board {
 
   setupNobles(): void {
     const numNobles: number = this.numPlayers + 1;
-    const nobles = new Map(NobleManager.getAllNobles());
+    const nobles = NobleManager.shuffleNobles(new Map(NobleManager.getAllNobles()));
+    this.activeNobles = Array.from(nobles.keys())
+      .slice(0, numNobles)
+      .reduce((
+        activeNobles: Map<string, Noble>,
+        nobleID: string,
+      ) => {
+        const noble: Noble = nobles.get(nobleID);
+        nobles.delete(nobleID);
+        return activeNobles.set(nobleID, noble);
+      }, new Map())
   }
-
-
 }
