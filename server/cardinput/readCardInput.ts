@@ -20,7 +20,7 @@ const allGemStones =
 function convertFromLineToObject(line: string[]): string {
   const outputString = `{
       pointValue: ${getPointValue(line)},
-      gemStoneValue: ${getGemStoneType(line)},
+      gemStoneType: ${getGemStoneType(line)},
       tier: ${getTier(line)},
       requiredGemStones: [
         ${getRequiredGemStones(line)}
