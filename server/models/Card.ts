@@ -10,7 +10,7 @@ export enum CardTier {
 
 export interface CardStructure {
   pointValue: number,
-  gemStoneValue: CardGemStone,
+  gemStoneType: CardGemStone,
   tier: CardTier,
   requiredGemStones: Map<GemStone, number>,
 }
@@ -18,19 +18,19 @@ export interface CardStructure {
 export class Card {
   id: string;
   pointValue: number;
-  gemStoneValue: CardGemStone;
+  gemStoneType: CardGemStone;
   tier: CardTier;
   requiredGemStones: Map<GemStone, number>;
 
   constructor (
     pointValue: number,
-    gemStoneValue: CardGemStone,
+    gemStoneType: CardGemStone,
     tier: CardTier,
     requiredGemStones: Map<GemStone, number>
   ) {
     this.id = this.createCardID();
     this.pointValue = pointValue;
-    this.gemStoneValue = gemStoneValue;
+    this.gemStoneType = gemStoneType;
     this.tier = tier;
     this.requiredGemStones = requiredGemStones;
   }

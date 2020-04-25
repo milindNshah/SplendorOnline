@@ -7,7 +7,7 @@ export function createNewCard(
 ): Card {
   return new Card(
     cardStructure.pointValue,
-    cardStructure.gemStoneValue,
+    cardStructure.gemStoneType,
     cardStructure.tier,
     cardStructure.requiredGemStones
   );

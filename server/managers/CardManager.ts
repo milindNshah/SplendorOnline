@@ -57,7 +57,7 @@ function generateCardStructuresFromInputCardStructures(): CardStructure[] {
         }, new Map());
     return {
       pointValue: inputCardStructure.pointValue,
-      gemStoneValue: inputCardStructure.gemStoneValue,
+      gemStoneType: inputCardStructure.gemStoneType,
       tier: inputCardStructure.tier,
       requiredGemStones: requiredGemStoneMap,
     }
