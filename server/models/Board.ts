@@ -6,6 +6,8 @@ import * as CardManager from '../managers/CardManager';
 import * as NobleManager from '../managers/NobleManager';
 import { CardGenerationError } from './Errors';
 import { Noble } from './Noble';
+import * as CardService from '../services/CardService';
+import * as NobleService from '../services/NobleService';
 
 const NUM_CARDS_PER_TIER = 4;
 const NUM_GEM_STONES_TWO_PLAYER = 4;
@@ -59,7 +61,7 @@ export class Board {
       .reduce((map: Map<CardTier, Map<string, Card>>, cardTier: CardTier) => {
         return map.set(
           cardTier,
-          CardManager.shuffleCards(new Map(CardManager.getCardsByTier(cardTier)))
+          CardService.shuffleCards(new Map(CardManager.getCardsByTier(cardTier)))
         )
       }, new Map())
 
@@ -95,7 +97,7 @@ export class Board {
 
   setupNobles(): void {
     const numNobles: number = this.numPlayers + 1;
-    const nobles = NobleManager.shuffleNobles(new Map(NobleManager.getAllNobles()));
+    const nobles = NobleService.shuffleNobles(new Map(NobleManager.getAllNobles()));
     this.activeNobles = Array.from(nobles.keys())
       .slice(0, numNobles)
       .reduce((

@@ -5,7 +5,6 @@ import * as CardService from "../services/CardService"
 import { GemStone } from "../models/GemStone";
 import { IInputCardStructure, IInputRequiredGemStones, inputCardStructures } from "../utils/CardInputUtils";
 import { CardGenerationError } from "../models/Errors";
-import { GlobalUtils } from "../utils/GlobalUtils";
 
 const cards: Map<string, Card> = new Map();
 
@@ -32,10 +31,6 @@ export function getCardsByTier(tier: CardTier): Map<string, Card> {
     }).reduce(function (tier1Cards: Map<string, Card>, card: Card) {
       return tier1Cards.set(card.id, card);
     }, new Map());
-}
-
-export function shuffleCards(unshuffledCards: Map<string, Card>): Map<string, Card> {
-  return GlobalUtils.shuffleMap(unshuffledCards);
 }
 
 /* Helper functions */

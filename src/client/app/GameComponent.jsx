@@ -34,7 +34,7 @@ class GameComponent extends React.Component {
     const game = deserialize(Buffer.from(data));
     const players = new Map(Object.entries(game.room.players));
     const currentPlayer = players.get(this.state.playerID);
-    const board = new Map(Object.entries(game.board))
+    const board = new Map(Object.entries(game.board));
 
     this.setState({
       board: board,
