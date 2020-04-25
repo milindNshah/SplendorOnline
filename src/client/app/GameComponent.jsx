@@ -30,14 +30,19 @@ class GameComponent extends React.Component {
   }
 
   onGameUpdate(data) {
+    // console.log(data);
     const game = deserialize(Buffer.from(data));
-    const players = new Map(Object.entries(game.room.players));
-    const currentPlayer = players.get(this.state.playerID);
+    console.log(game);
+    // console.log(JSON.parse(game))
+    // console.log(JSON.parse(room))
+    // console.log(JSON.parse(board))
+    // const players = new Map(Object.entries(game.room.players));
+    // const currentPlayer = players.get(this.state.playerID);
 
-    this.setState({
-      players: players,
-      player: currentPlayer,
-    });
+    // this.setState({
+    //   players: players,
+    //   player: currentPlayer,
+    // });
   }
 
   onClientRequestError(err) {

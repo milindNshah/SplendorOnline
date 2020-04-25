@@ -18,7 +18,7 @@ export class Board {
   numPlayers: number;
   remainingTieredCards: Map<CardTier, Map<string, Card>>;
   activeTieredCards: Map<CardTier, Map<string, Card>>;
-  activeNobles: Map<string, Noble>
+  activeNobles: Map<string, Noble>;
 
   constructor (numPlayers: number) {
     this.id = this.createBoardID();

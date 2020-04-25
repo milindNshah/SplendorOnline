@@ -2,10 +2,15 @@
 import { GlobalUtils } from '../utils/GlobalUtils'
 import { GemStone, CardGemStone } from './GemStone'
 
+/* TODO: This was converted to be of type string
+* cause bson.serialize wouldn't accept number values.
+* Maybe eventually create a toBSON or something that
+* can accept it
+*/
 export enum CardTier {
-  TIER1 = 1,
-  TIER2 = 2,
-  TIER3 = 3,
+  TIER1 = '1',
+  TIER2 = '2',
+  TIER3 = '3',
 }
 
 export interface CardStructure {

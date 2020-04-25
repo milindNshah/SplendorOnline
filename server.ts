@@ -57,18 +57,8 @@ io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
 });
 
-// CardManager.generateAllCards;
 const cards = CardManager.generateAllCards();
-// const someCards = Array.from(cards.keys())
-//   .slice(0, 6)
-//   .reduce((map: Map<string, Card>, cardId: string) => {
-//     return map.set(cardId, cards.get(cardId))
-//   }, new Map())
-// const shuffled1 = GlobalUtils.shuffleMap(someCards);
-// const shuffled2 = GlobalUtils.shuffleMap(someCards);
-// console.log(someCards);
-// console.log(shuffled1);
-// console.log(shuffled2);
+const nobles = NobleManager.generateAllNobles();
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);
