@@ -10,7 +10,7 @@ const cards: Map<string, Card> = new Map();
 
 export function generateAllCards(): Map<string, Card> {
   const generatedCardStructures: CardStructure[] = generateCardStructuresFromInputCardStructures();
-  generatedCardStructures.map((generatedCardStructure: CardStructure) => {
+  generatedCardStructures.forEach((generatedCardStructure: CardStructure) => {
     const card: Card = CardService.createNewCard(generatedCardStructure);
     cards.set(card.id, card);
   })
