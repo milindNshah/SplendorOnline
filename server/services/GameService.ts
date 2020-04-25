@@ -4,13 +4,20 @@ import { Room } from "../models/Room";
 import { Game } from "../models/Game";
 import { InvalidInputError } from "../models/Errors";
 import * as GameManager from "../managers/GameManager";
+import { Board } from "../models/Board";
+import * as BoardService from "../services/BoardService";
 
 export async function createNewGame(room: Room): Promise<Game> {
-  if(!room || !room.id || !room.code) {
-    throw new InvalidInputError("Invalid room give");
+  try {
+    if(!room || !room.id || !room.code) {
+      throw new InvalidInputError("Invalid room given");
+    }
+    room.toggleGameStarted(true);
+    const board: Board = await BoardService.createNewBoard(room.players.size);
+    const game: Game = new Game(room, board);
+    GameManager.addGame(game);
+    return game;
+  } catch (err) {
+    throw err;
   }
-  room.toggleGameStarted(true);
-  const game: Game = new Game(room);
-  GameManager.addGame(game);
-  return game;
 }

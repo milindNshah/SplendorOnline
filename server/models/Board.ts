@@ -23,7 +23,6 @@ export class Board {
   constructor (numPlayers: number) {
     this.id = this.createBoardID();
     this.numPlayers = numPlayers;
-    // TODO: Throw error if numPlayers > 4 or < 2
     this.setupBoard();
   }
 
