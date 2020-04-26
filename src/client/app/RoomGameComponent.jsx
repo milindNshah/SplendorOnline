@@ -15,6 +15,7 @@ class RoomGameComponent extends React.Component {
       roomCode: this.props.location.state
         ? this.props.location.state.roomCode
         : '',
+      targetScore: null,
     }
     this.socket = socket;
     this.onGameStart = this.onGameStart.bind(this);
@@ -32,6 +33,7 @@ class RoomGameComponent extends React.Component {
     this.setState({
       gameStarted: true,
       gameID: data.gameID,
+      targetScore: data.targetScore,
     })
   }
 
@@ -39,7 +41,7 @@ class RoomGameComponent extends React.Component {
     return (
       <div>
         {this.state.gameStarted
-          ? <GameComponent {...this.props} gameID={this.state.gameID} playerID={this.state.playerID} />
+          ? <GameComponent {...this.props} gameID={this.state.gameID} playerID={this.state.playerID} targetScore={this.state.targetScore}/>
           : <RoomComponent {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
         }
       </div>

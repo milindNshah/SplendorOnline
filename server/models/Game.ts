@@ -7,6 +7,11 @@ import { Player } from './Player';
 
 const TARGET_SCORE = 15;
 
+export interface GameEndTurn {
+  playerID: string,
+  gameID: string,
+}
+
 export class Game {
   id: string;
   board: Board;
@@ -56,7 +61,7 @@ export class Game {
     return this;
   }
 
-  checkScores(): this {
+  private checkScores(): this {
     const players: Map<string, Player> = this.room.players;
     const playersWon = Array.from(players.values())
       .filter((player) => player.hand.score >= 15);
@@ -88,7 +93,7 @@ export class Game {
     return this;
   }
 
-  checkHighestScoreOnTie(players: Player[]): Player[] {
+  private checkHighestScoreOnTie(players: Player[]): Player[] {
     const maxScore: number = players
       .reduce((a, b) => a.hand.score > b.hand.score ? a : b)
       .hand.score;
@@ -97,7 +102,7 @@ export class Game {
     );
   }
 
-  checkLeastCardsOnTie(players: Player[]): Player[] {
+  private checkLeastCardsOnTie(players: Player[]): Player[] {
     const leastCards: number = players.reduce(
       (a, b) => a.hand.ownedCards.size < b.hand.ownedCards.size ? a : b
     ).hand.ownedCards.size;

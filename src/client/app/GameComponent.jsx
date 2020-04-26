@@ -13,6 +13,12 @@ class GameComponent extends React.Component {
       players: [{}],
       player: {},
       board: {},
+      targetScore: this.props.targetScore,
+      turnOrder: [],
+      curTurnIndex: 0,
+      gameTurn: 0,
+      winner: null,
+      curPlayerTurn: {},
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
@@ -33,13 +39,19 @@ class GameComponent extends React.Component {
   onGameUpdate(data) {
     const game = deserialize(Buffer.from(data));
     const players = new Map(Object.entries(game.room.players));
-    const currentPlayer = players.get(this.state.playerID);
+    const player = players.get(this.state.playerID);
     const board = new Map(Object.entries(game.board));
+    const curPlayerTurn = players.get(game.turnOrder[game.curTurnIndex]);
 
     this.setState({
+      turnOrder: game.turnOrder,
+      curTurnIndex: game.curTurnIndex,
+      gameTurn: game.gameTurn,
+      winner: game.winner,
       board: board,
       players: players,
-      player: currentPlayer,
+      player: player,
+      curPlayerTurn: curPlayerTurn,
     });
   }
 
@@ -55,11 +67,20 @@ class GameComponent extends React.Component {
       : null
     );
 
+    const TurnDiv = () => (this.state.curPlayerTurn.id === this.state.playerID
+      ? <p>It is your turn!</p>
+    : <p>It is Player {this.state.curPlayerTurn.user?.name}'s turn</p>
+    );
+
     return (
       <div>
         <h1>This is the Game Component</h1>
-        <p>GameID: {this.state.gameID}</p>
-        <p>PlayerID: {this.state.playerID}</p>
+        <p>TargetScore: {this.state.targetScore}</p>
+        <p>GameTurn: {this.state.gameTurn}</p>
+        <p>Player: {this.state.player.user?.name}</p>
+        <p>My Score: {this.state.player.hand?.score}</p>
+        <TurnDiv/>
+        <p>Winner: {this.state.winner}</p>
         <ErrorMessage/>
       </div>
     )

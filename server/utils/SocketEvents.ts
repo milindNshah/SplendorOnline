@@ -8,7 +8,7 @@ import * as RoomManager from '../managers/RoomManager'
 import * as Socket from './Socket'
 import * as ErrorHandler from './ErrorHandler';
 import { InvalidInputError, UserServiceError } from '../models/Errors';
-import { Game } from '../models/Game';
+import { Game, GameEndTurn } from '../models/Game';
 import * as GameService from '../services/GameService'
 import * as GameManager from '../managers/GameManager'
 
@@ -95,7 +95,10 @@ export class SocketEvents {
           throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
         const game: Game = await GameService.createNewGame(room);
-        io.sockets.in(room.code).emit("gameStarted", { gameID: game.id });
+        io.sockets.in(room.code).emit("gameStarted", {
+          gameID: game.id,
+          targetScore: game.targetScore
+        });
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -104,8 +107,20 @@ export class SocketEvents {
     socket.on('requestGameUpdate', async function (gameID: string) {
       try {
         const game: Game = await GameManager.getGameByID(gameID);
+        io.to(socket.id).emit("updateGame", serialize(game));
+      } catch (err) {
+        await ErrorHandler.handleError(err, io, socket.id);
+      }
+    })
+
+    socket.on('endTurn', async function(data: GameEndTurn){
+      try {
+        const game: Game = await GameManager.getGameByID(data.gameID);
+        const board = game.board;
         const room: Room = game.room;
-        io.sockets.in(room.code).emit("updateGame", serialize(game));
+        const player: Player = room.getPlayer(data.playerID);
+        game.checkValidTurn(player.id);
+        game.finishTurn(player.id);
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
