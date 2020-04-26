@@ -121,6 +121,7 @@ export class SocketEvents {
         const player: Player = room.getPlayer(data.playerID);
         game.checkValidTurn(player.id);
         game.finishTurn(player.id);
+        io.sockets.in(room.code).emit("updateGame", serialize(game))
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }

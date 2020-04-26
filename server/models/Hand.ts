@@ -27,4 +27,10 @@ export class Hand {
   createHandID(): string {
     return GlobalUtils.generateID();
   }
+
+  // TODO: temp - remove after testing.
+  addScore(value: number): this {
+    this.score += value;
+    return this;
+  }
 }

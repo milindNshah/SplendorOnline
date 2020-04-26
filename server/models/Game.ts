@@ -51,6 +51,10 @@ export class Game {
   }
 
   finishTurn(playerID: string): this {
+    // TODO: Temporary - need to remove after testing!
+    const player: Player = this.room.getPlayer(playerID);
+    player.hand.addScore(Math.floor(Math.random()*5))
+
     if (this.turnOrder[this.turnOrder.length - 1] === playerID) {
       this.checkScores();
       this.curTurnIndex = 0;

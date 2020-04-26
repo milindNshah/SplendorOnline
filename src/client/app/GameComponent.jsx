@@ -1,7 +1,7 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button';
 import { deserialize } from 'bson';
 import { socket } from './socket';
-
 
 class GameComponent extends React.Component {
   constructor (props) {
@@ -17,12 +17,13 @@ class GameComponent extends React.Component {
       turnOrder: [],
       curTurnIndex: 0,
       gameTurn: 0,
-      winner: null,
+      winner: {},
       curPlayerTurn: {},
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this);
+    this.onEndTurn = this.onEndTurn.bind(this);
   }
 
   componentDidMount() {
@@ -61,6 +62,13 @@ class GameComponent extends React.Component {
     });
   }
 
+  onEndTurn() {
+    this.socket.emit("endTurn", {
+      gameID: this.state.gameID,
+      playerID: this.state.playerID
+    })
+  }
+
   render() {
     const ErrorMessage = () => (this.state.errorMessage
       ? <div>{this.state.errorMessage.name}: {this.state.errorMessage.message}</div>
@@ -72,6 +80,12 @@ class GameComponent extends React.Component {
     : <p>It is Player {this.state.curPlayerTurn.user?.name}'s turn</p>
     );
 
+    const EndTurnButton = () => (
+      this.state.curPlayerTurn.id === this.state.playerID
+    ? <Button variant="outline-primary" onClick={this.onEndTurn}>End Turn</Button>
+    : <Button variant="outline-dark">Waiting for Other Players</Button>
+    );
+
     return (
       <div>
         <h1>This is the Game Component</h1>
@@ -80,7 +94,8 @@ class GameComponent extends React.Component {
         <p>Player: {this.state.player.user?.name}</p>
         <p>My Score: {this.state.player.hand?.score}</p>
         <TurnDiv/>
-        <p>Winner: {this.state.winner}</p>
+        <EndTurnButton/>
+        <p>Winner: {this.state.winner?.user?.name}</p>
         <ErrorMessage/>
       </div>
     )
