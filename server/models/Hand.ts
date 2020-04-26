@@ -12,7 +12,7 @@ export class Hand {
   ownedCards: Map<string, Card>;
   reservedCards: Map<string, Card>;
   nobles: Map<string, Noble>
-  turnNumber: number;
+  turn: number;
 
   constructor () {
     this.id = this.createHandID();
@@ -21,7 +21,7 @@ export class Hand {
     this.ownedCards = new Map();
     this.reservedCards = new Map();
     this.nobles = new Map();
-    this.turnNumber = 0;
+    this.turn = 0;
   }
 
   createHandID(): string {

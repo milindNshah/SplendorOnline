@@ -6,6 +6,7 @@ export enum ErrorType {
   USER_SERVICE = 'UserService',
   CARD_GENERATION_ERROR = 'CardGenerationError',
   NOBLE_GENERATION_ERROR = 'NobleGenerationError',
+  INVALID_GAME_ACTION = 'InvalidGameActionError',
 }
 
 export class BaseError extends Error {
@@ -53,6 +54,14 @@ export class NobleGenerationError extends BaseError {
   constructor (...args: string[]) {
     super(...args);
     this.name = ErrorType.NOBLE_GENERATION_ERROR;
+    this.isOperational = true;
+  }
+}
+
+export class InvalidGameError extends BaseError {
+  constructor (...args: string[]) {
+    super(...args);
+    this.name = ErrorType.INVALID_GAME_ACTION;
     this.isOperational = true;
   }
 }
