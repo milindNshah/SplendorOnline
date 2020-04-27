@@ -5,7 +5,7 @@ import { Board } from './Board';
 import { InvalidGameError } from './Errors';
 import { Player } from './Player';
 import { GemStone } from './GemStone';
-import { Card } from './Card';
+import { Card, CardTier } from './Card';
 
 const TARGET_SCORE = 15;
 const MAX_GEMS_ALLOWED_HAVE = 10;
@@ -67,7 +67,7 @@ export class Game {
     try {
       const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
-          let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone]
+          let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
           if(inputGemsToTransfer.get(gemStoneName) === 0) {
             return map;
           }
@@ -103,7 +103,7 @@ export class Game {
     }
   }
 
-  async reserveCard(card: Card, player: Player): Promise<this> {
+  async reserveActiveCard(card: Card, player: Player): Promise<this> {
     try {
       if(!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
@@ -114,6 +114,19 @@ export class Game {
     } catch (err) {
       throw err;
     }
+    return this;
+  }
+
+  async reserveDeckCard(player: Player, tier: string): Promise<this> {
+    try {
+      // TODO: Convert from string to CardTier.
+      const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
+      const card = await this.board.reserveDeckCard(tierKey);
+      await player.hand.addToReserved(card);
+    } catch(err) {
+      throw err;
+    }
+    return this;
   }
 
   finishTurn(playerID: string): this {

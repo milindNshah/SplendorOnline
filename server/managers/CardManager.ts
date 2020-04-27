@@ -35,7 +35,7 @@ export function getCardsByTier(tier: CardTier): Map<string, Card> {
 
 export function getCardByID(cardID: string): Card {
   if(cardID === undefined || cardID === null || !cardID) {
-    throw new InvalidInputError(`GameID cannot be empty`);
+    throw new InvalidInputError(`CardID cannot be empty`);
   }
   const card: Card = cards.get(cardID);
   if(card === undefined || card === null || !card) {
