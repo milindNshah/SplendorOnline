@@ -5,6 +5,7 @@ import { Board } from './Board';
 import { InvalidGameError } from './Errors';
 import { Player } from './Player';
 import { GemStone } from './GemStone';
+import { Card } from './Card';
 
 const TARGET_SCORE = 15;
 const MAX_GEMS_ALLOWED_HAVE = 10;
@@ -19,8 +20,9 @@ export interface GameEndTurn {
 /* Should be kept in sync with actionttype.js on client */
 export enum ActionType {
   TAKE_GEMS = "TakeGems",
-  RESERVE_DEVELOPMENT_CARD = "ReserveDevelopmentCard",
   PURCHASE_CARD = "PurchaseCard",
+  RESERVE_ACTIVE_CARD = "ReserveActiveCard",
+  RESERVE_DECK_CARD = "ReserveDeckCard",
 }
 
 export class Game {
@@ -95,6 +97,19 @@ export class Game {
       }
       await this.board.transferGems(gemsToTansfer);
       await player.hand.transferGems(gemsToTansfer);
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async reserveCard(card: Card, player: Player): Promise<this> {
+    try {
+      if(!player.hand.canReserveCard()) {
+        throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
+      }
+      await this.board.reserveActiveCard(card);
+      await player.hand.addToReserved(card);
       return this;
     } catch (err) {
       throw err;

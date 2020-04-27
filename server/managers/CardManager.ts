@@ -4,7 +4,7 @@ import { Card, CardStructure, CardTier } from "../models/Card"
 import * as CardService from "../services/CardService"
 import { GemStone } from "../models/GemStone";
 import { IInputCardStructure, IInputRequiredGemStones, inputCardStructures } from "../utils/CardInputUtils";
-import { CardGenerationError } from "../models/Errors";
+import { CardGenerationError, InvalidInputError } from "../models/Errors";
 
 const cards: Map<string, Card> = new Map();
 
@@ -31,6 +31,17 @@ export function getCardsByTier(tier: CardTier): Map<string, Card> {
     }).reduce(function (tier1Cards: Map<string, Card>, card: Card) {
       return tier1Cards.set(card.id, card);
     }, new Map());
+}
+
+export function getCardByID(cardID: string): Card {
+  if(cardID === undefined || cardID === null || !cardID) {
+    throw new InvalidInputError(`GameID cannot be empty`);
+  }
+  const card: Card = cards.get(cardID);
+  if(card === undefined || card === null || !card) {
+    throw new InvalidInputError(`Invalid card id: ${cardID}`);
+  }
+  return card;
 }
 
 /* Helper functions */

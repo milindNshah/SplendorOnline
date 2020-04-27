@@ -12,6 +12,8 @@ import { Game, GameEndTurn, ActionType } from '../models/Game';
 import * as GameService from '../services/GameService'
 import * as GameManager from '../managers/GameManager'
 import { Board } from '../models/Board';
+import * as CardManager from '../managers/CardManager';
+import { Card } from '../models/Card';
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
@@ -124,12 +126,19 @@ export class SocketEvents {
         const board: Board = game.board;
         const room: Room = game.room;
         const player: Player = room.getPlayer(data.playerID);
+        const card: Card = CardManager.getCardByID(actions.get(ActionType.RESERVE_ACTIVE_CARD));
         await game.checkValidTurn(player.id);
         if(actions.has(ActionType.TAKE_GEMS)) {
           await game.transferGems(new Map(Object.entries(actions.get(ActionType.TAKE_GEMS))), player)
         }
-        if(actions.get(ActionType.RESERVE_DEVELOPMENT_CARD)) {
-          console.log('dev-card');
+        if(actions.get(ActionType.RESERVE_ACTIVE_CARD)) {
+          await game.reserveCard(card, player, true);
+        }
+        if(actions.get(ActionType.RESERVE_DECK_CARD)) {
+          await game.reserveCard(card, player, false);
+          console.log(game.board.remainingTieredCards.get(card.tier).size)
+          console.log(game.board.activeTieredCards.get(card.tier))
+          console.log(player.hand)
         }
         if(actions.get(ActionType.PURCHASE_CARD)) {
           console.log('purchase-card');

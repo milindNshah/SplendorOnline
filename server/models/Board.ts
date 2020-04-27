@@ -117,36 +117,74 @@ export class Board {
 
     gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
       const availableGemStone = this.availableGemStones.get(gemStone);
-      if(amount === 0) {
+      if (amount === 0) {
         return;
       }
-      if(amount > 2) {
+      if (amount > 2) {
         throw new InvalidGameError(`You may not take more than 2 gemstones of the same type`)
       }
-      if(amount > availableGemStone) {
+      if (amount > availableGemStone) {
         throw new InvalidGameError(`You may not take ${amount} ${gemStone} gemstone(s). There are ${availableGemStone} ${gemStone} gemstone(s) available.`)
       }
-      if(amount === 2 && hasTakenAnyGemstones) {
+      if (amount === 2 && hasTakenAnyGemstones) {
         throw new InvalidGameError(`You may only take two gemstones of a single gemstone type and no other gemstone`);
       }
-      if(amount === 2 && availableGemStone < NUM_GEM_STONE_PREVENTING_TAKING_TWO) {
+      if (amount === 2 && availableGemStone < NUM_GEM_STONE_PREVENTING_TAKING_TWO) {
         throw new InvalidGameError(`You may not take more than 1 gemstone of type ${gemStone} because there are less than ${NUM_GEM_STONE_PREVENTING_TAKING_TWO} ${gemStone} gemstones available.`)
       }
-      if(amount === 2) {
+      if (amount === 2) {
         hasTakenAnyGemstones = true;
         hasTakenTwoGemstones = true;
-        this.availableGemStones.set(gemStone, availableGemStone-amount)
+        this.availableGemStones.set(gemStone, availableGemStone - amount)
       }
-      if(amount === 1 && hasTakenTwoGemstones) {
+      if (amount === 1 && hasTakenTwoGemstones) {
         throw new InvalidGameError(`You may only take two gemstones of a single gemstone type and no other gemstone`);
       }
-      if(amount === 1) {
+      if (amount === 1) {
         hasTakenAnyGemstones = true;
-        this.availableGemStones.set(gemStone, availableGemStone-amount)
+        this.availableGemStones.set(gemStone, availableGemStone - amount)
       }
       if (amount < 0) {
-        this.availableGemStones.set(gemStone, availableGemStone-amount)
+        this.availableGemStones.set(gemStone, availableGemStone - amount)
       }
     });
+  }
+
+  async reserveActiveCard(card: Card): Promise<this> {
+    const activeCardTier: Map<string, Card> =
+      this.activeTieredCards.get(card.tier);
+    if (activeCardTier.has(card.id)) {
+      activeCardTier.delete(card.id);
+      this.addNewActiveCard(card.tier);
+    } else {
+      throw new InvalidGameError(`Invalid card given. Unable to reserve`)
+    }
+    return this;
+  }
+
+  async reserveDeckCard(tier: CardTier): Promise<Card> {
+    const remainingCardTier: Map<string, Card> =
+      this.remainingTieredCards.get(tier);
+    if (remainingCardTier.size === 0) {
+      throw new InvalidGameError(`No more cards of tier ${tier} remaining`);
+    }
+    const cardToTake: Card = Array.from(remainingCardTier.values()).pop();
+    remainingCardTier.delete(cardToTake.id);
+    return cardToTake;
+  }
+
+  addNewActiveCard(tier: CardTier): this {
+    const activeCardTier: Map<string, Card> =
+      this.activeTieredCards.get(tier);
+    const remainingCardTier: Map<string, Card> =
+      this.remainingTieredCards.get(tier);
+
+    const cardToMove: Card = Array.from(remainingCardTier.values()).pop();
+    if (!cardToMove || cardToMove === null || cardToMove === undefined) {
+      return; // No more remaining cards in this tier
+    }
+    remainingCardTier.delete(cardToMove.id);
+    activeCardTier.set(cardToMove.id, cardToMove);
+    return this;
   }
 }

@@ -6,6 +6,8 @@ import { Noble } from "./Noble";
 import { GlobalUtils } from "../utils/GlobalUtils";
 import { InvalidGameError } from "./Errors";
 
+const MAX_NUM_RESERVED_CARDS = 3;
+
 export class Hand {
   id: string;
   score: number;
@@ -40,11 +42,24 @@ export class Hand {
     return this;
   }
 
-  async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<void> {
+  canReserveCard(): boolean {
+    return this.reservedCards.size < MAX_NUM_RESERVED_CARDS;
+  }
+
+  async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<this> {
     // The checks are being done in Board.transferGems.
     // This function shouldn't be used on its own.
     gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
       this.gemStones.set(gemStone, amount);
     })
+    return this;
+  }
+
+  async addToReserved(card: Card): Promise<this> {
+    if(!this.canReserveCard()) {
+      throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
+    }
+    this.reservedCards.set(card.id, card);
+    return this;
   }
 }

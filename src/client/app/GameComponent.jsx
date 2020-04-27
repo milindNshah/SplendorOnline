@@ -30,7 +30,7 @@ class GameComponent extends React.Component {
     this.onGameUpdate = this.onGameUpdate.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this);
     this.onTakeGems = this.onTakeGems.bind(this);
-    this.onReserveDevelopmentCard = this.onReserveDevelopmentCard.bind(this);
+    this.onReserveActiveCard = this.onReserveActiveCard.bind(this);
     this.onPurchaseCard = this.onPurchaseCard.bind(this);
     this.onEndTurn = this.onEndTurn.bind(this);
   }
@@ -73,17 +73,20 @@ class GameComponent extends React.Component {
 
   onTakeGems() {
     const gemsTaken = {
-      [GemStone.DIAMOND]: -4,
+      [GemStone.DIAMOND]: 1,
+      [GemStone.RUBY]: 1,
+      [GemStone.EMERALD]: 1,
     };
     this.setState({
       gemsTaken: gemsTaken,
     });
   }
 
-  onReserveDevelopmentCard() {
-    const remainingTieredCards = new Map(Object.entries(this.state.board.remainingTieredCards))
-    const tier1cards = new Map(Object.entries(remainingTieredCards.get(CardTier.TIER1)))
+  onReserveActiveCard() {
+    const activeTieredCards = new Map(Object.entries(this.state.board.activeTieredCards))
+    const tier1cards = new Map(Object.entries(activeTieredCards.get(CardTier.TIER1)))
     const tier1Card = Array.from(tier1cards.values()).pop();
+    console.log(tier1Card);
     this.setState({
       cardReserved: tier1Card,
     })
@@ -104,7 +107,7 @@ class GameComponent extends React.Component {
       actions[ActionType.TAKE_GEMS] = this.state.gemsTaken;
     }
     if(this.state.cardReserved) {
-      actions[ActionType.RESERVE_DEVELOPMENT_CARD] = this.state.cardReserved.id;
+      actions[ActionType.RESERVE_ACTIVE_CARD] = this.state.cardReserved.id;
     }
     if(this.state.cardPurchased) {
       actions[ActionType.PURCHASE_CARD] = this.state.cardPurchased.id;
@@ -146,9 +149,9 @@ class GameComponent extends React.Component {
       : null
     );
 
-    const ReserveDevelopmentCardButton = () => (
+    const ReserveActiveCardButton = () => (
       this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onReserveDevelopmentCard}>ReserveDevelopmentCard</Button>
+      ? <Button variant="outline-primary" onClick={this.onReserveActiveCard}>ReserveActiveCard</Button>
       : null
     );
 
@@ -167,7 +170,7 @@ class GameComponent extends React.Component {
         <p>My Score: {this.state.player.hand?.score}</p>
         <TurnDiv/>
         <TakeGemsButton/>
-        <ReserveDevelopmentCardButton/>
+        <ReserveActiveCardButton/>
         <PurchaseCardButton/>
         <EndTurnButton/>
         <p>Winner: {this.state.winner?.user?.name}</p>
