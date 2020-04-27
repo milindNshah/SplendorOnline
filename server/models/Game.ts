@@ -145,7 +145,22 @@ export class Game {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
       await this.board.swapActiveCard(card);
-      await player.hand.addToActive(card);
+      await player.hand.addToPurchased(card);
+      // TODO: Check if Nobles available.
+      // TODO: Update score of player.
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async purchaseReservedCard(card: Card, player: Player): Promise<this> {
+    try {
+      if (!player.hand.canPurchaseCard(card)) {
+        throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
+      }
+      await player.hand.purchaseReservedCard(card);
+      await player.hand.addToPurchased(card);
       // TODO: Check if Nobles available.
       // TODO: Update score of player.
       return this;

@@ -74,7 +74,7 @@ export class Hand {
     return this;
   }
 
-  async addToActive(card: Card): Promise<this> {
+  async addToPurchased(card: Card): Promise<this> {
     if (!this.canPurchaseCard(card)) {
       throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
     }
@@ -91,6 +91,17 @@ export class Hand {
       }
     })
     this.purchasedCards.set(card.id, card);
+    return this;
+  }
+
+  async purchaseReservedCard(card: Card): Promise<this> {
+    if(!this.reservedCards.has(card.id)) {
+      throw new InvalidGameError(`Couldn't find the reserved card.`)
+    }
+    if (!this.canPurchaseCard(card)) {
+      throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
+    }
+    this.reservedCards.delete(card.id);
     return this;
   }
 

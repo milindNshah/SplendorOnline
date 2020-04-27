@@ -136,8 +136,14 @@ export class SocketEvents {
         if(actions.get(ActionType.RESERVE_DECK_CARD)) {
           await game.reserveDeckCard(player, actions.get(ActionType.RESERVE_DECK_CARD));
         }
+        // TODO: Still need to test PURCHASE_ACTIVE_CARD fully.
         if(actions.get(ActionType.PURCHASE_ACTIVE_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_ACTIVE_CARD));
+          await game.purchaseActiveCard(card, player);
+        }
+        // TODO: Still need to test PURCHASE_RESERVED_CARD fully.
+        if(actions.get(ActionType.PURCHASE_RESERVED_CARD)) {
+          const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_RESERVED_CARD));
           await game.purchaseActiveCard(card, player);
         }
         game.finishTurn(player);

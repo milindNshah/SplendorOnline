@@ -26,6 +26,7 @@ class GameComponent extends React.Component {
       reservedActiveCard: null,
       reservedDeckCardTier: null,
       purchasedActiveCard: null,
+      purchasedReservedCard: null,
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
@@ -34,6 +35,7 @@ class GameComponent extends React.Component {
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this);
     this.onReserveDeckCard = this.onReserveDeckCard.bind(this);
     this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this);
+    this.onPurchaseReservedCard = this.onPurchaseReservedCard.bind(this);
     this.onEndTurn = this.onEndTurn.bind(this);
   }
 
@@ -108,6 +110,15 @@ class GameComponent extends React.Component {
     })
   }
 
+  onPurchaseReservedCard() {
+    const hand = new Map(Object.entries(this.state.player.hand));
+    const reservedCards = new Map(Object.entries(hand.get("reservedCards")));
+    const card = Array.from(reservedCards.values()).pop()
+    this.setState({
+      purchasedReservedCard: card,
+    })
+  }
+
   onEndTurn() {
     const actions = {};
     if(this.state.gemsTaken) {
@@ -121,6 +132,9 @@ class GameComponent extends React.Component {
     }
     if(this.state.purchasedActiveCard) {
       actions[ActionType.PURCHASE_ACTIVE_CARD] = this.state.purchasedActiveCard.id;
+    }
+    if(this.state.purchasedReservedCard) {
+      actions[ActionType.PURCHASE_RESERVED_CARD] = this.state.purchasedReservedCard.id;
     }
     console.log(actions);
 
@@ -179,6 +193,12 @@ class GameComponent extends React.Component {
       : null
     );
 
+    const PurchaseReservedCardButton = () => (
+      this.state.curPlayerTurn.id === this.state.playerID
+      ? <Button variant="outline-primary" onClick={this.onPurchaseReservedCard}>Purchase Reserved Card</Button>
+      : null
+    );
+
     return (
       <div>
         <h1>This is the Game Component</h1>
@@ -191,6 +211,7 @@ class GameComponent extends React.Component {
         <ReserveActiveCardButton/>
         <ReserveDeckCardButton/>
         <PurchaseActiveCardButton/>
+        <PurchaseReservedCardButton/>
         <EndTurnButton/>
         <p>Winner: {this.state.winner?.user?.name}</p>
         <ErrorMessage/>
