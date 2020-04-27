@@ -69,7 +69,7 @@ export class Game {
       const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
           let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
-          if(inputGemsToTransfer.get(gemStoneName) === 0) {
+          if (inputGemsToTransfer.get(gemStoneName) === 0) {
             return map;
           }
           return map.set(gemStoneKey, inputGemsToTransfer.get(gemStoneName));
@@ -79,9 +79,9 @@ export class Game {
           return acc = amount > 0 ? acc + amount : 0;
         }, 0)
       const totalGemsReturned: number = Array.from(gemsToTansfer.values())
-      .reduce((acc: number, amount: number) => {
-        return acc = amount < 0 ? acc - amount : 0;
-      }, 0)
+        .reduce((acc: number, amount: number) => {
+          return acc = amount < 0 ? acc - amount : 0;
+        }, 0)
       const totalGemChange = totalGemsTaken - totalGemsReturned;
       const numGemsAllowedToReturn = (player.hand.gemStones.size > MAX_GEMS_ALLOWED_HAVE - MAX_GEMS_ALLOWED_RETURN)
         ? MAX_GEMS_ALLOWED_RETURN - (MAX_GEMS_ALLOWED_HAVE - player.hand.gemStones.size)
@@ -106,36 +106,42 @@ export class Game {
 
   async reserveActiveCard(card: Card, player: Player): Promise<this> {
     try {
-      if(!player.hand.canReserveCard()) {
+      if (!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
       await this.board.swapActiveCard(card);
       await player.hand.addToReserved(card);
+      const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
+      if (goldGemStoneObtained) {
+        player.hand.takeGoldGemStone();
+      }
       return this;
     } catch (err) {
       throw err;
     }
-    // TODO: Get gold token.
   }
 
   async reserveDeckCard(player: Player, tier: string): Promise<this> {
     try {
-      if(!player.hand.canReserveCard()) {
+      if (!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
       const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
       const card = await this.board.reserveDeckCard(tierKey);
       await player.hand.addToReserved(card);
+      const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
+      if (goldGemStoneObtained) {
+        player.hand.takeGoldGemStone();
+      }
       return this;
-    } catch(err) {
+    } catch (err) {
       throw err;
     }
-    // TODO: Get gold token.
   }
 
   async purchaseActiveCard(card: Card, player: Player): Promise<this> {
     try {
-      if(!player.hand.canPurchaseCard(card)) {
+      if (!player.hand.canPurchaseCard(card)) {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
       await this.board.swapActiveCard(card);
@@ -143,7 +149,7 @@ export class Game {
       // TODO: Check if Nobles available.
       // TODO: Update score of player.
       return this;
-    } catch(err) {
+    } catch (err) {
       throw err;
     }
   }

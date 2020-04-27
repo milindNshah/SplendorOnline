@@ -93,4 +93,10 @@ export class Hand {
     this.purchasedCards.set(card.id, card);
     return this;
   }
+
+  takeGoldGemStone(): this {
+    const numGoldGemStones = this.gemStones.get(GemStone.GOLD);
+    this.gemStones.set(GemStone.GOLD, numGoldGemStones+1);
+    return this;
+  }
 }

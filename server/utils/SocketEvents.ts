@@ -138,11 +138,7 @@ export class SocketEvents {
         }
         if(actions.get(ActionType.PURCHASE_ACTIVE_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_ACTIVE_CARD));
-          console.log(card);
-          console.log(game.board.remainingTieredCards.get(card.tier).size)
           await game.purchaseActiveCard(card, player);
-          console.log(game.board.remainingTieredCards.get(card.tier).size)
-          console.log(player.hand)
         }
         game.finishTurn(player);
         io.sockets.in(room.code).emit("updateGame", serialize(game))

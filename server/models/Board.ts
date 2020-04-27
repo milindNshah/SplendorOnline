@@ -173,6 +173,16 @@ export class Board {
     return cardToTake;
   }
 
+  async removeGoldGemStone(): Promise<boolean> {
+    const numGoldGemStones = this.availableGemStones.get(GemStone.GOLD);
+    if(numGoldGemStones > 0) {
+      this.availableGemStones.set(GemStone.GOLD, numGoldGemStones-1)
+      return true;
+    } else {
+      throw new InvalidGameError(`No more gold tokens left. Card was reserved`);
+    }
+  }
+
   private addNewActiveCard(tier: CardTier): this {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);
