@@ -2,8 +2,8 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import { deserialize } from 'bson';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { socket } from './socket';
-import { Error } from './enums/errors'
+import { socket } from '../socket';
+import { Error } from '../enums/errors'
 
 class RoomComponent extends React.Component {
   constructor (props) {

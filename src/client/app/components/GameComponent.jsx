@@ -1,10 +1,10 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import { deserialize } from 'bson';
-import { socket } from './socket';
-import { GemStone } from './enums/gemstones';
-import { ActionType } from './enums/actiontype';
-import { CardTier } from './enums/cardtier';
+import { socket } from '../socket';
+import { GemStone } from '../enums/gemstones';
+import { ActionType } from '../enums/actiontype';
+import { CardTier } from '../enums/cardtier';
 
 class GameComponent extends React.Component {
   constructor (props) {

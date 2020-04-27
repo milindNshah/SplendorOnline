@@ -11,7 +11,6 @@ import { InvalidInputError, UserServiceError, InvalidGameError } from '../models
 import { Game, GameEndTurn, ActionType } from '../models/Game';
 import * as GameService from '../services/GameService'
 import * as GameManager from '../managers/GameManager'
-import { Board } from '../models/Board';
 import * as CardManager from '../managers/CardManager';
 import { Card } from '../models/Card';
 
@@ -160,7 +159,7 @@ export class SocketEvents {
         if (!player || player === null || player === undefined) {
           return;
         }
-
+        // TODO: Need to add extra functionality if player disconnects from game.
         const modifiedRooms: Room[] = await RoomManager.removePlayerFromRooms(player);
         modifiedRooms.forEach((room) => {
           io.sockets.in(room.code).emit("updateRoom", serialize(room));

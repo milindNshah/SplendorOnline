@@ -1,7 +1,7 @@
 import React from 'react';
 import GameComponent from './GameComponent.jsx';
 import RoomComponent from './RoomComponent.jsx';
-import { socket } from './socket';
+import { socket } from '../socket';
 
 class RoomGameComponent extends React.Component {
   constructor (props) {

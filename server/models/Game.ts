@@ -208,7 +208,7 @@ export class Game {
     }
     // Go more rounds until someone has more points or
     // breaks one of the other tie conditions
-    // TODO: Implement more options that users can select
+    // TODO: Implement more options that users can select for tiebreaker
     this.tieBreakerMoreRounds = true;
     return this;
   }

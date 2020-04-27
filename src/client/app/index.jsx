@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import WelcomeComponent from './WelcomeComponent.jsx';
-import RoomGameComponent from './RoomGameComponent.jsx';
+import WelcomeComponent from './components/WelcomeComponent.jsx';
+import RoomGameComponent from './components/RoomGameComponent.jsx';
 import {
   BrowserRouter as Router,
   Switch,
