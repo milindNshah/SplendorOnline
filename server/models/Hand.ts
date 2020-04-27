@@ -4,6 +4,7 @@ import { GemStone } from "./GemStone";
 import { Card } from "./Card";
 import { Noble } from "./Noble";
 import { GlobalUtils } from "../utils/GlobalUtils";
+import { InvalidGameError } from "./Errors";
 
 export class Hand {
   id: string;
@@ -32,5 +33,18 @@ export class Hand {
   addScore(value: number): this {
     this.score += value;
     return this;
+  }
+
+  incrementTurn(): this {
+    this.turn += 1;
+    return this;
+  }
+
+  async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<void> {
+    // The checks are being done in Board.transferGems.
+    // This function shouldn't be used on its own.
+    gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
+      this.gemStones.set(gemStone, amount);
+    })
   }
 }

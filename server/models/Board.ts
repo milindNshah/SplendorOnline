@@ -4,7 +4,7 @@ import { CardTier, Card } from './Card';
 import { GemStone } from './GemStone';
 import * as CardManager from '../managers/CardManager';
 import * as NobleManager from '../managers/NobleManager';
-import { CardGenerationError } from './Errors';
+import { CardGenerationError, InvalidGameError } from './Errors';
 import { Noble } from './Noble';
 import * as CardService from '../services/CardService';
 import * as NobleService from '../services/NobleService';
@@ -13,6 +13,7 @@ const NUM_CARDS_PER_TIER = 4;
 const NUM_GEM_STONES_TWO_PLAYER = 4;
 const NUM_GEM_STONES_THREE_PLAYER = 5;
 const NUM_GEM_STONES_FOUR_PLAYER = 7;
+const NUM_GEM_STONE_PREVENTING_TAKING_TWO = 4;
 
 export class Board {
   id: string;
@@ -108,5 +109,44 @@ export class Board {
         nobles.delete(nobleID);
         return activeNobles.set(nobleID, noble);
       }, new Map())
+  }
+
+  async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<void> {
+    let hasTakenAnyGemstones: boolean = false;
+    let hasTakenTwoGemstones: boolean = false;
+
+    gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
+      const availableGemStone = this.availableGemStones.get(gemStone);
+      if(amount === 0) {
+        return;
+      }
+      if(amount > 2) {
+        throw new InvalidGameError(`You may not take more than 2 gemstones of the same type`)
+      }
+      if(amount > availableGemStone) {
+        throw new InvalidGameError(`You may not take ${amount} ${gemStone} gemstone(s). There are ${availableGemStone} ${gemStone} gemstone(s) available.`)
+      }
+      if(amount === 2 && hasTakenAnyGemstones) {
+        throw new InvalidGameError(`You may only take two gemstones of a single gemstone type and no other gemstone`);
+      }
+      if(amount === 2 && availableGemStone < NUM_GEM_STONE_PREVENTING_TAKING_TWO) {
+        throw new InvalidGameError(`You may not take more than 1 gemstone of type ${gemStone} because there are less than ${NUM_GEM_STONE_PREVENTING_TAKING_TWO} ${gemStone} gemstones available.`)
+      }
+      if(amount === 2) {
+        hasTakenAnyGemstones = true;
+        hasTakenTwoGemstones = true;
+        this.availableGemStones.set(gemStone, availableGemStone-amount)
+      }
+      if(amount === 1 && hasTakenTwoGemstones) {
+        throw new InvalidGameError(`You may only take two gemstones of a single gemstone type and no other gemstone`);
+      }
+      if(amount === 1) {
+        hasTakenAnyGemstones = true;
+        this.availableGemStones.set(gemStone, availableGemStone-amount)
+      }
+      if (amount < 0) {
+        this.availableGemStones.set(gemStone, availableGemStone-amount)
+      }
+    });
   }
 }

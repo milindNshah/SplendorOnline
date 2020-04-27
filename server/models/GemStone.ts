@@ -1,3 +1,4 @@
+/* Should be kept in sync with GemStone.js on client */
 export enum GemStone {
   CHOCOLATE= 'chocolate',
   DIAMOND = 'diamond',

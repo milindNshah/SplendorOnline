@@ -4,12 +4,23 @@ import { Room } from './Room';
 import { Board } from './Board';
 import { InvalidGameError } from './Errors';
 import { Player } from './Player';
+import { GemStone } from './GemStone';
 
 const TARGET_SCORE = 15;
+const MAX_GEMS_ALLOWED_HAVE = 10;
+const MAX_GEMS_ALLOWED_RETURN = 3;
 
 export interface GameEndTurn {
+  actions: Map<ActionType, any>,
   playerID: string,
   gameID: string,
+}
+
+/* Should be kept in sync with actionttype.js on client */
+export enum ActionType {
+  TAKE_GEMS = "TakeGems",
+  RESERVE_DEVELOPMENT_CARD = "ReserveDevelopmentCard",
+  PURCHASE_CARD = "PurchaseCard",
 }
 
 export class Game {
@@ -43,17 +54,57 @@ export class Game {
     return GlobalUtils.shuffle(playerIDs);
   }
 
-  checkValidTurn(playerID: string): boolean {
+  async checkValidTurn(playerID: string): Promise<boolean> {
     if (playerID !== this.turnOrder[this.curTurnIndex]) {
       throw new InvalidGameError(`It is not player ${playerID}'s turn right now.`)
     }
     return true;
   }
 
+  async transferGems(inputGemsToTransfer: Map<string, number>, player: Player): Promise<this> {
+    try {
+      const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
+        .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
+          let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone]
+          if(inputGemsToTransfer.get(gemStoneName) === 0) {
+            return map;
+          }
+          return map.set(gemStoneKey, inputGemsToTransfer.get(gemStoneName));
+        }, new Map())
+      const totalGemsTaken: number = Array.from(gemsToTansfer.values())
+        .reduce((acc: number, amount: number) => {
+          return acc = amount > 0 ? acc + amount : 0;
+        }, 0)
+      const totalGemsReturned: number = Array.from(gemsToTansfer.values())
+      .reduce((acc: number, amount: number) => {
+        return acc = amount < 0 ? acc - amount : 0;
+      }, 0)
+      const totalGemChange = totalGemsTaken - totalGemsReturned;
+      const numGemsAllowedToReturn = (player.hand.gemStones.size > MAX_GEMS_ALLOWED_HAVE - MAX_GEMS_ALLOWED_RETURN)
+        ? MAX_GEMS_ALLOWED_RETURN - (MAX_GEMS_ALLOWED_HAVE - player.hand.gemStones.size)
+        : 0;
+
+      if (totalGemChange > 3 || totalGemsTaken > 3) {
+        throw new InvalidGameError(`Can't take more than 3 gem stones`);
+      }
+      if (totalGemChange < -3 || totalGemsReturned > 3) {
+        throw new InvalidGameError(`Can't put back more than 3 gem stones`);
+      }
+      if (totalGemsReturned > numGemsAllowedToReturn) {
+        throw new InvalidGameError(`Can't return any more gems until total gems in hand is greater than ${MAX_GEMS_ALLOWED_HAVE}`);
+      }
+      await this.board.transferGems(gemsToTansfer);
+      await player.hand.transferGems(gemsToTansfer);
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   finishTurn(playerID: string): this {
     // TODO: Temporary - need to remove after testing!
     const player: Player = this.room.getPlayer(playerID);
-    player.hand.addScore(Math.floor(Math.random()*5))
+    player.hand.addScore(Math.floor(Math.random() * 5))
 
     if (this.turnOrder[this.turnOrder.length - 1] === playerID) {
       this.checkScores();
@@ -62,6 +113,7 @@ export class Game {
     } else {
       this.curTurnIndex += 1;
     }
+    player.hand.incrementTurn();
     return this;
   }
 
@@ -80,13 +132,13 @@ export class Game {
     // Tie Breaker
     const highestScorePlayers: Player[]
       = this.checkHighestScoreOnTie(playersWon);
-    if(highestScorePlayers.length === 1) {
+    if (highestScorePlayers.length === 1) {
       this.winner = highestScorePlayers.pop()
       return this;
     }
     const leastCardPlayers: Player[]
       = this.checkLeastCardsOnTie(highestScorePlayers)
-    if(leastCardPlayers.length === 1) {
+    if (leastCardPlayers.length === 1) {
       this.winner = leastCardPlayers.pop()
       return this;
     }

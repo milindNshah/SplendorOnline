@@ -7,6 +7,7 @@ import { GemStone, CardGemStone } from './GemStone'
 * Maybe eventually create a toBSON or something that
 * can accept it
 */
+/* Should be kept in sync with cardtier.js on client */
 export enum CardTier {
   TIER1 = '1',
   TIER2 = '2',

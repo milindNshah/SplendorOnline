@@ -2,6 +2,9 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import { deserialize } from 'bson';
 import { socket } from './socket';
+import { GemStone } from './enums/gemstones';
+import { ActionType } from './enums/actiontype';
+import { CardTier } from './enums/cardtier';
 
 class GameComponent extends React.Component {
   constructor (props) {
@@ -19,10 +22,16 @@ class GameComponent extends React.Component {
       gameTurn: 0,
       winner: {},
       curPlayerTurn: {},
+      gemsTaken: null,
+      cardReserved: null,
+      cardPurchased: null,
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this);
+    this.onTakeGems = this.onTakeGems.bind(this);
+    this.onReserveDevelopmentCard = this.onReserveDevelopmentCard.bind(this);
+    this.onPurchaseCard = this.onPurchaseCard.bind(this);
     this.onEndTurn = this.onEndTurn.bind(this);
   }
 
@@ -41,7 +50,7 @@ class GameComponent extends React.Component {
     const game = deserialize(Buffer.from(data));
     const players = new Map(Object.entries(game.room.players));
     const player = players.get(this.state.playerID);
-    const board = new Map(Object.entries(game.board));
+    const board = game.board;
     const curPlayerTurn = players.get(game.turnOrder[game.curTurnIndex]);
 
     this.setState({
@@ -62,11 +71,56 @@ class GameComponent extends React.Component {
     });
   }
 
+  onTakeGems() {
+    const gemsTaken = {
+      [GemStone.DIAMOND]: -4,
+    };
+    this.setState({
+      gemsTaken: gemsTaken,
+    });
+  }
+
+  onReserveDevelopmentCard() {
+    const remainingTieredCards = new Map(Object.entries(this.state.board.remainingTieredCards))
+    const tier1cards = new Map(Object.entries(remainingTieredCards.get(CardTier.TIER1)))
+    const tier1Card = Array.from(tier1cards.values()).pop();
+    this.setState({
+      cardReserved: tier1Card,
+    })
+  }
+
+  onPurchaseCard() {
+    const remainingTieredCards = new Map(Object.entries(this.state.board.remainingTieredCards))
+    const tier1cards = new Map(Object.entries(remainingTieredCards.get(CardTier.TIER1)))
+    const tier1Card = Array.from(tier1cards.values()).pop();
+    this.setState({
+      cardPurchased: tier1Card,
+    })
+  }
+
   onEndTurn() {
+    const actions = {};
+    if(this.state.gemsTaken) {
+      actions[ActionType.TAKE_GEMS] = this.state.gemsTaken;
+    }
+    if(this.state.cardReserved) {
+      actions[ActionType.RESERVE_DEVELOPMENT_CARD] = this.state.cardReserved.id;
+    }
+    if(this.state.cardPurchased) {
+      actions[ActionType.PURCHASE_CARD] = this.state.cardPurchased.id;
+    }
+
     this.socket.emit("endTurn", {
+      actions: actions,
       gameID: this.state.gameID,
       playerID: this.state.playerID
     })
+
+    this.setState({
+      gemsTaken: null,
+      cardReserved: null,
+      cardPurchased: null,
+    });
   }
 
   render() {
@@ -86,6 +140,24 @@ class GameComponent extends React.Component {
     : <Button variant="outline-dark">Waiting for Other Players</Button>
     );
 
+    const TakeGemsButton = () => (
+      this.state.curPlayerTurn.id === this.state.playerID
+      ? <Button variant="outline-primary" onClick={this.onTakeGems}>Take Gems</Button>
+      : null
+    );
+
+    const ReserveDevelopmentCardButton = () => (
+      this.state.curPlayerTurn.id === this.state.playerID
+      ? <Button variant="outline-primary" onClick={this.onReserveDevelopmentCard}>ReserveDevelopmentCard</Button>
+      : null
+    );
+
+    const PurchaseCardButton = () => (
+      this.state.curPlayerTurn.id === this.state.playerID
+      ? <Button variant="outline-primary" onClick={this.onPurchaseCard}>Purchase Card</Button>
+      : null
+    );
+
     return (
       <div>
         <h1>This is the Game Component</h1>
@@ -94,6 +166,9 @@ class GameComponent extends React.Component {
         <p>Player: {this.state.player.user?.name}</p>
         <p>My Score: {this.state.player.hand?.score}</p>
         <TurnDiv/>
+        <TakeGemsButton/>
+        <ReserveDevelopmentCardButton/>
+        <PurchaseCardButton/>
         <EndTurnButton/>
         <p>Winner: {this.state.winner?.user?.name}</p>
         <ErrorMessage/>

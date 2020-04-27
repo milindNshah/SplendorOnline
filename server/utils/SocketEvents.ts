@@ -7,10 +7,11 @@ import * as PlayerManager from '../managers/PlayerManager'
 import * as RoomManager from '../managers/RoomManager'
 import * as Socket from './Socket'
 import * as ErrorHandler from './ErrorHandler';
-import { InvalidInputError, UserServiceError } from '../models/Errors';
-import { Game, GameEndTurn } from '../models/Game';
+import { InvalidInputError, UserServiceError, InvalidGameError } from '../models/Errors';
+import { Game, GameEndTurn, ActionType } from '../models/Game';
 import * as GameService from '../services/GameService'
 import * as GameManager from '../managers/GameManager'
+import { Board } from '../models/Board';
 
 export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
@@ -115,11 +116,24 @@ export class SocketEvents {
 
     socket.on('endTurn', async function(data: GameEndTurn){
       try {
+        const actions: Map<string, any> = new Map(Object.entries(data.actions));
+        if(actions.size > 1) {
+          throw new InvalidGameError("Can't take more than one action per turn.")
+        }
         const game: Game = await GameManager.getGameByID(data.gameID);
-        const board = game.board;
+        const board: Board = game.board;
         const room: Room = game.room;
         const player: Player = room.getPlayer(data.playerID);
-        game.checkValidTurn(player.id);
+        await game.checkValidTurn(player.id);
+        if(actions.has(ActionType.TAKE_GEMS)) {
+          await game.transferGems(new Map(Object.entries(actions.get(ActionType.TAKE_GEMS))), player)
+        }
+        if(actions.get(ActionType.RESERVE_DEVELOPMENT_CARD)) {
+          console.log('dev-card');
+        }
+        if(actions.get(ActionType.PURCHASE_CARD)) {
+          console.log('purchase-card');
+        }
         game.finishTurn(player.id);
         io.sockets.in(room.code).emit("updateGame", serialize(game))
       } catch (err) {

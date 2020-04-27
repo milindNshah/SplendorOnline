@@ -1,5 +1,6 @@
 "use strict"
 
+/* Should be kept in sync with errors.js on client */
 export enum ErrorType {
   INVALID_INPUT = 'InvalidInput',
   ROOM_DOES_NOT_EXIST = 'RoomDoesNotExist',
