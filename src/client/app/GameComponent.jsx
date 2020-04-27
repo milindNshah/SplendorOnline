@@ -25,7 +25,7 @@ class GameComponent extends React.Component {
       gemsTaken: null,
       reservedActiveCard: null,
       reservedDeckCardTier: null,
-      cardPurchased: null,
+      purchasedActiveCard: null,
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
@@ -33,7 +33,7 @@ class GameComponent extends React.Component {
     this.onTakeGems = this.onTakeGems.bind(this);
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this);
     this.onReserveDeckCard = this.onReserveDeckCard.bind(this);
-    this.onPurchaseCard = this.onPurchaseCard.bind(this);
+    this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this);
     this.onEndTurn = this.onEndTurn.bind(this);
   }
 
@@ -99,12 +99,12 @@ class GameComponent extends React.Component {
     })
   }
 
-  onPurchaseCard() {
-    const remainingTieredCards = new Map(Object.entries(this.state.board.remainingTieredCards))
-    const tier1cards = new Map(Object.entries(remainingTieredCards.get(CardTier.TIER1)))
+  onPurchaseActiveCard() {
+    const activeTieredCards = new Map(Object.entries(this.state.board.activeTieredCards))
+    const tier1cards = new Map(Object.entries(activeTieredCards.get(CardTier.TIER1)))
     const tier1Card = Array.from(tier1cards.values()).pop();
     this.setState({
-      cardPurchased: tier1Card,
+      purchasedActiveCard: tier1Card,
     })
   }
 
@@ -119,9 +119,10 @@ class GameComponent extends React.Component {
     if(this.state.reservedDeckCardTier) {
       actions[ActionType.RESERVE_DECK_CARD] = this.state.reservedDeckCardTier;
     }
-    if(this.state.cardPurchased) {
-      actions[ActionType.PURCHASE_CARD] = this.state.cardPurchased.id;
+    if(this.state.purchasedActiveCard) {
+      actions[ActionType.PURCHASE_ACTIVE_CARD] = this.state.purchasedActiveCard.id;
     }
+    console.log(actions);
 
     this.socket.emit("endTurn", {
       actions: actions,
@@ -133,7 +134,7 @@ class GameComponent extends React.Component {
       gemsTaken: null,
       reservedActiveCard: null,
       reservedDeckCardTier: null,
-      cardPurchased: null,
+      purchasedActiveCard: null,
     });
   }
 
@@ -172,9 +173,9 @@ class GameComponent extends React.Component {
       : null
     );
 
-    const PurchaseCardButton = () => (
+    const PurchaseActiveCardButton = () => (
       this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onPurchaseCard}>Purchase Card</Button>
+      ? <Button variant="outline-primary" onClick={this.onPurchaseActiveCard}>Purchase Active Card</Button>
       : null
     );
 
@@ -189,7 +190,7 @@ class GameComponent extends React.Component {
         <TakeGemsButton/>
         <ReserveActiveCardButton/>
         <ReserveDeckCardButton/>
-        <PurchaseCardButton/>
+        <PurchaseActiveCardButton/>
         <EndTurnButton/>
         <p>Winner: {this.state.winner?.user?.name}</p>
         <ErrorMessage/>

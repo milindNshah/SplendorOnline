@@ -20,7 +20,8 @@ export interface GameEndTurn {
 /* Should be kept in sync with actionttype.js on client */
 export enum ActionType {
   TAKE_GEMS = "TakeGems",
-  PURCHASE_CARD = "PurchaseCard",
+  PURCHASE_ACTIVE_CARD = "PurchaseActiveCard",
+  PURCHASE_RESERVED_CARD = "PurchaseReservedCard",
   RESERVE_ACTIVE_CARD = "ReserveActiveCard",
   RESERVE_DECK_CARD = "ReserveDeckCard",
 }
@@ -108,33 +109,47 @@ export class Game {
       if(!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
-      await this.board.reserveActiveCard(card);
+      await this.board.swapActiveCard(card);
       await player.hand.addToReserved(card);
       return this;
     } catch (err) {
       throw err;
     }
-    return this;
+    // TODO: Get gold token.
   }
 
   async reserveDeckCard(player: Player, tier: string): Promise<this> {
     try {
-      // TODO: Convert from string to CardTier.
+      if(!player.hand.canReserveCard()) {
+        throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
+      }
       const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
       const card = await this.board.reserveDeckCard(tierKey);
       await player.hand.addToReserved(card);
+      return this;
     } catch(err) {
       throw err;
     }
-    return this;
+    // TODO: Get gold token.
   }
 
-  finishTurn(playerID: string): this {
-    // TODO: Temporary - need to remove after testing!
-    const player: Player = this.room.getPlayer(playerID);
-    player.hand.addScore(Math.floor(Math.random() * 5))
+  async purchaseActiveCard(card: Card, player: Player): Promise<this> {
+    try {
+      if(!player.hand.canPurchaseCard(card)) {
+        throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
+      }
+      await this.board.swapActiveCard(card);
+      await player.hand.addToActive(card);
+      // TODO: Check if Nobles available.
+      // TODO: Update score of player.
+      return this;
+    } catch(err) {
+      throw err;
+    }
+  }
 
-    if (this.turnOrder[this.turnOrder.length - 1] === playerID) {
+  finishTurn(player: Player): this {
+    if (this.turnOrder[this.turnOrder.length - 1] === player.id) {
       this.checkScores();
       this.curTurnIndex = 0;
       this.gameTurn += 1;
@@ -188,10 +203,10 @@ export class Game {
 
   private checkLeastCardsOnTie(players: Player[]): Player[] {
     const leastCards: number = players.reduce(
-      (a, b) => a.hand.ownedCards.size < b.hand.ownedCards.size ? a : b
-    ).hand.ownedCards.size;
+      (a, b) => a.hand.purchasedCards.size < b.hand.purchasedCards.size ? a : b
+    ).hand.purchasedCards.size;
     return players.filter(
-      (player) => player.hand.ownedCards.size === leastCards
+      (player) => player.hand.purchasedCards.size === leastCards
     );
   }
 }

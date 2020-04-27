@@ -150,14 +150,14 @@ export class Board {
     });
   }
 
-  async reserveActiveCard(card: Card): Promise<this> {
+  async swapActiveCard(card: Card): Promise<this> {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(card.tier);
     if (activeCardTier.has(card.id)) {
       activeCardTier.delete(card.id);
       this.addNewActiveCard(card.tier);
     } else {
-      throw new InvalidGameError(`Invalid card given. Unable to reserve`)
+      throw new InvalidGameError(`Invalid card given. Unable to get card`)
     }
     return this;
   }
@@ -173,7 +173,7 @@ export class Board {
     return cardToTake;
   }
 
-  addNewActiveCard(tier: CardTier): this {
+  private addNewActiveCard(tier: CardTier): this {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);
     const remainingCardTier: Map<string, Card> =
