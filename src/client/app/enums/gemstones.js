@@ -15,3 +15,29 @@ export const CardGemStone = {
   RUBY: 'ruby',
   SAPPHIRE: 'sapphire',
 }
+
+export const GemStoneToColor = {
+  CHOCOLATE: '#CB6D51',
+  DIAMOND: 'white',
+  GOLD: '',
+  EMERALD: 'green',
+  RUBY: 'red',
+  SAPPHIRE: 'blue',
+}
+
+export function getColorFromGemStone(gemStone) {
+  switch (gemStone) {
+    case GemStone.CHOCOLATE:
+      return GemStoneToColor.CHOCOLATE;
+    case GemStone.DIAMOND:
+      return GemStoneToColor.DIAMOND;
+    case GemStone.EMERALD:
+      return GemStoneToColor.EMERALD;
+    case GemStone.GOLD:
+      return GemStoneToColor.GOLD;
+    case GemStone.RUBY:
+      return GemStoneToColor.RUBY;
+    case GemStone.SAPPHIRE:
+      return GemStoneToColor.SAPPHIRE;
+  }
+}

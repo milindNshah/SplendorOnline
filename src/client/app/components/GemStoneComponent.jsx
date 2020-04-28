@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from "styled-components"
+import { GemStone, GemStoneToColor } from '../enums/gemstones.js';
 
 const Path = styled.path`
   stroke-width: ${ props => props.strokeWidth ?? 5};
@@ -9,26 +10,32 @@ const Path = styled.path`
 `;
 
 const RubyPath = styled(Path)`
-  stroke: ${ props => props.stroke ?? "red" };
+  stroke: ${ props => props.stroke ?? GemStoneToColor.RUBY };
 `;
 
 const DiamondPath = styled(Path)`
-  stroke: ${ props => props.stroke ?? "white" };
+  stroke: ${ props => props.stroke ?? GemStoneToColor.DIAMOND };
 `;
 
 const ChocolatePath = styled(Path)`
-  stroke: ${ props => props.stroke ?? "#CB6D51" };
+  stroke: ${ props => props.stroke ?? GemStoneToColor.CHOCOLATE };
 `;
 
 const EmeraldPath = styled(Path)`
-  stroke: ${ props => props.stroke ?? "green" };
+  stroke: ${ props => props.stroke ?? GemStoneToColor.EMERALD };
 `;
 
 const SapphirePath = styled(Path)`
-  stroke: ${ props => props.stroke ?? "blue" };
+  stroke: ${ props => props.stroke ?? GemStoneToColor.SAPPHIRE };
 `;
 
-export const Ruby = (props) => {
+const Amount = styled.span`
+  font-size: ${ props => props.amount ?? "0.75rem"};
+  color: ${ props => props.color ?? "white" };
+  padding-right: 0.2rem;
+`;
+
+const Ruby = (props) => {
   const { height, width, ...others } = props
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={height} width={width}>
@@ -37,7 +44,7 @@ export const Ruby = (props) => {
   );
 }
 
-export const Diamond = (props) => {
+const Diamond = (props) => {
   const { height, width, ...others } = props
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={height} width={width}>
@@ -46,7 +53,7 @@ export const Diamond = (props) => {
   );
 }
 
-export const Chocolate = (props) => {
+const Chocolate = (props) => {
   const { height, width, ...others } = props
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={height} width={width}>
@@ -55,7 +62,7 @@ export const Chocolate = (props) => {
   );
 }
 
-export const Emerald = (props) => {
+const Emerald = (props) => {
   const { height, width, ...others } = props
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={height} width={width}>
@@ -64,11 +71,50 @@ export const Emerald = (props) => {
   )
 }
 
-export const Sapphire = (props) => {
+const Sapphire = (props) => {
   const { height, width, ...others } = props
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" height={height} width={width}>
       <SapphirePath d="M35 25C32.83 29.5 30.5 32.84 28 35C25.5 37.17 22.84 38.17 20 38C17.17 38.26 14.5 37.26 12 35C9.5 32.74 7.17 29.41 5 25L20 2L35 25Z" {...others} />
     </svg>
   )
+}
+
+export const GemStoneComponent = (props) => {
+  const GetGemStone = (props) => {
+    const { amount, type } = props;
+    if (amount) {
+      return (
+        <div>
+          <Amount>{amount}</Amount>
+          {GetSoloGemStone(props)}
+        </div>
+      );
+    }
+    return GetSoloGemStone(props);
+  }
+
+  const GetSoloGemStone = (props) => {
+    const { type, ...others } = props;
+    switch (type) {
+      case GemStone.CHOCOLATE:
+        return <Chocolate {...others} />;
+      case GemStone.DIAMOND:
+        return <Diamond {...others} />;
+      case GemStone.GOLD:
+        return <Gold {...others} />;
+      case GemStone.EMERALD:
+        return <Emerald {...others} />;
+      case GemStone.RUBY:
+        return <Ruby {...others} />;
+      case GemStone.SAPPHIRE:
+        return <Sapphire {...others} />;
+      default:
+        return <div></div>
+    }
+  }
+
+  return (
+    <GetGemStone {...props} />
+  );
 }

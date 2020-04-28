@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "styled-components"
-import { Ruby, Diamond, Chocolate, Emerald, Sapphire } from './GemStoneComponent.jsx'
+import { GemStoneComponent } from './GemStoneComponent.jsx'
+import { getColorFromGemStone } from '../enums/gemstones.js'
 
 const Card = styled.div`
   background: black;
@@ -23,20 +24,28 @@ const Line = styled.line`
   stroke-width: 2;
 `;
 
-const GemStoneType = styled.div`
-  position: absolute;
-  top:1.5rem;
-  left:0.3rem; /* TODO: Need to figure out how to center */
-  width:100%;
-  height:100%;
-`;
-
-const Score = styled.div`
+const ScoreOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Score = styled.div`
   color: white;
-  padding: 0 0.5rem; /* TODO: Need to figure out how to center */
+  padding: 0 0.5rem;
+`;
+
+const RequiredGemStonesOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.1rem 0.25rem;
 `;
 
 class CardComponent extends React.Component {
@@ -48,17 +57,37 @@ class CardComponent extends React.Component {
       gemStoneType: this.props.card.gemStoneType,
       requiredGemStones: this.props.card.requiredGemStones,
     }
+    this.renderRequiredGemStones = this.renderRequiredGemStones.bind(this);
+  }
+
+  renderRequiredGemStones() {
+    const gemStones = Array.from(this.state.requiredGemStones.keys())
+      .map((key) => {
+        return this.renderRequiredGemStone(key, this.state.requiredGemStones.get(key))
+      });
+    return gemStones;
+  }
+
+  renderRequiredGemStone(type, amount) {
+    return (
+      <GemStoneComponent key={type} type={type} amount={amount} width='0.75rem' height='0.75rem'/>
+    )
   }
 
   render() {
     return (
-      <Card color="green">
+      <Card color={getColorFromGemStone(this.state.gemStoneType)}>
         <Svg xmlns="http://www.w3.org/2000/svg">
           {/* TODO: Make Line it's own component (svg) and use width/height to generate it */}
           <Line x1="10" y1="110" x2="80" y2="10" />
         </Svg>
-        <Score><span>{this.state.pointValue}</span></Score>
-        <GemStoneType><Emerald width='1rem' height='1rem'/></GemStoneType>
+        <ScoreOverlay>
+          <Score><span>{this.state.pointValue}</span></Score>
+          <GemStoneComponent type={this.state.gemStoneType} width='1rem' height='1rem'/>
+        </ScoreOverlay>
+        <RequiredGemStonesOverlay>
+          {this.renderRequiredGemStones()}
+        </RequiredGemStonesOverlay>
       </Card>
     );
   }
