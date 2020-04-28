@@ -2,7 +2,22 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import Form from 'react-bootstrap/Form';
+import CardComponent from './CardComponent.jsx';
 import { socket } from '../socket';
+import { GemStone } from '../enums/gemstones.js';
+
+// TODO: Remove after testing.
+const myCard = {
+  tier: 1,
+  pointValue: 3,
+  gemStoneType: GemStone.DIAMOND,
+  requiredGemStones: new Map([
+    [GemStone.EMERALD, 3],
+    [GemStone.RUBY = 4],
+    [GemStone.SAPPHIRE = 1],
+    [GemStone.CHOCOLATE = 2],
+  ])
+}
 
 class WelcomeComponent extends React.Component {
   constructor (props) {
@@ -82,6 +97,7 @@ class WelcomeComponent extends React.Component {
           </Form.Group>
         </Form>
         <ErrorMessage/>
+        <CardComponent card={myCard}/>
       </div>
     );
   }
