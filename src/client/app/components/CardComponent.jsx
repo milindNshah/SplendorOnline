@@ -9,7 +9,7 @@ const Card = styled.div`
   /*Ratio of 3:4*/
   width: 90px;
   height: 120px;
-  box-shadow: inset 0px 0px 0px 1px ${ props => props.color ?? "black"};
+  border: 1px solid white;
   border-radius: 5px;
 `;
 

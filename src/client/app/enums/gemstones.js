@@ -16,10 +16,10 @@ export const CardGemStone = {
   SAPPHIRE: 'sapphire',
 }
 
-export const GemStoneToColor = {
+const GemStoneToColor = {
   CHOCOLATE: '#CB6D51',
-  DIAMOND: 'white',
-  GOLD: '',
+  DIAMOND: '#CBE3F0',
+  GOLD: '#FFD700',
   EMERALD: 'green',
   RUBY: 'red',
   SAPPHIRE: 'blue',

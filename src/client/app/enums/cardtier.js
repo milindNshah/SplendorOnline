@@ -4,3 +4,25 @@ export const CardTier = {
   TIER2: '2',
   TIER3: '3',
 }
+
+export function getColorFromTier(cardTier) {
+  switch(cardTier) {
+    case CardTier.TIER1:
+      return "green";
+    case CardTier.TIER2:
+      return "purple";
+    case CardTier.TIER3:
+      return "#eb6b34";
+  }
+}
+
+export function getNumberFromTier(cardTier){
+  switch(cardTier) {
+    case CardTier.TIER1:
+      return 1;
+    case CardTier.TIER2:
+      return 2;
+    case CardTier.TIER3:
+      return 3;
+  }
+}

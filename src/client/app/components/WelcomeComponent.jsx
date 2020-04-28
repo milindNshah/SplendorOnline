@@ -3,18 +3,21 @@ import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import Form from 'react-bootstrap/Form';
 import CardComponent from './CardComponent.jsx';
+import TierCardComponent from './TierCardComponent.jsx';
+import GemStoneTokenComponent from './GemStoneTokenComponent.jsx';
 import { socket } from '../socket';
 import { GemStone, CardGemStone } from '../enums/gemstones.js';
+import { CardTier } from '../enums/cardtier.js';
 
 // TODO: Remove after testing.
 const myCard = {
-  tier: 1,
+  tier: CardTier.TIER3,
   pointValue: 3,
   gemStoneType: CardGemStone.SAPPHIRE,
   requiredGemStones: new Map([
     [GemStone.EMERALD, 3],
     [GemStone.RUBY, 4],
-    [GemStone.SAPPHIRE, 1],
+    [GemStone.DIAMOND, 1],
     [GemStone.CHOCOLATE, 2],
   ])
 }
@@ -98,6 +101,8 @@ class WelcomeComponent extends React.Component {
         </Form>
         <ErrorMessage/>
         <CardComponent card={myCard}/>
+        <TierCardComponent tier={myCard.tier}/>
+        <GemStoneTokenComponent type={GemStone.GOLD}/>
       </div>
     );
   }
