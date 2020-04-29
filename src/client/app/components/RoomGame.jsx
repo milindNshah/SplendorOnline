@@ -3,7 +3,7 @@ import GameComponent from './GameComponent.jsx';
 import RoomComponent from './RoomComponent.jsx';
 import { socket } from '../socket';
 
-class RoomGameComponent extends React.Component {
+class RoomGame extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -49,4 +49,4 @@ class RoomGameComponent extends React.Component {
   }
 }
 
-export default RoomGameComponent;
+export default RoomGame;

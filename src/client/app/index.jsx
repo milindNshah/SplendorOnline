@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import WelcomeComponent from './components/WelcomeComponent.jsx';
-import RoomGameComponent from './components/RoomGameComponent.jsx';
+import Home from './components/Home.jsx';
+import WaitingRoom from './components/WaitingRoom.jsx';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,8 +16,8 @@ class AppComponent extends React.Component {
   render() {
     return (
         <Switch>
-          <Route exact path='/' component={WelcomeComponent}/>
-          <Route path='/room' component={RoomGameComponent}/>
+          <Route exact path='/' component={Home}/>
+          <Route path='/room' component={WaitingRoom}/>
         </Switch>
     );
   }

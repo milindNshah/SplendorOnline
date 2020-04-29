@@ -32,7 +32,7 @@ import { socket } from '../socket';
 //   ])
 // }
 
-class WelcomeComponent extends React.Component {
+class WaitingRoom extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -94,7 +94,7 @@ class WelcomeComponent extends React.Component {
 
     return (
       <div>
-        <h1>Welcome to Splendor</h1>
+        <h1>Welcome to Splendor Online</h1>
         <h2>A resource-based card-building game</h2>
         <img></img>
         <Form>
@@ -119,4 +119,4 @@ class WelcomeComponent extends React.Component {
   }
 }
 
-export default WelcomeComponent;
+export default WaitingRoom;
