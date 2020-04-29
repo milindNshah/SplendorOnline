@@ -6,6 +6,7 @@ import { GemStone, getColorFromGemStone } from '../enums/gemstones.js';
 const Token = styled.div`
   background: black;
   position: relative;
+  /* From CardComponent.jsx */
   width: 90px;
   height: 90px;
   box-shadow: inset 0px 0px 0px 2px ${ props => props.type ? getColorFromGemStone(props.type) : "white"};
@@ -14,10 +15,6 @@ const Token = styled.div`
   align-items: center;
   justify-content: center;
 `;
-
-// const Stone = styled.div`
-
-// `;
 
 class GemStoneTokenComponent extends React.Component {
   constructor(props) {

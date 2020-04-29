@@ -11,7 +11,7 @@ const Path = styled.path`
 `;
 
 const Amount = styled.span`
-  font-size: ${ props => props.amount ?? "0.75rem"};
+  font-size: ${ props => props.fontSize ?? "0.75rem"};
   color: ${ props => props.color ?? "white" };
   padding-right: 0.2rem;
 `;

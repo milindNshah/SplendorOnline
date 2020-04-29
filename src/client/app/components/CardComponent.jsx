@@ -9,7 +9,7 @@ const Card = styled.div`
   /*Ratio of 3:4*/
   width: 90px;
   height: 120px;
-  border: 1px solid white;
+  border: 2px solid white;
   border-radius: 5px;
 `;
 
@@ -31,9 +31,6 @@ const ScoreOverlay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const Score = styled.div`
   color: white;
   padding: 0 0.5rem;
 `;
@@ -58,19 +55,17 @@ class CardComponent extends React.Component {
       requiredGemStones: this.props.card.requiredGemStones,
     }
     this.renderRequiredGemStones = this.renderRequiredGemStones.bind(this);
+    this.renderRequiredGemStone = this.renderRequiredGemStone.bind(this);
   }
 
   renderRequiredGemStones() {
-    const gemStones = Array.from(this.state.requiredGemStones.keys())
-      .map((key) => {
-        return this.renderRequiredGemStone(key, this.state.requiredGemStones.get(key))
-      });
-    return gemStones;
+    return Array.from(this.state.requiredGemStones.keys())
+      .map((key) => this.renderRequiredGemStone(key, this.state.requiredGemStones.get(key)));
   }
 
   renderRequiredGemStone(type, amount) {
     return (
-      <GemStoneComponent key={type} type={type} amount={amount} width='0.75rem' height='0.75rem'/>
+      <GemStoneComponent key={type} type={type} amount={amount} width='0.75rem' height='0.75rem' />
     )
   }
 
@@ -81,9 +76,8 @@ class CardComponent extends React.Component {
           {/* TODO: Make Line it's own component (svg) and use width/height to generate it */}
           <Line x1="10" y1="110" x2="80" y2="10" />
         </Svg>
-        <ScoreOverlay>
-          <Score><span>{this.state.pointValue}</span></Score>
-          <GemStoneComponent type={this.state.gemStoneType} width='1rem' height='1rem'/>
+        <ScoreOverlay><span>{this.state.pointValue}</span>
+          <GemStoneComponent type={this.state.gemStoneType} width='1rem' height='1rem' fill={this.props.fill} />
         </ScoreOverlay>
         <RequiredGemStonesOverlay>
           {this.renderRequiredGemStones()}
