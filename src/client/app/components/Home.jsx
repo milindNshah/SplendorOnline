@@ -1,5 +1,4 @@
 import React from 'react';
-// import Button from 'react-bootstrap/Button';
 import Button from '../styledcomponents/button.jsx';
 
 class Home extends React.Component {
@@ -24,11 +23,12 @@ class Home extends React.Component {
         <h2>A resource-based card-building game</h2>
         <Button
           onClick={this.onCreateRoom}
-          backgroundColor={"darkseagreen"}
-          color={"white"}
-          borderRadius={"5px"}
+          hoverColor={"#28a745"}
         >Create Game</Button>
-        {/* <Button variant="success" onClick={this.onJoinRoom}>Join Game</Button> */}
+        <Button
+          onClick={this.onJoinRoom}
+          hoverColor={"#17a2b8"}
+        >Join Game</Button>
       </div>
     );
   }
