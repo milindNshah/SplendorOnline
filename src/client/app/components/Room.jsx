@@ -1,7 +1,8 @@
 import React from 'react'
-import { socket } from '../socket'
 import Button from '../styledcomponents/button.jsx'
 import Input from '../styledcomponents/input.jsx'
+import WaitingRoom from './WaitingRoom.jsx';
+import { socket } from '../socket'
 
 const UserNameError = 'User name cannot be empty and may only contain alphanumeric symbols'
 const RoomCodeError = 'Room Code must be a 4 character alphanumeric code'
@@ -14,11 +15,11 @@ class Room extends React.Component {
       isJoinRoom: this.props.location.state.isJoinRoom,
       isCreateRoom: this.props.location.state.isCreateRoom,
       loadWaitingRoom: false,
-      userNameInput: '',
       playerID: null,
       roomCode: null,
       roomCodeInput: '',
       serverError: null,
+      userNameInput: '',
     }
     this.socket = socket
     this.onClientRequestError = this.onClientRequestError.bind(this)
@@ -26,8 +27,8 @@ class Room extends React.Component {
     this.onFormChange = this.onFormChange.bind(this)
     this.onJoinRoom = this.onJoinRoom.bind(this)
     this.onLoadWaitingRoom = this.onLoadWaitingRoom.bind(this);
-    this.renderJoinRoom = this.renderJoinRoom.bind(this)
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
+    this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
 
   componentDidMount() {
@@ -55,21 +56,23 @@ class Room extends React.Component {
   }
 
   onCreateRoom() {
-    if(!this.checkUserNameIsValid(this.state.userNameInput)) {
-      this.setState({invalidInputError: UserNameError})
+    if (!this.checkUserNameIsValid(this.state.userNameInput)) {
+      this.setState({ invalidInputError: UserNameError })
+      return;
     }
     this.socket.emit('CreateNewRoom', this.state.userNameInput);
   }
 
   onJoinRoom() {
-    if(!this.checkUserNameIsValid(this.state.userNameInput)) {
-      this.setState({invalidInputError: UserNameError})
+    if (!this.checkUserNameIsValid(this.state.userNameInput)) {
+      this.setState({ invalidInputError: UserNameError })
+      return;
     }
-    if(!this.checkRoomCodeIsValid(this.state.roomCodeInput)) {
-      this.setState({invalidInputError: RoomCodeError})
+    if (!this.checkRoomCodeIsValid(this.state.roomCodeInput)) {
+      this.setState({ invalidInputError: RoomCodeError })
+      return;
     }
-    console.log('clicked join room');
-    // this.socket.emit('joinRoom', { userName: this.state.userName, roomCode: this.state.roomCode })
+    this.socket.emit('JoinRoom', { userName: this.state.userNameInput, roomCode: this.state.roomCodeInput })
   }
 
   checkUserNameIsValid(newUserName) {
@@ -125,7 +128,7 @@ class Room extends React.Component {
         />
         <Button
           type="button"
-          color={"#28a745"}
+          color= "#28a745"
           disabled={this.state.invalidInputError}
           onClick={this.onCreateRoom}>
           Create Game
@@ -157,7 +160,7 @@ class Room extends React.Component {
         />
         <Button
           type="button"
-          color={"#17a2b8"}
+          color= "#17a2b8"
           disabled={this.state.invalidInputError}
           onClick={this.onJoinRoom}>
           Join Game
@@ -173,17 +176,22 @@ class Room extends React.Component {
         : null
     );
     const ServerError = () => (
-      this.state.serverError
-        ? <p>Server Error: {this.state.serverError}</p>
+      (this.state.serverError && !this.state.invalidInputError)
+        ? <p>Server Error: {this.state.serverError.message}</p>
         : null
     );
 
     return (
       <div>
-        {this.state.isJoinRoom ? this.renderJoinRoom() : null}
-        {this.state.isCreateRoom ? this.renderCreateRoom() : null}
-        <InvalidInputError />
-        <ServerError/>
+        {this.state.loadWaitingRoom
+        ? <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
+        : <div>
+          {this.state.isJoinRoom ? this.renderJoinRoom() : null}
+          {this.state.isCreateRoom ? this.renderCreateRoom() : null}
+          <InvalidInputError />
+          <ServerError />
+        </div>
+        }
       </div>
     )
   }

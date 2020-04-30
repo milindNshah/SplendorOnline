@@ -13,7 +13,8 @@ const Button = styled.button`
   font-size: ${ props => props.fontSize ?? "1rem" };
   font-weight: 400;
   line-height: 1.5rem;
-  opacity: 0.7;
+  margin-top: 0.5rem;
+  opacity: 1;
   outline: none;
   padding: 0.25rem 1rem;
   position: relative;

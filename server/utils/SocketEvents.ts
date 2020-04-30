@@ -31,7 +31,7 @@ export class SocketEvents {
       }
     });
 
-    socket.on('joinRoom', async function (data: JoinRoomParams) {
+    socket.on('JoinRoom', async function (data: JoinRoomParams) {
       try {
         const playerRoom: PlayerRoom = await RoomService.joinRoom(
           data.roomCode,
@@ -42,17 +42,17 @@ export class SocketEvents {
         const player: Player = playerRoom.player;
 
         socket.join(room.code);
-        io.to(socket.id).emit("allowNavigateToRoom", { playerID: player.id, roomCode: room.code });
+        io.to(socket.id).emit("LoadWaitingRoom", { playerID: player.id, roomCode: room.code });
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
     });
 
-    socket.on('requestRoomUpdate', async function (roomCode: string) {
+    socket.on('RequestRoomUpdate', async function (roomCode: string) {
       try {
         const room: Room = await RoomManager.getRoomByCode(roomCode);
         socket.join(room.code);
-        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -66,7 +66,7 @@ export class SocketEvents {
           throw new InvalidInputError(`Player with ID: ${data.playerID} doesn't exist`);
         }
         player.toggleIsReady(data.isPlayerReady);
-        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -82,7 +82,7 @@ export class SocketEvents {
 
         await RoomManager.removePlayerFromRoom(room, player);
         socket.leave(room.code);
-        io.sockets.in(room.code).emit("updateRoom", serialize(room));
+        io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
         await PlayerManager.removePlayer(player);
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
@@ -162,7 +162,7 @@ export class SocketEvents {
         // TODO: Need to add extra functionality if player disconnects from game.
         const modifiedRooms: Room[] = await RoomManager.removePlayerFromRooms(player);
         modifiedRooms.forEach((room) => {
-          io.sockets.in(room.code).emit("updateRoom", serialize(room));
+          io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
         });
         await PlayerManager.removePlayer(player);
       } catch (err) {
