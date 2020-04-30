@@ -8,7 +8,7 @@ import Room from './components/Room.jsx'
 
 WebFont.load({
   google: {
-    families: ['Raleway:300,400', 'sans-serif']
+    families: ['Raleway:300,400', 'Roboto Slab:400', 'sans-serif']
   }
 })
 

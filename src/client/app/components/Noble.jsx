@@ -2,7 +2,7 @@ import React from 'react';
 import styled from "styled-components"
 import { getColorFromGemStone } from '../enums/gemstones.js';
 
-const Noble = styled.div`
+const NobleContainer = styled.div`
   background: black;
   position: relative;
   /* From CardComponent.jsx */
@@ -10,6 +10,7 @@ const Noble = styled.div`
   height: 90px;
   border: 2px solid white;
   border-radius: 5px;
+  font-family: Roboto Slab;
 `;
 
 const ScoreOverlay = styled.div`
@@ -19,6 +20,7 @@ const ScoreOverlay = styled.div`
   display: flex;
   color: white;
   padding: 0 0.5rem;
+  font-size: 1.5rem;
 `;
 
 const RequiredCardsOverlay = styled.div`
@@ -47,7 +49,7 @@ const RequiredCard = styled.div`
 `;
 
 const Card = styled.div`
-  background: black;
+  background: ${ props => props.type ? getColorFromGemStone(props.type) : "black"};
   /*Ratio of 3:4*/
   width: 0.6rem;
   height: 0.8rem;
@@ -56,12 +58,12 @@ const Card = styled.div`
 `;
 
 const Amount = styled.span`
-  font-size: ${ props => props.fontSize ?? "0.75rem"};
+  font-size: ${ props => props.fontSize ?? "0.9rem"};
   color: ${ props => props.color ?? "white" };
   padding-right: 0.2rem;
 `;
 
-class NobleComponent extends React.Component{
+class Noble extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
@@ -73,33 +75,33 @@ class NobleComponent extends React.Component{
   }
 
   renderRequiredCards() {
-    return Array.from(this.state.requiredCards.keys())
-      .map((key) => this.renderRequiredCard(key, this.state.requiredCards.get(key)))
+    return Object.keys(this.state.requiredCards)
+      .map((key) => this.renderRequiredCard(key, this.state.requiredCards[key]))
   }
 
   renderRequiredCard(type, amount) {
     return (
-    <RequiredCard>
+    <RequiredCard key={type}>
       <Amount>{amount}</Amount>
-      <Card key={type} type={type}/>
+      <Card type={type}/>
     </RequiredCard>
     )
   }
 
   render() {
     return (
-      <Noble>
+      <NobleContainer>
         <Svg xmlns="http://www.w3.org/2000/svg">
           {/* TODO: Make Line it's own component (svg) and use width/height to generate it */}
-          <Line x1="1.5rem" y1="0.25rem" x2="1.5rem" y2="80"/>
+          <Line x1="1.7rem" y1="5" x2="1.7rem" y2="85"/>
         </Svg>
         <ScoreOverlay>{this.state.pointValue}</ScoreOverlay>
         <RequiredCardsOverlay>
           {this.renderRequiredCards()}
         </RequiredCardsOverlay>
-      </Noble>
+      </NobleContainer>
     )
   }
 }
 
-export default NobleComponent
+export default Noble

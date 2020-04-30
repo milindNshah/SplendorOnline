@@ -7,11 +7,11 @@ const Path = styled.path`
   stroke-width: ${ props => props.strokeWidth ?? 5};
   stroke-opacity: ${ props => props.strokeOpacity ?? 1};
   fill: ${ props => props.fill ? getColorFromGemStone(props.type) :  null};
-  fill-opacity: ${ props => props.fill ?? 0};
+  /* fill-opacity: ${ props => props.fill ?? 0}; */
 `;
 
 const Amount = styled.span`
-  font-size: ${ props => props.fontSize ?? "0.75rem"};
+  font-size: ${ props => props.fontSize ?? "0.9rem"};
   color: ${ props => props.color ?? "white" };
   padding-right: 0.2rem;
 `;
@@ -70,15 +70,20 @@ const Sapphire = (props) => {
   )
 }
 
-export const GemStoneComponent = (props) => {
+const GemStoneContainer = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+export const GemStoneBase = (props) => {
   const GetGemStone = (props) => {
     const { amount } = props;
     if (amount) {
       return (
-        <div>
+        <GemStoneContainer>
           <Amount>{amount}</Amount>
           {GetSoloGemStone(props)}
-        </div>
+        </GemStoneContainer>
       );
     }
     return GetSoloGemStone(props);

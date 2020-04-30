@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import Board  from './Board.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
 import { GemStone } from '../enums/gemstones';
@@ -40,13 +41,13 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
-    this.socket.on('updateGame', this.onGameUpdate);
+    this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
-    this.socket.emit('requestGameUpdate', this.state.gameID);
+    this.socket.emit('RequestGameUpdate', this.state.gameID);
   }
 
   componentWillUnmount() {
-    this.socket.off('updateGame', this.onGameUpdate);
+    this.socket.off('UpdateGame', this.onGameUpdate);
     this.socket.off('ClientRequestError', this.onClientRequestError);
   }
 
@@ -206,12 +207,13 @@ class Game extends React.Component {
         {/* <p>Player: {this.state.player.user?.name}</p>
         <p>My Score: {this.state.player.hand?.score}</p> */}
         <TurnDiv/>
-        <TakeGemsButton/>
+        <Board board={this.state.board}/>
+        {/* <TakeGemsButton/>
         <ReserveActiveCardButton/>
         <ReserveDeckCardButton/>
         <PurchaseActiveCardButton/>
         <PurchaseReservedCardButton/>
-        <EndTurnButton/>
+        <EndTurnButton/> */}
         <p>Winner: {this.state.winner?.user?.name}</p>
         <ErrorMessage/>
       </div>

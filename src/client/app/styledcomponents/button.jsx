@@ -9,7 +9,7 @@ const Button = styled.button`
   cursor: pointer;
   display: inline-block;
   height: ${props => props.height ? props.width : "auto"};
-  font-family: 'Raleway', helvetica, sans-serif;
+  font-family: ${ props => (props.fontFamily || 'Raleway'), "helvetica", "sans-serif"};
   font-size: ${ props => props.fontSize ?? "1rem" };
   font-weight: 400;
   line-height: 1.5rem;

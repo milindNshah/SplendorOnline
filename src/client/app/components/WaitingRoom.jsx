@@ -34,6 +34,10 @@ const Col = styled.div`
   justify-content: center;
 `
 
+const CopiedCodeDialog = function() {
+  return (<p>Copied to clipboard!</p>)
+}
+
 class WaitingRoom extends React.Component {
   constructor (props) {
     super(props)
@@ -221,7 +225,6 @@ class WaitingRoom extends React.Component {
   }
 
   render() {
-    const CopiedCodeDialog = () => (<div>Copied to clipboard!</div>)
     const InvalidInputError = () => (
       this.state.invalidInputError
         ? <div>Invalid Input: {this.state.invalidInputError}</div>
@@ -239,7 +242,8 @@ class WaitingRoom extends React.Component {
           <p>Room Code</p>
           <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
             <Button
-              color="#17a2b8">
+              color="#17a2b8"
+              fontFamily = "Roboto Slab">
               {this.state.roomCode}
               <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
             </Button>
@@ -257,7 +261,6 @@ class WaitingRoom extends React.Component {
         <div>
           {this.renderPlayerButton()}
           {this.canStartGame() ? "True" : "False"}
-          {/* {this.renderUnableStartGameReason()} */}
         </div>
         <div>
           <Button

@@ -8,7 +8,6 @@ const Input = styled.input.attrs(props => ({
   border-radius: 0.25rem;
   color: ${props => props.color || "black"};
   display: block;
-  font-family: 'Raleway', helvetica, sans-serif;
   font-size: ${ props => props.fontSize ?? "1rem" };
   font-weight: 400;
   line-height: 1.5rem;

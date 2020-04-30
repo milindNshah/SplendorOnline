@@ -18,7 +18,7 @@ export const CardGemStone = {
 
 const GemStoneToColor = {
   CHOCOLATE: '#CB6D51',
-  DIAMOND: '#CBE3F0',
+  DIAMOND: 'white',
   GOLD: '#FFD700',
   EMERALD: 'green',
   RUBY: 'red',

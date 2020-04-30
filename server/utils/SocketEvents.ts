@@ -105,10 +105,10 @@ export class SocketEvents {
       }
     })
 
-    socket.on('requestGameUpdate', async function (gameID: string) {
+    socket.on('RequestGameUpdate', async function (gameID: string) {
       try {
         const game: Game = await GameManager.getGameByID(gameID);
-        io.to(socket.id).emit("updateGame", serialize(game));
+        io.to(socket.id).emit("UpdateGame", serialize(game));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }
@@ -145,7 +145,7 @@ export class SocketEvents {
           await game.purchaseActiveCard(card, player);
         }
         game.finishTurn(player);
-        io.sockets.in(room.code).emit("updateGame", serialize(game))
+        io.sockets.in(room.code).emit("UpdateGame", serialize(game))
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }

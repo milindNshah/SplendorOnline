@@ -12,6 +12,7 @@ const Card = styled.div`
   border-radius: 5px;
   display: flex;
   justify-content: center;
+  font-family: "Roboto Slab";
 `;
 
 const CardTitle = styled.div`
@@ -46,7 +47,7 @@ const CardDots = (props) => {
   return dots;
 }
 
-class TierCardComponent extends React.Component {
+class TierCard extends React.Component {
   render() {
     return (
       <Card {...this.props}>
@@ -57,4 +58,4 @@ class TierCardComponent extends React.Component {
   }
 }
 
-export default TierCardComponent;
+export default TierCard;
