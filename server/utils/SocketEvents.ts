@@ -18,14 +18,14 @@ export class SocketEvents {
   static initRoomEvents(socket: SocketIO.Socket): void {
     const io: SocketIO.Server = Socket.getIO();
 
-    socket.on('createNewRoom', async function (userName: string) {
+    socket.on('CreateNewRoom', async function (userName: string) {
       try {
         const playerRoom: PlayerRoom = await RoomService.createNewRoom(userName, socket.id);
         const room: Room = playerRoom.room;
         const player: Player = playerRoom.player;
 
         socket.join(room.code);
-        io.to(socket.id).emit("allowNavigateToRoom", { playerID: player.id, roomCode: room.code });
+        io.to(socket.id).emit("LoadWaitingRoom", { playerID: player.id, roomCode: room.code });
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }

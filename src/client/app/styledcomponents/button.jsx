@@ -3,9 +3,9 @@ import styled from "styled-components";
 const Button = styled.button`
   appearance: none;
   background-color: white;
-  border: 1px solid ${ props => props.hoverColor ?? "black" };
+  border: 1px solid ${ props => props.color ?? "black" };
   border-radius: 0.25rem;
-  color: ${ props => props.hoverColor ?? "black"};
+  color: ${ props => props.color ?? "black"};
   cursor: pointer;
   display: inline-block;
   height: ${props => props.height ? props.width : "auto"};
@@ -15,7 +15,7 @@ const Button = styled.button`
   line-height: 1.5rem;
   opacity: 0.7;
   outline: none;
-  padding: 0.25em 1em;
+  padding: 0.25rem 1rem;
   position: relative;
   text-align: center;
   user-select: none;
@@ -29,7 +29,7 @@ const Button = styled.button`
   }
 
   &:hover {
-    background-color: ${ props => props.hoverColor ?? "black" };
+    background-color: ${ props => props.color ?? "black" };
     opacity: 1;
     color: white;
   }

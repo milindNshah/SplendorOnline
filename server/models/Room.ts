@@ -107,7 +107,7 @@ export class Room {
     return this;
   }
 
-  // Keep in sync with RoomComponent.jsx->canStartGame() on Client.
+  // Keep in sync with WaitingRoom.jsx->canStartGame() on Client.
   canStartGame(): boolean {
     const allPlayersReady: boolean = Array.from(this.players.values())
       .map((player: Player) => {

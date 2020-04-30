@@ -1,6 +1,6 @@
 import React from 'react';
 import GameComponent from './GameComponent.jsx';
-import RoomComponent from './RoomComponent.jsx';
+import WaitingRoom from './WaitingRoom.jsx';
 import { socket } from '../socket';
 
 class RoomGame extends React.Component {
@@ -42,7 +42,7 @@ class RoomGame extends React.Component {
       <div>
         {this.state.gameStarted
           ? <GameComponent {...this.props} gameID={this.state.gameID} playerID={this.state.playerID} targetScore={this.state.targetScore}/>
-          : <RoomComponent {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
+          : <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
         }
       </div>
     )

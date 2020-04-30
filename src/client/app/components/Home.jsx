@@ -9,11 +9,11 @@ class Home extends React.Component {
   }
 
   onCreateRoom() {
-    this.props.history.push('/room');
+    this.props.history.push('/room', {isCreateRoom: true});
   }
 
   onJoinRoom() {
-    this.props.history.push('/room');
+    this.props.history.push('/room', {isJoinRoom: true});
   }
 
   render() {
@@ -21,14 +21,12 @@ class Home extends React.Component {
       <div>
         <h1>Welcome to Splendor Online</h1>
         <h2>A resource-based card-building game</h2>
-        <Button
-          onClick={this.onCreateRoom}
-          hoverColor={"#28a745"}
-        >Create Game</Button>
-        <Button
-          onClick={this.onJoinRoom}
-          hoverColor={"#17a2b8"}
-        >Join Game</Button>
+        <Button onClick={this.onCreateRoom} color={"#28a745"}>
+          Create Game
+        </Button>
+        <Button onClick={this.onJoinRoom} color={"#17a2b8"}>
+          Join Game
+        </Button>
       </div>
     );
   }
