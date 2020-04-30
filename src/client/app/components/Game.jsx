@@ -6,7 +6,7 @@ import { GemStone } from '../enums/gemstones';
 import { ActionType } from '../enums/actiontype';
 import { CardTier } from '../enums/cardtier';
 
-class GameComponent extends React.Component {
+class Game extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -201,11 +201,10 @@ class GameComponent extends React.Component {
 
     return (
       <div>
-        <h1>This is the Game Component</h1>
         <p>TargetScore: {this.state.targetScore}</p>
-        <p>GameTurn: {this.state.gameTurn}</p>
-        <p>Player: {this.state.player.user?.name}</p>
-        <p>My Score: {this.state.player.hand?.score}</p>
+        <p>Turn: {this.state.gameTurn}</p>
+        {/* <p>Player: {this.state.player.user?.name}</p>
+        <p>My Score: {this.state.player.hand?.score}</p> */}
         <TurnDiv/>
         <TakeGemsButton/>
         <ReserveActiveCardButton/>
@@ -220,4 +219,4 @@ class GameComponent extends React.Component {
   }
 }
 
-export default GameComponent;
+export default Game;

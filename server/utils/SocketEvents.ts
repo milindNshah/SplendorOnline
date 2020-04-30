@@ -58,7 +58,7 @@ export class SocketEvents {
       }
     });
 
-    socket.on('playerReady', async function (data: ReadyRoomParams) {
+    socket.on('PlayerReady', async function (data: ReadyRoomParams) {
       try {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
@@ -72,7 +72,7 @@ export class SocketEvents {
       }
     });
 
-    socket.on('leftRoom', async function (data: LeaveRoomParams) {
+    socket.on('LeftRoom', async function (data: LeaveRoomParams) {
       try {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
@@ -89,7 +89,7 @@ export class SocketEvents {
       }
     })
 
-    socket.on('startNewGame', async function (roomCode: string) {
+    socket.on('StartNewGame', async function (roomCode: string) {
       try {
         const room: Room = await RoomManager.getRoomByCode(roomCode);
         const canStartGame: boolean = room.canStartGame();
@@ -97,9 +97,8 @@ export class SocketEvents {
           throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
         const game: Game = await GameService.createNewGame(room);
-        io.sockets.in(room.code).emit("gameStarted", {
+        io.sockets.in(room.code).emit("GameStarted", {
           gameID: game.id,
-          targetScore: game.targetScore
         });
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);

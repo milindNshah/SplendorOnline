@@ -43,7 +43,6 @@ class WaitingRoom extends React.Component {
       player: {},
       playerID: this.props.playerID,
       players: [{}],
-      pressedStartGame: false,
       roomCode: this.props.roomCode,
       serverError: null,
     }
@@ -61,7 +60,6 @@ class WaitingRoom extends React.Component {
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
     this.renderPlayerRow = this.renderPlayerRow.bind(this);
     this.renderPlayerButton = this.renderPlayerButton.bind(this);
-    this.renderUnableStartGameReason = this.renderUnableStartGameReason.bind(this);
   }
 
   componentDidMount() {
@@ -89,7 +87,7 @@ class WaitingRoom extends React.Component {
     this.setState({
       players: players,
       player: currentPlayer,
-      pressedStartGame: false,
+      invalidInputError: null,
     });
   }
 
@@ -146,7 +144,7 @@ class WaitingRoom extends React.Component {
   }
 
   onReady() {
-    this.socket.emit('playerReady', {
+    this.socket.emit('PlayerReady', {
       roomCode: this.state.roomCode,
       playerID: this.state.playerID,
       isPlayerReady: true,
@@ -154,7 +152,7 @@ class WaitingRoom extends React.Component {
   }
 
   onUnReady() {
-    this.socket.emit('playerReady', {
+    this.socket.emit('PlayerReady', {
       roomCode: this.state.roomCode,
       playerID: this.state.playerID,
       isPlayerReady: false,
@@ -162,10 +160,27 @@ class WaitingRoom extends React.Component {
   }
 
   onStartGame() {
+    let message;
+    const areAllPlayersReady = this.areAllPlayersReady();
+
+    if (this.state.players.size < 2) {
+      message = (<span>Need atleast 2 players to start a game</span>)
+    } else if (this.state.players.size > 4) {
+      message = (<span>A room can only have at most 4 players</span>)
+    } else if (!areAllPlayersReady) {
+      message = (<span>All players must be ready</span>)
+    } else {
+      message = null
+    }
     this.setState({
-      pressedStartGame: true,
+      invalidInputError: message,
     })
-    this.socket.emit('startNewGame', this.state.roomCode);
+
+    if(message || this.state.invalidInputError) {
+      // TODO: Investigate - strange error when this if statement is not here.
+      return;
+    }
+    this.socket.emit('StartNewGame', this.state.roomCode);
   }
 
   renderPlayerButton() {
@@ -197,29 +212,8 @@ class WaitingRoom extends React.Component {
     return allPlayersReady && this.state.players.size >= 2 && this.state.players.size <= 4;
   }
 
-  renderUnableStartGameReason() {
-    if (!this.state.pressedStartGame) {
-      return null;
-    }
-    let message;
-    const areAllPlayersReady = this.areAllPlayersReady();
-
-    if (this.state.players.size < 2) {
-      message = (<div>Need atleast 2 players to start a game</div>)
-    } else if (this.state.players.size > 4) {
-      message = (<div>A room can only have at most 4 players</div>)
-    } else if (!areAllPlayersReady) {
-      message = (<div>All players must be ready</div>)
-    } else {
-      message = null
-    }
-    this.setState({
-      invalidInputError: message,
-    })
-  }
-
   onLeaveRoom() {
-    this.socket.emit('leftRoom', {
+    this.socket.emit('LeftRoom', {
       roomCode: this.state.roomCode,
       playerID: this.state.playerID,
     });
@@ -230,7 +224,7 @@ class WaitingRoom extends React.Component {
     const CopiedCodeDialog = () => (<div>Copied to clipboard!</div>)
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <p>Invalid Input: {this.state.invalidInputError}</p>
+        ? <div>Invalid Input: {this.state.invalidInputError}</div>
         : null
     );
     const ServerError = () => (
@@ -263,7 +257,7 @@ class WaitingRoom extends React.Component {
         <div>
           {this.renderPlayerButton()}
           {this.canStartGame() ? "True" : "False"}
-          {this.renderUnableStartGameReason()}
+          {/* {this.renderUnableStartGameReason()} */}
         </div>
         <div>
           <Button

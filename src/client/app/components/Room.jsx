@@ -1,6 +1,7 @@
 import React from 'react'
 import Button from '../styledcomponents/button.jsx'
 import Input from '../styledcomponents/input.jsx'
+import Game from './Game.jsx';
 import WaitingRoom from './WaitingRoom.jsx';
 import { socket } from '../socket'
 
@@ -14,6 +15,8 @@ class Room extends React.Component {
       invalidInputError: null,
       isJoinRoom: this.props.location.state.isJoinRoom,
       isCreateRoom: this.props.location.state.isCreateRoom,
+      gameID: null,
+      gameStarted: false,
       loadWaitingRoom: false,
       playerID: null,
       roomCode: null,
@@ -26,19 +29,28 @@ class Room extends React.Component {
     this.onCreateRoom = this.onCreateRoom.bind(this)
     this.onFormChange = this.onFormChange.bind(this)
     this.onJoinRoom = this.onJoinRoom.bind(this)
-    this.onLoadWaitingRoom = this.onLoadWaitingRoom.bind(this);
+    this.onGameStart = this.onGameStart.bind(this)
+    this.onLoadWaitingRoom = this.onLoadWaitingRoom.bind(this)
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
 
   componentDidMount() {
-    this.socket.on('LoadWaitingRoom', this.onLoadWaitingRoom);
     this.socket.on('ClientRequestError', this.onClientRequestError);
+    this.socket.on('LoadWaitingRoom', this.onLoadWaitingRoom);
+    this.socket.on('GameStarted', this.onGameStart);
   }
 
   componentWillUnmount() {
-    this.socket.off('LoadWaitingRoom', this.onLoadWaitingRoom);
     this.socket.off('ClientRequestError', this.onClientRequestError);
+    this.socket.off('LoadWaitingRoom', this.onLoadWaitingRoom);
+    this.socket.off('GameStarted', this.onGameStart);
+  }
+
+  onClientRequestError(err) {
+    this.setState({
+      serverError: err,
+    })
   }
 
   onLoadWaitingRoom(data) {
@@ -49,9 +61,10 @@ class Room extends React.Component {
     })
   }
 
-  onClientRequestError(err) {
+  onGameStart(data) {
     this.setState({
-      serverError: err,
+      gameStarted: true,
+      gameID: data.gameID,
     })
   }
 
@@ -128,7 +141,7 @@ class Room extends React.Component {
         />
         <Button
           type="button"
-          color= "#28a745"
+          color="#28a745"
           disabled={this.state.invalidInputError}
           onClick={this.onCreateRoom}>
           Create Game
@@ -160,7 +173,7 @@ class Room extends React.Component {
         />
         <Button
           type="button"
-          color= "#17a2b8"
+          color="#17a2b8"
           disabled={this.state.invalidInputError}
           onClick={this.onJoinRoom}>
           Join Game
@@ -183,14 +196,16 @@ class Room extends React.Component {
 
     return (
       <div>
-        {this.state.loadWaitingRoom
-        ? <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
-        : <div>
-          {this.state.isJoinRoom ? this.renderJoinRoom() : null}
-          {this.state.isCreateRoom ? this.renderCreateRoom() : null}
-          <InvalidInputError />
-          <ServerError />
-        </div>
+        {this.state.gameStarted
+          ? <Game gameID={this.state.gameID} playerID={this.state.playerID} />
+          : this.state.loadWaitingRoom
+            ? <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
+            : <div>
+              {this.state.isJoinRoom ? this.renderJoinRoom() : null}
+              {this.state.isCreateRoom ? this.renderCreateRoom() : null}
+              <InvalidInputError />
+              <ServerError />
+            </div>
         }
       </div>
     )
