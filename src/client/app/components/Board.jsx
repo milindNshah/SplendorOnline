@@ -5,6 +5,25 @@ import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 import TierCard from './TierCard.jsx'
 
+const Table = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  min-width: 600px;
+`
+const Row = styled.div`
+  margin: 0.25rem 0rem;
+  display: flex;
+  justify-content: space-evenly;
+`
+const GemRow = styled(Row)`
+  justify-content: center;
+`
+const Col = styled.div`
+  display: flex;
+  margin: 0rem 0.5rem;
+`
+
 class Board extends React.Component {
   constructor(props) {
     super(props)
@@ -31,24 +50,26 @@ class Board extends React.Component {
     if(!this.state.board.availableGemStones) {
       return;
     }
-    return Object.keys(this.state.board.availableGemStones)
+    const tokens = Object.keys(this.state.board.availableGemStones)
       .map((gemstone) => this.renderGemStoneToken(gemstone, this.state.board.availableGemStones[gemstone]))
+    return (<GemRow>{tokens}</GemRow>)
   }
 
   renderGemStoneToken(gemStone, amount) {
-    return (<GemStoneToken key={gemStone} type={gemStone} amount={amount}/>)
+    return (<Col key={gemStone}><GemStoneToken type={gemStone} amount={amount}/></Col>)
   }
 
   renderNobles() {
     if(!this.state.board.activeNobles) {
       return;
     }
-    return Object.values(this.state.board.activeNobles)
+    const nobles = Object.values(this.state.board.activeNobles)
       .map((noble) => this.renderNoble(noble))
+    return (<Row>{nobles}</Row>)
   }
 
   renderNoble(noble) {
-    return (<Noble key={noble.id} noble={noble}/>)
+    return (<Col key={noble.id}><Noble noble={noble}/></Col>)
   }
 
   renderTieredCards() {
@@ -63,24 +84,26 @@ class Board extends React.Component {
     const tierCard = this.renderTierCard(tier);
     const mainCards = Object.values(cardsByTier)
       .map((card) => this.renderCard(card))
-    return [tierCard, ...mainCards];
+    const cards = [tierCard, ...mainCards];
+    return (<Row key={tier}>{cards}</Row>)
   }
 
   renderCard(card) {
-    return (<Card key={card.id} card={card}/>)
+    return (<Col key={card.id}><Card card={card}/></Col>)
   }
 
   renderTierCard(tier) {
-    return (<TierCard tier={tier} key={tier}/>)
+    return (<Col key={tier}><TierCard tier={tier}/></Col>)
   }
 
   render() {
     return (
       <div>
-        <div>Board</div>
+        <Table>
         {this.renderGemStoneTokens()}
         {this.renderNobles()}
         {this.renderTieredCards()}
+        </Table>
       </div>
     )
   }

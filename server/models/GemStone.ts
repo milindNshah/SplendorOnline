@@ -1,17 +1,17 @@
 /* Should be kept in sync with GemStone.js on client */
 export enum GemStone {
-  CHOCOLATE= 'chocolate',
   DIAMOND = 'diamond',
-  GOLD = 'gold',
+  SAPPHIRE = 'sapphire',
   EMERALD = 'emerald',
   RUBY = 'ruby',
-  SAPPHIRE = 'sapphire',
+  CHOCOLATE = 'chocolate',
+  GOLD = 'gold',
 }
 
 export enum CardGemStone {
-  CHOCOLATE = 'chocolate',
   DIAMOND = 'diamond',
+  SAPPHIRE = 'sapphire',
   EMERALD = 'emerald',
   RUBY = 'ruby',
-  SAPPHIRE = 'sapphire',
+  CHOCOLATE = 'chocolate',
 }

@@ -1,28 +1,28 @@
 /* Should be kept in sync with GemStone.ts on server */
 export const GemStone = {
-  CHOCOLATE: 'chocolate',
   DIAMOND: 'diamond',
-  GOLD: 'gold',
+  SAPPHIRE: 'sapphire',
   EMERALD: 'emerald',
   RUBY: 'ruby',
-  SAPPHIRE: 'sapphire',
+  CHOCOLATE: 'chocolate',
+  GOLD: 'gold',
 }
 
 export const CardGemStone = {
-  CHOCOLATE: 'chocolate',
   DIAMOND: 'diamond',
+  SAPPHIRE: 'sapphire',
   EMERALD: 'emerald',
   RUBY: 'ruby',
-  SAPPHIRE: 'sapphire',
+  CHOCOLATE: 'chocolate',
 }
 
 const GemStoneToColor = {
-  CHOCOLATE: '#CB6D51',
   DIAMOND: 'white',
-  GOLD: '#FFD700',
+  SAPPHIRE: 'blue',
   EMERALD: 'green',
   RUBY: 'red',
-  SAPPHIRE: 'blue',
+  CHOCOLATE: '#CB6D51',
+  GOLD: '#FFD700',
 }
 
 export function getColorFromGemStone(gemStone) {
