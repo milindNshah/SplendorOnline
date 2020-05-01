@@ -5,37 +5,59 @@ import styled from "styled-components";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
+import theme from '../styledcomponents/theme.jsx'
+
+const WaitingRoomContainer = styled.div`
+  margin-top: 10rem;
+  text-align: center;
+`
+const PlayerTableContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5rem;
+`
 
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
+const CopiedCode = styled.p`
+  color: ${ props => props.theme.color.secondary};
+`
+
 const Ready = styled.span`
-  color: ${ props => props.isready ? "#28a745" : "red"};
+  color: ${ props => props.isready
+    ? props.theme.color.primary
+    : props.theme.color.error};
 `
 const Host = styled.span`
-  color: #17a2b8;
+  color: ${ props => props.theme.color.secondary};
 `
 
 const Table = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  width: 30rem;
+  max-width: 30rem;
 `
 const Row = styled.div`
-  padding: 0.25rem 0;
+  margin: 0.25rem 0;
   display: flex;
+  justify-content: space-evenly;
 `
 const Header = styled(Row)`
-  padding: 0.5rem 0;
+  margin: 0.5rem 0;
+  text-decoration: underline;
 `
 const Col = styled.div`
-  display: flex;
-  flex: 1;
   justify-content: center;
+  width: 4rem;
+`
+const NameCol = styled(Col)`
+  width: 22rem;
 `
 
-const CopiedCodeDialog = function() {
-  return (<p>Copied to clipboard!</p>)
+const CopiedCodeDialog = function () {
+  return (<CopiedCode>Copied to clipboard!</CopiedCode>)
 }
 
 class WaitingRoom extends React.Component {
@@ -53,7 +75,6 @@ class WaitingRoom extends React.Component {
 
     this.socket = socket;
     this.areAllPlayersReady = this.areAllPlayersReady.bind(this);
-    this.canStartGame = this.canStartGame.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this)
     this.onCopyCode = this.onCopyCode.bind(this);
     this.onLeaveRoom = this.onLeaveRoom.bind(this);
@@ -121,7 +142,7 @@ class WaitingRoom extends React.Component {
       <Table>
         <Header>
           <Col>Host</Col>
-          <Col>Name</Col>
+          <NameCol>Name</NameCol>
           <Col>Ready</Col>
         </Header>
         {rows}
@@ -141,7 +162,7 @@ class WaitingRoom extends React.Component {
     return (
       <Row key={player.id}>
         <Col>{isHost}</Col>
-        <Col>{player.user.name}</Col>
+        <NameCol>{player.user.name}</NameCol>
         <Col>{isReady}</Col>
       </Row>
     )
@@ -180,7 +201,7 @@ class WaitingRoom extends React.Component {
       invalidInputError: message,
     })
 
-    if(message || this.state.invalidInputError) {
+    if (message || this.state.invalidInputError) {
       // TODO: Investigate - strange error when this if statement is not here.
       return;
     }
@@ -193,12 +214,12 @@ class WaitingRoom extends React.Component {
     }
 
     const button = this.state.player.isHost
-      ? (<Button color="#28a745" onClick={this.onStartGame}>
+      ? (<Button onClick={this.onStartGame}>
         Start Game
       </Button>)
       : this.state.player.isReady
-        ? (<FilledButton color="#28a745" onClick={this.onUnReady}>Ready</FilledButton>)
-        : (<Button color="#28a745" onClick={this.onReady}>Ready</Button>)
+        ? (<FilledButton onClick={this.onUnReady}>Ready</FilledButton>)
+        : (<Button onClick={this.onReady}>Ready</Button>)
     return button;
   }
 
@@ -210,10 +231,6 @@ class WaitingRoom extends React.Component {
       }).reduce((acc, cur) => {
         return acc && cur
       }, true);
-  }
-  canStartGame() {
-    const allPlayersReady = this.areAllPlayersReady()
-    return allPlayersReady && this.state.players.size >= 2 && this.state.players.size <= 4;
   }
 
   onLeaveRoom() {
@@ -237,13 +254,13 @@ class WaitingRoom extends React.Component {
     );
 
     return (
-      <div>
+      <WaitingRoomContainer>
         <div>
           <p>Room Code</p>
           <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
             <Button
-              color="#17a2b8"
-              fontFamily = "Roboto Slab">
+              color={theme.color.secondary}
+              fontFamily={theme.fontFamily.secondary}>
               {this.state.roomCode}
               <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
             </Button>
@@ -254,24 +271,21 @@ class WaitingRoom extends React.Component {
               : null
           }
         </div>
-        <div>
-          <h1>Player Info</h1>
-          {this.renderPlayerTable()}
-        </div>
+        <h2>Players in Room</h2>
+        <PlayerTableContainer>{this.renderPlayerTable()}</PlayerTableContainer>
         <div>
           {this.renderPlayerButton()}
-          {this.canStartGame() ? "True" : "False"}
         </div>
         <div>
           <Button
-            color="red"
+            color={theme.color.error}
             onClick={this.onLeaveRoom}>
             Leave Room
           </Button>
         </div>
         <InvalidInputError />
         <ServerError />
-      </div>
+      </WaitingRoomContainer>
     );
   }
 }

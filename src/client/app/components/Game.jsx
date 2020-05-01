@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
+import Button from '../styledcomponents/button.jsx'
 import Board  from './Board.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';

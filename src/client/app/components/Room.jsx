@@ -1,12 +1,23 @@
 import React from 'react'
+import styled from 'styled-components'
+import { ThemeProvider } from 'styled-components'
 import Button from '../styledcomponents/button.jsx'
 import Input from '../styledcomponents/input.jsx'
+import theme from '../styledcomponents/theme.jsx'
 import Game from './Game.jsx';
 import WaitingRoom from './WaitingRoom.jsx';
 import { socket } from '../socket'
 
-const UserNameError = 'User name cannot be empty and may only contain alphanumeric symbols'
+const UserNameError = 'User name must be between 1 and 25 characters and may only contain alphanumeric symbols'
 const RoomCodeError = 'Room Code must be a 4 character alphanumeric code'
+
+const RoomContainer = styled.div`
+  margin-top: 10rem;
+  text-align: center;
+`
+const Label = styled.div`
+  margin: 0.5rem 0;
+`
 
 class Room extends React.Component {
   constructor (props) {
@@ -34,6 +45,7 @@ class Room extends React.Component {
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
+  // TODO: Stop form submit from going through (ex. enter button)
 
   componentDidMount() {
     this.socket.on('ClientRequestError', this.onClientRequestError);
@@ -89,7 +101,7 @@ class Room extends React.Component {
   }
 
   checkUserNameIsValid(newUserName) {
-    const regex = /^[a-zA-Z0-9]+$/g;
+    const regex = /^[a-zA-Z0-9]{1,25}$/g;
     return newUserName.match(regex);
   }
 
@@ -130,22 +142,23 @@ class Room extends React.Component {
   renderCreateRoom() {
     return (
       <form noValidate>
-        <label>Enter a username</label>
-        <Input
-          type="text"
-          placeholder="Ex. NormalHuman11"
-          name="userNameInput"
-          onChange={this.onFormChange}
-          value={this.state.userNameInput}
-          hoverColor="#17a2b8"
-        />
-        <Button
-          type="button"
-          color="#28a745"
-          disabled={this.state.invalidInputError}
-          onClick={this.onCreateRoom}>
-          Create Game
+        <Label>Enter your username</Label>
+        <div>
+          <Input
+            type="text"
+            name="userNameInput"
+            onChange={this.onFormChange}
+            value={this.state.userNameInput}
+          />
+        </div>
+        <div>
+          <Button
+            type="button"
+            disabled={this.state.invalidInputError}
+            onClick={this.onCreateRoom}>
+            Create Game
         </Button>
+        </div>
       </form>
     )
   }
@@ -153,31 +166,31 @@ class Room extends React.Component {
   renderJoinRoom() {
     return (
       <form noValidate>
-        <label>Enter a username</label>
-        <Input
-          type="text"
-          placeholder="NormalHuman11"
-          name="userNameInput"
-          onChange={this.onFormChange}
-          value={this.state.userName}
-          hoverColor="#28a745"
-        />
-        <label>Enter the room code</label>
-        <Input
-          type="text"
-          placeholder="X42L"
-          name="roomCodeInput"
-          onChange={this.onFormChange}
-          value={this.state.roomCodeInput}
-          hoverColor="#28a745"
-        />
-        <Button
+        <Label>Enter your username</Label>
+        <div>
+          <Input
+            type="text"
+            name="userNameInput"
+            onChange={this.onFormChange}
+            value={this.state.userNameInput}
+          />
+        </div>
+        <Label>Enter the room code</Label>
+        <div>
+          <Input
+            type="text"
+            name="roomCodeInput"
+            onChange={this.onFormChange}
+            value={this.state.roomCodeInput}
+          />
+        </div>
+        <div><Button
           type="button"
-          color="#17a2b8"
+          color={theme.color.secondary}
           disabled={this.state.invalidInputError}
           onClick={this.onJoinRoom}>
           Join Game
-        </Button>
+        </Button></div>
       </form>
     )
   }
@@ -195,19 +208,19 @@ class Room extends React.Component {
     );
 
     return (
-      <div>
+      <ThemeProvider theme={theme}>
         {this.state.gameStarted
           ? <Game gameID={this.state.gameID} playerID={this.state.playerID} />
           : this.state.loadWaitingRoom
             ? <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
-            : <div>
+            : <RoomContainer>
               {this.state.isJoinRoom ? this.renderJoinRoom() : null}
               {this.state.isCreateRoom ? this.renderCreateRoom() : null}
               <InvalidInputError />
               <ServerError />
-            </div>
+            </RoomContainer>
         }
-      </div>
+      </ThemeProvider>
     )
   }
 }

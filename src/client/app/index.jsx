@@ -16,7 +16,7 @@ import 'font-awesome/css/font-awesome.min.css'
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'Raleway', sans-serif
+    font-family: 'Raleway', helvetica, sans-serif;
   }
 `
 

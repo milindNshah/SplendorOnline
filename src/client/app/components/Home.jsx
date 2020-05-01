@@ -1,5 +1,13 @@
-import React from 'react';
-import Button from '../styledcomponents/button.jsx';
+import React from 'react'
+import styled from 'styled-components'
+import { ThemeProvider } from 'styled-components'
+import theme from '../styledcomponents/theme.jsx'
+import Button from '../styledcomponents/button.jsx'
+
+const HomeContainer = styled.div`
+  margin-top: 10rem;
+  text-align: center;
+`
 
 class Home extends React.Component {
   constructor (props) {
@@ -9,25 +17,31 @@ class Home extends React.Component {
   }
 
   onCreateRoom() {
-    this.props.history.push('/room', {isCreateRoom: true});
+    this.props.history.push('/room', { isCreateRoom: true });
   }
 
   onJoinRoom() {
-    this.props.history.push('/room', {isJoinRoom: true});
+    this.props.history.push('/room', { isJoinRoom: true });
   }
 
   render() {
     return (
-      <div>
-        <h1>Welcome to Splendor Online</h1>
-        <h2>A resource-based card-building game</h2>
-        <Button onClick={this.onCreateRoom} color={"#28a745"}>
-          Create Game
+      <ThemeProvider theme={theme}>
+        <HomeContainer>
+          <h1>Welcome to Splendor Online</h1>
+          <h2>A resource-based card-building game</h2>
+          <div>
+            <Button onClick={this.onCreateRoom}>
+              Create Game
+          </Button>
+          </div>
+          <div>
+            <Button onClick={this.onJoinRoom} color={theme.color.secondary}>
+              Join Game
         </Button>
-        <Button onClick={this.onJoinRoom} color={"#17a2b8"}>
-          Join Game
-        </Button>
-      </div>
+          </div>
+        </HomeContainer>
+      </ThemeProvider>
     );
   }
 }

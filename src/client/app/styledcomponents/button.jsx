@@ -2,18 +2,18 @@ import styled from "styled-components";
 
 const Button = styled.button`
   appearance: none;
-  background-color: white;
-  border: 1px solid ${ props => props.color ?? "black" };
+  background-color: ${ props => props.theme.color.white };
+  border: 1px solid ${ props => props.color ?? props.theme.color.primary };
   border-radius: 0.25rem;
-  color: ${ props => props.color ?? "black"};
+  color: ${ props => props.color ?? props.theme.color.primary };
   cursor: pointer;
   display: inline-block;
-  height: ${props => props.height ? props.width : "auto"};
-  font-family: ${ props => (props.fontFamily || 'Raleway'), "helvetica", "sans-serif"};
-  font-size: ${ props => props.fontSize ?? "1rem" };
+  height: "auto";
+  font-family: ${ props => props.fontFamily ?? props.theme.fontFamily.primary };
+  font-size: ${ props => props.fontSize ?? props.theme.fontSize };
   font-weight: 400;
   line-height: 1.5rem;
-  margin-top: 0.5rem;
+  margin: 0.5rem 0;
   opacity: 1;
   outline: none;
   padding: 0.25rem 1rem;
@@ -22,7 +22,7 @@ const Button = styled.button`
   user-select: none;
   vertical-align: middle;
   white-space: nowrap;
-  width: ${props => props.width ? props.width : "auto"};
+  width: ${props => props.width ?? props.theme.button.width};
 
   &:hover,
   &:focus {
@@ -30,9 +30,8 @@ const Button = styled.button`
   }
 
   &:hover {
-    background-color: ${ props => props.color ?? "black" };
-    opacity: 1;
-    color: white;
+    background-color: ${ props => props.color ?? props.theme.color.primary };
+    color: ${ props => props.theme.color.white };
   }
 `;
 
