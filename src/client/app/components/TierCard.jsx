@@ -14,6 +14,20 @@ const Card = styled.div`
   font-family: ${ props => props.theme.fontFamily.secondary };
 `;
 
+const Remaining = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: ${ props => props.fontSize ?? props.theme.token.fontSize};
+  line-height: ${ props => props.fontSize ?? props.theme.token.fontSize};
+  font-family: ${ props => props.theme.fontFamily.secondary };
+  color: ${ props => props.theme.color.white };
+  text-shadow: -1px 1px 0 black,
+				  1px 1px 0 black,
+				  1px -1px 0 black,
+				  -1px -1px 0 black;
+`
+
 const CardTitle = styled.div`
   color: ${ props => props.theme.color.white };
   position: absolute;
@@ -50,6 +64,7 @@ class TierCard extends React.Component {
   render() {
     return (
       <Card {...this.props}>
+        <Remaining>{this.props.remaining}</Remaining>
         <CardDots {...this.props}></CardDots>
         <CardTitle>Splendor</CardTitle>
       </Card>

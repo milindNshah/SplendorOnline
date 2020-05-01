@@ -5,14 +5,20 @@ import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 import TierCard from './TierCard.jsx'
 
+const BoardContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`
+
 const Table = styled.div`
+  border: 2px solid ${ props => props.theme.color.black };
   display: flex;
   flex-direction: column;
-  width: 600px;
-  min-width: 600px;
+  width: ${ props => props.theme.board.width};
+  min-width: ${ props => props.theme.board.width};
 `
 const Row = styled.div`
-  margin: 0.25rem 0rem;
+  margin: 0.5rem 0rem;
   display: flex;
   justify-content: space-evenly;
 `
@@ -21,7 +27,7 @@ const GemRow = styled(Row)`
 `
 const Col = styled.div`
   display: flex;
-  margin: 0rem 0.5rem;
+  margin: 0rem ${ props => props.theme.board.colLeftRightMargin};
 `
 
 class Board extends React.Component {
@@ -73,16 +79,19 @@ class Board extends React.Component {
   }
 
   renderTieredCards() {
-    if(!this.state.board.activeTieredCards) {
+    if(!this.state.board.activeTieredCards || !this.state.board.remainingTieredCards) {
       return;
     }
     return Object.keys(this.state.board.activeTieredCards)
-      .map((tier) => this.renderCards(tier, this.state.board.activeTieredCards[tier]))
+      .map((tier) => {
+        let remaining = Object.keys(this.state.board.remainingTieredCards[tier]).length;
+        return this.renderCards(tier, remaining, this.state.board.activeTieredCards[tier])
+      })
       .reverse()
   }
 
-  renderCards(tier, cardsByTier) {
-    const tierCard = this.renderTierCard(tier);
+  renderCards(tier, remaining, cardsByTier) {
+    const tierCard = this.renderTierCard(tier, remaining);
     const mainCards = Object.values(cardsByTier)
       .map((card) => this.renderCard(card))
     const cards = [tierCard, ...mainCards];
@@ -93,19 +102,19 @@ class Board extends React.Component {
     return (<Col key={card.id}><Card card={card}/></Col>)
   }
 
-  renderTierCard(tier) {
-    return (<Col key={tier}><TierCard tier={tier}/></Col>)
+  renderTierCard(tier, remaining) {
+    return (<Col key={tier}><TierCard tier={tier} remaining={remaining}/></Col>)
   }
 
   render() {
     return (
-      <div>
+      <BoardContainer>
         <Table>
         {this.renderGemStoneTokens()}
         {this.renderNobles()}
         {this.renderTieredCards()}
         </Table>
-      </div>
+      </BoardContainer>
     )
   }
 }

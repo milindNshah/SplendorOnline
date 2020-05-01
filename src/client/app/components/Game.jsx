@@ -1,42 +1,48 @@
 import React from 'react';
+import styled from 'styled-components'
 import Button from '../styledcomponents/button.jsx'
-import Board  from './Board.jsx';
+import Board from './Board.jsx';
+import Hand from './Hand.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
-import { GemStone } from '../enums/gemstones';
 import { ActionType } from '../enums/actiontype';
-import { CardTier } from '../enums/cardtier';
+
+const GameContainer = styled.div`
+  margin-top: 2.5rem;
+  text-align: center;
+`
+const Scorebox = styled.div`
+  margin-bottom: 3rem;
+`
+const TargetScore = styled.h2`
+  color: ${ props => props.theme.color.error };
+`
+const TurnName = styled.span`
+  color: ${ props => props.theme.color.secondary};
+  font-weight: bold;
+`
 
 class Game extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      gameID: this.props.gameID,
-      playerID: this.props.playerID,
-      errorMessage: null,
-      players: [{}],
-      player: {},
       board: {},
-      targetScore: this.props.targetScore,
-      turnOrder: [],
-      curTurnIndex: 0,
-      gameTurn: 0,
-      winner: {},
       curPlayerTurn: {},
-      gemsTaken: null,
-      reservedActiveCard: null,
-      reservedDeckCardTier: null,
-      purchasedActiveCard: null,
-      purchasedReservedCard: null,
+      curTurnIndex: 0,
+      invalidInputError: null,
+      serverError: null,
+      gameID: this.props.gameID,
+      gameTurn: 0,
+      player: {},
+      playerID: this.props.playerID,
+      players: [{}],
+      targetScore: null,
+      turnOrder: [],
+      winner: {},
     }
     this.socket = socket;
     this.onGameUpdate = this.onGameUpdate.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this);
-    this.onTakeGems = this.onTakeGems.bind(this);
-    this.onReserveActiveCard = this.onReserveActiveCard.bind(this);
-    this.onReserveDeckCard = this.onReserveDeckCard.bind(this);
-    this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this);
-    this.onPurchaseReservedCard = this.onPurchaseReservedCard.bind(this);
     this.onEndTurn = this.onEndTurn.bind(this);
   }
 
@@ -59,85 +65,41 @@ class Game extends React.Component {
     const curPlayerTurn = players.get(game.turnOrder[game.curTurnIndex]);
 
     this.setState({
-      turnOrder: game.turnOrder,
       curTurnIndex: game.curTurnIndex,
       gameTurn: game.gameTurn,
+      targetScore: game.targetScore,
+      turnOrder: game.turnOrder,
       winner: game.winner,
       board: board,
-      players: players,
-      player: player,
       curPlayerTurn: curPlayerTurn,
+      player: player,
+      players: players,
     });
   }
 
   onClientRequestError(err) {
     this.setState({
-      errorMessage: err,
+      serverError: err,
     });
-  }
-
-  onTakeGems() {
-    const gemsTaken = {
-      [GemStone.DIAMOND]: 1,
-      [GemStone.RUBY]: 1,
-      [GemStone.EMERALD]: 1,
-    };
-    this.setState({
-      gemsTaken: gemsTaken,
-    });
-  }
-
-  onReserveActiveCard() {
-    const activeTieredCards = new Map(Object.entries(this.state.board.activeTieredCards))
-    const tier1cards = new Map(Object.entries(activeTieredCards.get(CardTier.TIER1)))
-    const tier1Card = Array.from(tier1cards.values()).pop();
-    this.setState({
-      reservedActiveCard: tier1Card,
-    })
-  }
-
-  onReserveDeckCard() {
-    this.setState({
-      reservedDeckCardTier: CardTier.TIER1
-    })
-  }
-
-  onPurchaseActiveCard() {
-    const activeTieredCards = new Map(Object.entries(this.state.board.activeTieredCards))
-    const tier1cards = new Map(Object.entries(activeTieredCards.get(CardTier.TIER1)))
-    const tier1Card = Array.from(tier1cards.values()).pop();
-    this.setState({
-      purchasedActiveCard: tier1Card,
-    })
-  }
-
-  onPurchaseReservedCard() {
-    const hand = new Map(Object.entries(this.state.player.hand));
-    const reservedCards = new Map(Object.entries(hand.get("reservedCards")));
-    const card = Array.from(reservedCards.values()).pop()
-    this.setState({
-      purchasedReservedCard: card,
-    })
   }
 
   onEndTurn() {
     const actions = {};
-    if(this.state.gemsTaken) {
+    if (this.state.gemsTaken) {
       actions[ActionType.TAKE_GEMS] = this.state.gemsTaken;
     }
-    if(this.state.reservedActiveCard) {
+    if (this.state.reservedActiveCard) {
       actions[ActionType.RESERVE_ACTIVE_CARD] = this.state.reservedActiveCard.id;
     }
-    if(this.state.reservedDeckCardTier) {
+    if (this.state.reservedDeckCardTier) {
       actions[ActionType.RESERVE_DECK_CARD] = this.state.reservedDeckCardTier;
     }
-    if(this.state.purchasedActiveCard) {
+    if (this.state.purchasedActiveCard) {
       actions[ActionType.PURCHASE_ACTIVE_CARD] = this.state.purchasedActiveCard.id;
     }
-    if(this.state.purchasedReservedCard) {
+    if (this.state.purchasedReservedCard) {
       actions[ActionType.PURCHASE_RESERVED_CARD] = this.state.purchasedReservedCard.id;
     }
-    console.log(actions);
 
     this.socket.emit("endTurn", {
       actions: actions,
@@ -154,69 +116,33 @@ class Game extends React.Component {
   }
 
   render() {
-    const ErrorMessage = () => (this.state.errorMessage
-      ? <div>{this.state.errorMessage.name}: {this.state.errorMessage.message}</div>
-      : null
+    const InvalidInputError = () => (
+      this.state.invalidInputError
+        ? <p>Invalid Input: {this.state.invalidInputError}</p>
+        : null
+    );
+    const ServerError = () => (
+      (this.state.serverError && !this.state.invalidInputError)
+        ? <p>Server Error: {this.state.serverError.message}</p>
+        : null
     );
 
-    const TurnDiv = () => (this.state.curPlayerTurn.id === this.state.playerID
-      ? <p>It is your turn!</p>
-    : <p>It is Player {this.state.curPlayerTurn.user?.name}'s turn</p>
-    );
-
-    const EndTurnButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-    ? <Button variant="outline-primary" onClick={this.onEndTurn}>End Turn</Button>
-    : <Button variant="outline-dark">Waiting for Other Players</Button>
-    );
-
-    const TakeGemsButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onTakeGems}>Take Gems</Button>
-      : null
-    );
-
-    const ReserveActiveCardButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onReserveActiveCard}>ReserveActiveCard</Button>
-      : null
-    );
-
-    const ReserveDeckCardButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onReserveDeckCard}>ReserveDeckCard</Button>
-      : null
-    );
-
-    const PurchaseActiveCardButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onPurchaseActiveCard}>Purchase Active Card</Button>
-      : null
-    );
-
-    const PurchaseReservedCardButton = () => (
-      this.state.curPlayerTurn.id === this.state.playerID
-      ? <Button variant="outline-primary" onClick={this.onPurchaseReservedCard}>Purchase Reserved Card</Button>
-      : null
+    const Turn = () => (this.state.curPlayerTurn.id === this.state.playerID
+      ? <h2>It is <TurnName>your</TurnName> turn!</h2>
+      : <h2>It is <TurnName>{this.state.curPlayerTurn.user?.name}'s</TurnName> turn</h2>
     );
 
     return (
-      <div>
-        <p>TargetScore: {this.state.targetScore}</p>
-        <p>Turn: {this.state.gameTurn}</p>
-        {/* <p>Player: {this.state.player.user?.name}</p>
-        <p>My Score: {this.state.player.hand?.score}</p> */}
-        <TurnDiv/>
-        <Board board={this.state.board}/>
-        {/* <TakeGemsButton/>
-        <ReserveActiveCardButton/>
-        <ReserveDeckCardButton/>
-        <PurchaseActiveCardButton/>
-        <PurchaseReservedCardButton/>
-        <EndTurnButton/> */}
-        <p>Winner: {this.state.winner?.user?.name}</p>
-        <ErrorMessage/>
-      </div>
+      <GameContainer>
+        <Scorebox>
+          <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
+          <p>Turn: {this.state.gameTurn}</p>
+          <Turn />
+        </Scorebox>
+        <Board board={this.state.board} />
+        <InvalidInputError />
+        <ServerError />
+      </GameContainer>
     )
   }
 }

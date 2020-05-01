@@ -5,9 +5,9 @@ const theme = {
   color: {
     primary: "#28a745",
     secondary: '#17a2b8',
+    error: "red",
     white: "white",
     black: "black",
-    error: "red",
     diamond: "white",
     sapphire: "blue",
     emerald: "green",
@@ -71,6 +71,10 @@ const theme = {
       width: "0.75rem",
       height: "0.75rem",
     }
+  },
+  board: {
+    colLeftRightMargin: `0.5rem`,
+    width: `${cardWidth*5+0.5*10+5}rem`,
   },
 };
 
