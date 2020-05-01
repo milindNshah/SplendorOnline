@@ -76,6 +76,11 @@ const theme = {
     colLeftRightMargin: `0.5rem`,
     width: `${cardWidth*5+0.5*10+5}rem`,
   },
+  player: {
+    iconColWidth: `${(cardWidth*5+0.5*10+5)*4/6}rem`,
+    nameColWidth: `${(cardWidth*5+0.5*10+5)*1/6}rem`,
+    iconColWidth: `${(cardWidth*5+0.5*10+5)*1/6}rem`,
+  }
 };
 
 export default theme;

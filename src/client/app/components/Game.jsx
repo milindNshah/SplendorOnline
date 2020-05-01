@@ -2,10 +2,9 @@ import React from 'react';
 import styled from 'styled-components'
 import Button from '../styledcomponents/button.jsx'
 import Board from './Board.jsx';
-import Hand from './Hand.jsx';
+import Player from './Player.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
-import { ActionType } from '../enums/actiontype';
 
 const GameContainer = styled.div`
   margin-top: 2.5rem;
@@ -22,12 +21,15 @@ const TurnName = styled.span`
   font-weight: bold;
 `
 
+const Hands = styled.div`
+`
+
 class Game extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       board: {},
-      curPlayerTurn: {},
+      isPlayerTurn: false,
       curTurnIndex: 0,
       invalidInputError: null,
       serverError: null,
@@ -35,15 +37,16 @@ class Game extends React.Component {
       gameTurn: 0,
       player: {},
       playerID: this.props.playerID,
-      players: [{}],
+      players: [],
       targetScore: null,
       turnOrder: [],
       winner: {},
     }
     this.socket = socket;
-    this.onGameUpdate = this.onGameUpdate.bind(this);
     this.onClientRequestError = this.onClientRequestError.bind(this);
-    this.onEndTurn = this.onEndTurn.bind(this);
+    this.onGameUpdate = this.onGameUpdate.bind(this);
+    this.renderHand = this.renderHand.bind(this);
+    this.renderHands = this.renderHands.bind(this);
   }
 
   componentDidMount() {
@@ -59,10 +62,11 @@ class Game extends React.Component {
 
   onGameUpdate(data) {
     const game = deserialize(Buffer.from(data));
-    const players = new Map(Object.entries(game.room.players));
-    const player = players.get(this.state.playerID);
+    const players = game.room.players;
+    const player = players[this.state.playerID];
     const board = game.board;
-    const curPlayerTurn = players.get(game.turnOrder[game.curTurnIndex]);
+    const curPlayerTurn = players[game.turnOrder[game.curTurnIndex]];
+    const isPlayerTurn = curPlayerTurn.id === player.id;
 
     this.setState({
       curTurnIndex: game.curTurnIndex,
@@ -71,7 +75,7 @@ class Game extends React.Component {
       turnOrder: game.turnOrder,
       winner: game.winner,
       board: board,
-      curPlayerTurn: curPlayerTurn,
+      isPlayerTurn: isPlayerTurn,
       player: player,
       players: players,
     });
@@ -83,36 +87,18 @@ class Game extends React.Component {
     });
   }
 
-  onEndTurn() {
-    const actions = {};
-    if (this.state.gemsTaken) {
-      actions[ActionType.TAKE_GEMS] = this.state.gemsTaken;
+  renderHands() {
+    if(!this.state.players) {
+      return;
     }
-    if (this.state.reservedActiveCard) {
-      actions[ActionType.RESERVE_ACTIVE_CARD] = this.state.reservedActiveCard.id;
-    }
-    if (this.state.reservedDeckCardTier) {
-      actions[ActionType.RESERVE_DECK_CARD] = this.state.reservedDeckCardTier;
-    }
-    if (this.state.purchasedActiveCard) {
-      actions[ActionType.PURCHASE_ACTIVE_CARD] = this.state.purchasedActiveCard.id;
-    }
-    if (this.state.purchasedReservedCard) {
-      actions[ActionType.PURCHASE_RESERVED_CARD] = this.state.purchasedReservedCard.id;
-    }
+    const hands = Object.values(this.state.players)
+      .map((player) => this.renderHand(player));
+    return (<Hands>{hands}</Hands>)
+  }
 
-    this.socket.emit("endTurn", {
-      actions: actions,
-      gameID: this.state.gameID,
-      playerID: this.state.playerID
-    })
-
-    this.setState({
-      gemsTaken: null,
-      reservedActiveCard: null,
-      reservedDeckCardTier: null,
-      purchasedActiveCard: null,
-    });
+  // TODO: Render current player's hand first. Also why is it complaining about key.
+  renderHand(player) {
+    return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn}/>
   }
 
   render() {
@@ -127,9 +113,9 @@ class Game extends React.Component {
         : null
     );
 
-    const Turn = () => (this.state.curPlayerTurn.id === this.state.playerID
+    const Turn = () => (this.state.isPlayerTurn
       ? <h2>It is <TurnName>your</TurnName> turn!</h2>
-      : <h2>It is <TurnName>{this.state.curPlayerTurn.user?.name}'s</TurnName> turn</h2>
+      : <h2>It is <TurnName>{this.state.players[this.state.gameTurn[this.state.curTurnIndex]]}'s</TurnName> turn</h2>
     );
 
     return (
@@ -140,6 +126,7 @@ class Game extends React.Component {
           <Turn />
         </Scorebox>
         <Board board={this.state.board} />
+        {this.renderHands()}
         <InvalidInputError />
         <ServerError />
       </GameContainer>
