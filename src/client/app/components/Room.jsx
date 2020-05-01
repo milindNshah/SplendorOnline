@@ -24,8 +24,8 @@ class Room extends React.Component {
     super(props)
     this.state = {
       invalidInputError: null,
-      isJoinRoom: this.props.location.state.isJoinRoom,
-      isCreateRoom: this.props.location.state.isCreateRoom,
+      isJoinRoom: this.props.location?.state?.isJoinRoom,
+      isCreateRoom: this.props.location?.state?.isCreateRoom,
       gameID: null,
       gameStarted: false,
       loadWaitingRoom: false,
@@ -40,15 +40,18 @@ class Room extends React.Component {
     this.onCreateRoom = this.onCreateRoom.bind(this)
     this.onFormChange = this.onFormChange.bind(this)
     this.onJoinRoom = this.onJoinRoom.bind(this)
+    this.onLeaveRoom = this.onLeaveRoom.bind(this)
     this.onGameStart = this.onGameStart.bind(this)
     this.onLoadWaitingRoom = this.onLoadWaitingRoom.bind(this)
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
   // TODO: Stop form submit from going through (ex. enter button)
-  // TODO: Go back or show "Leave Room button" as default.
 
   componentDidMount() {
+    if(!this.props.location.state) {
+      this.props.history.push('/');
+    }
     this.socket.on('ClientRequestError', this.onClientRequestError);
     this.socket.on('LoadWaitingRoom', this.onLoadWaitingRoom);
     this.socket.on('GameStarted', this.onGameStart);
@@ -158,7 +161,7 @@ class Room extends React.Component {
             disabled={this.state.invalidInputError}
             onClick={this.onCreateRoom}>
             Create Game
-        </Button>
+          </Button>
         </div>
       </form>
     )
@@ -196,6 +199,10 @@ class Room extends React.Component {
     )
   }
 
+  onLeaveRoom() {
+    this.props.history.push('/');
+  }
+
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
@@ -219,6 +226,11 @@ class Room extends React.Component {
               {this.state.isCreateRoom ? this.renderCreateRoom() : null}
               <InvalidInputError />
               <ServerError />
+              <Button
+                color={theme.color.error}
+                onClick={this.onLeaveRoom}>
+                Leave Room
+                </Button>
             </RoomContainer>
         }
       </ThemeProvider>

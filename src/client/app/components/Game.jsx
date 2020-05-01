@@ -14,7 +14,7 @@ const Scorebox = styled.div`
   margin-bottom: 3rem;
 `
 const TargetScore = styled.h2`
-  color: ${ props => props.theme.color.error };
+  color: ${ props => props.theme.color.error};
 `
 const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
@@ -88,7 +88,7 @@ class Game extends React.Component {
   }
 
   renderHands() {
-    if(!this.state.players) {
+    if (!this.state.players) {
       return;
     }
     const hands = Object.values(this.state.players)
@@ -96,9 +96,8 @@ class Game extends React.Component {
     return (<Hands>{hands}</Hands>)
   }
 
-  // TODO: Render current player's hand first. Also why is it complaining about key.
   renderHand(player) {
-    return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn}/>
+    return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn} />
   }
 
   render() {
@@ -115,7 +114,7 @@ class Game extends React.Component {
 
     const Turn = () => (this.state.isPlayerTurn
       ? <h2>It is <TurnName>your</TurnName> turn!</h2>
-      : <h2>It is <TurnName>{this.state.players[this.state.gameTurn[this.state.curTurnIndex]]}'s</TurnName> turn</h2>
+      : <h2>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</h2>
     );
 
     return (
