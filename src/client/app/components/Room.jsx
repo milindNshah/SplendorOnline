@@ -46,6 +46,7 @@ class Room extends React.Component {
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
   // TODO: Stop form submit from going through (ex. enter button)
+  // TODO: Go back or show "Leave Room button" as default.
 
   componentDidMount() {
     this.socket.on('ClientRequestError', this.onClientRequestError);

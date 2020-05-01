@@ -1,3 +1,5 @@
+import theme from '../styledcomponents/theme.jsx'
+
 /* Should be kept in sync with GemStone.ts on server */
 export const GemStone = {
   DIAMOND: 'diamond',
@@ -16,28 +18,19 @@ export const CardGemStone = {
   CHOCOLATE: 'chocolate',
 }
 
-const GemStoneToColor = {
-  DIAMOND: 'white',
-  SAPPHIRE: 'blue',
-  EMERALD: 'green',
-  RUBY: 'red',
-  CHOCOLATE: '#CB6D51',
-  GOLD: '#FFD700',
-}
-
 export function getColorFromGemStone(gemStone) {
   switch (gemStone) {
-    case GemStone.CHOCOLATE:
-      return GemStoneToColor.CHOCOLATE;
     case GemStone.DIAMOND:
-      return GemStoneToColor.DIAMOND;
-    case GemStone.EMERALD:
-      return GemStoneToColor.EMERALD;
-    case GemStone.GOLD:
-      return GemStoneToColor.GOLD;
-    case GemStone.RUBY:
-      return GemStoneToColor.RUBY;
+      return theme.color.diamond
     case GemStone.SAPPHIRE:
-      return GemStoneToColor.SAPPHIRE;
+      return theme.color.sapphire
+    case GemStone.EMERALD:
+      return theme.color.emerald
+    case GemStone.RUBY:
+      return theme.color.ruby
+    case GemStone.CHOCOLATE:
+      return theme.color.chocolate
+    case GemStone.GOLD:
+      return theme.color.gold
   }
 }

@@ -21,7 +21,7 @@ const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
 const CopiedCode = styled.p`
-  color: ${ props => props.theme.color.secondary};
+  color: ${ props => props.theme.color.secondary };
 `
 
 const Ready = styled.span`
@@ -30,7 +30,7 @@ const Ready = styled.span`
     : props.theme.color.error};
 `
 const Host = styled.span`
-  color: ${ props => props.theme.color.secondary};
+  color: ${ props => props.theme.color.secondary };
 `
 
 const Table = styled.div`

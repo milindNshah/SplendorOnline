@@ -78,6 +78,7 @@ class Board extends React.Component {
     }
     return Object.keys(this.state.board.activeTieredCards)
       .map((tier) => this.renderCards(tier, this.state.board.activeTieredCards[tier]))
+      .reverse()
   }
 
   renderCards(tier, cardsByTier) {

@@ -3,20 +3,19 @@ import styled from "styled-components"
 import { getColorFromTier, getNumberFromTier } from '../enums/cardtier'
 
 const Card = styled.div`
-  background-color: black;
+  background-color: ${ props => props.theme.color.black };
   position: relative;
-  /*Ratio of 3:4 - copied from CardComponent*/
-  width: 90px;
-  height: 120px;
-  box-shadow: inset 0px 0px 0px 2px ${ props => props.tier ? getColorFromTier(props.tier) : "white"};
+  width: ${ props => props.theme.card.width };
+  height: ${ props => props.theme.card.height };
+  box-shadow: inset 0px 0px 0px 2px ${ props => getColorFromTier(props.tier) ?? props.theme.color.white };
   border-radius: 5px;
   display: flex;
   justify-content: center;
-  font-family: "Roboto Slab";
+  font-family: ${ props => props.theme.fontFamily.secondary };
 `;
 
 const CardTitle = styled.div`
-  color: white;
+  color: ${ props => props.theme.color.white };
   position: absolute;
   top: 0;
   left: 0;
@@ -28,13 +27,13 @@ const CardTitle = styled.div`
 `;
 
 const DotContainer = styled.div`
-  padding: 0.4rem 0.1rem;
+  padding: 0.75rem 0.1rem;
 `;
 
 const CardDot = styled.div`
   height: 0.5rem;
   width: 0.5rem;
-  background-color: ${props => props.tier ? getColorFromTier(props.tier) : "white"};
+  background-color: ${props => getColorFromTier(props.tier) ?? props.tier.color.white};
   border-radius: 50%;
 `;
 

@@ -1,16 +1,15 @@
 import React from 'react';
 import styled from "styled-components"
 import { getColorFromGemStone } from '../enums/gemstones.js';
+import theme from '../styledcomponents/theme.jsx'
 
 const NobleContainer = styled.div`
-  background: black;
+  background: ${ props => props.theme.color.black};
   position: relative;
-  /* From CardComponent.jsx */
-  width: 90px;
-  height: 90px;
-  border: 2px solid white;
+  width: ${ props => props.theme.card.width};
+  height: ${ props => props.theme.card.width};
   border-radius: 5px;
-  font-family: Roboto Slab;
+  font-family: ${ props => props.theme.fontFamily.secondary};
 `;
 
 const ScoreOverlay = styled.div`
@@ -20,7 +19,7 @@ const ScoreOverlay = styled.div`
   display: flex;
   color: white;
   padding: 0 0.5rem;
-  font-size: 1.5rem;
+  font-size: ${ props => props.theme.card.scoreFontSize};
 `;
 
 const RequiredCardsOverlay = styled.div`
@@ -32,14 +31,8 @@ const RequiredCardsOverlay = styled.div`
   padding: 0.1rem 0.25rem;
 `;
 
-const Svg = styled.svg`
-  /* Same as Card */
-  width: 90px;
-  height: 90px;
-`;
-
 const Line = styled.line`
-  stroke: white;
+  stroke: ${ props => props.theme.color.white};
   stroke-width: 2;
 `;
 
@@ -49,22 +42,37 @@ const RequiredCard = styled.div`
 `;
 
 const Card = styled.div`
-  background: ${ props => props.type ? getColorFromGemStone(props.type) : "black"};
-  /*Ratio of 3:4*/
-  width: 0.6rem;
-  height: 0.8rem;
-  border: 1px solid ${ props => props.type ? getColorFromGemStone(props.type) : "white"};
+  background: ${ props => getColorFromGemStone(props.type) ?? props.theme.color.black};
+  width: ${ props => props.theme.card.icon.width};
+  height: ${ props => props.theme.card.icon.height};
+  border: 1px solid ${ props => getColorFromGemStone(props.type) ?? props.theme.color.white};
   border-radius: 2px;
 `;
 
 const Amount = styled.span`
-  font-size: ${ props => props.fontSize ?? "0.9rem"};
-  color: ${ props => props.color ?? "white" };
+  font-size: ${ props => props.theme.card.amountFontSize};
+  color: ${ props => props.color ?? props.theme.color.white};
   padding-right: 0.2rem;
 `;
 
-class Noble extends React.Component{
-  constructor(props) {
+const HorizontalLine = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg"
+      width={theme.card.width}
+      height={theme.card.height}
+    >
+      <Line
+        x1={theme.card.horizontalLine.x1}
+        y1={theme.card.horizontalLine.y1}
+        x2={theme.card.horizontalLine.x2}
+        y2={theme.card.horizontalLine.y2}
+        />
+    </svg>
+  )
+}
+
+class Noble extends React.Component {
+  constructor (props) {
     super(props)
     this.state = {
       pointValue: this.props.noble.pointValue,
@@ -81,20 +89,17 @@ class Noble extends React.Component{
 
   renderRequiredCard(type, amount) {
     return (
-    <RequiredCard key={type}>
-      <Amount>{amount}</Amount>
-      <Card type={type}/>
-    </RequiredCard>
+      <RequiredCard key={type}>
+        <Amount>{amount}</Amount>
+        <Card type={type} />
+      </RequiredCard>
     )
   }
 
   render() {
     return (
       <NobleContainer>
-        <Svg xmlns="http://www.w3.org/2000/svg">
-          {/* TODO: Make Line it's own component (svg) and use width/height to generate it */}
-          <Line x1="1.7rem" y1="5" x2="1.7rem" y2="85"/>
-        </Svg>
+        <HorizontalLine />
         <ScoreOverlay>{this.state.pointValue}</ScoreOverlay>
         <RequiredCardsOverlay>
           {this.renderRequiredCards()}

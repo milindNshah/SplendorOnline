@@ -1,24 +1,18 @@
 import React from 'react';
 import styled from "styled-components"
 import { GemStoneBase } from './GemStone.jsx'
+import theme from '../styledcomponents/theme.jsx'
 
 const CardContainer = styled.div`
-  background: black;
+  background: ${ props => props.theme.color.black};
   position: relative;
-  /*Ratio of 3:4*/
-  width: 90px;
-  height: 120px;
+  width: ${ props => props.theme.card.width};
+  height: ${ props => props.theme.card.height};
   border-radius: 5px;
 `;
 
-const Svg = styled.svg`
-  /* Same as Card */
-  width: 90px;
-  height: 120px;
-`;
-
 const Line = styled.line`
-  stroke: white;
+  stroke: ${ props => props.theme.color.white};
   stroke-width: 2;
 `;
 
@@ -29,10 +23,10 @@ const ScoreOverlay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
+  color: ${ props => props.theme.color.white};
   padding: 0.25rem 0.5rem;
-  font-size: 1.5rem;
-  font-family: Roboto Slab;
+  font-size: ${ props => props.theme.card.scoreFontSize};
+  font-family: ${ props => props.theme.fontFamily.secondary};
 `;
 
 const RequiredGemStonesOverlay = styled.div`
@@ -44,6 +38,22 @@ const RequiredGemStonesOverlay = styled.div`
   align-items: center;
   padding: 0.1rem 0.25rem;
 `;
+
+const DiagonalLine = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg"
+      width={theme.card.width}
+      height={theme.card.height}
+    >
+      <Line
+        x1={theme.card.diagonalLine.x1}
+        y1={theme.card.diagonalLine.y1}
+        x2={theme.card.diagonalLine.x2}
+        y2={theme.card.diagonalLine.y2}
+      />
+    </svg>
+  );
+}
 
 class Card extends React.Component {
   constructor (props) {
@@ -65,19 +75,28 @@ class Card extends React.Component {
 
   renderRequiredGemStone(type, amount) {
     return (
-      <GemStoneBase key={type} type={type} amount={amount} width='0.75rem' height='0.75rem' fill="true"/>
+      <GemStoneBase
+        key={type}
+        type={type}
+        amount={amount}
+        width={theme.card.gemStone.width}
+        height={theme.card.gemStone.height}
+        fill="true"
+      />
     )
   }
 
   render() {
     return (
       <CardContainer>
-        <Svg xmlns="http://www.w3.org/2000/svg">
-          {/* TODO: Make Line it's own component (svg) and use width/height to generate it */}
-          <Line x1="10" y1="110" x2="80" y2="10" />
-        </Svg>
+        <DiagonalLine />
         <ScoreOverlay><span>{this.state.pointValue}</span>
-          <GemStoneBase type={this.state.gemStoneType} width='1rem' height='1rem' fill="true"/>
+          <GemStoneBase
+            type={this.state.gemStoneType}
+            width={theme.card.gemStoneType.width}
+            height={theme.card.gemStoneType.height}
+            fill="true"
+          />
         </ScoreOverlay>
         <RequiredGemStonesOverlay>
           {this.renderRequiredGemStones()}

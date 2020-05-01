@@ -1,3 +1,5 @@
+import theme from '../styledcomponents/theme.jsx'
+
 /* Should be kept in sync with CardTier(Card.ts) on server */
 export const CardTier = {
   TIER1: '1',
@@ -8,21 +10,21 @@ export const CardTier = {
 export function getColorFromTier(cardTier) {
   switch(cardTier) {
     case CardTier.TIER1:
-      return "green";
+      return theme.color.tier1
     case CardTier.TIER2:
-      return "purple";
+      return theme.color.tier2
     case CardTier.TIER3:
-      return "#eb6b34";
+      return theme.color.tier3
   }
 }
 
 export function getNumberFromTier(cardTier){
   switch(cardTier) {
     case CardTier.TIER1:
-      return 1;
+      return 1
     case CardTier.TIER2:
-      return 2;
+      return 2
     case CardTier.TIER3:
-      return 3;
+      return 3
   }
 }
