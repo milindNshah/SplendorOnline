@@ -12,9 +12,9 @@ const Amount = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
-  font-size: ${ props => props.fontSize ?? props.theme.token.fontSize};
+  font-size: ${ props => `${props.width*2/5}rem`};
   font-family: ${ props => props.theme.fontFamily.secondary };
-  color: ${ props => getColorFromGemStone(props.type) ?? props.theme.color.white };
+  color: ${ props => props.theme.color.white };
   text-shadow: -1px 1px 0 black,
 				  1px 1px 0 black,
 				  1px -1px 0 black,
@@ -23,8 +23,8 @@ const Amount = styled.div`
 
 const Token = styled.div`
   background: ${ props => props.theme.color.black };
-  width: ${ props => props.theme.token.width };
-  height: ${ props => props.theme.token.height };
+  width: ${ props => `${props.width}rem` };
+  height: ${ props => `${props.height}rem` };
   box-shadow: inset 0px 0px 0px 2px ${ props => getColorFromGemStone(props.type) ?? props.theme.color.white};
   border-radius: 50%;
   display: flex;
@@ -40,12 +40,12 @@ class GemStoneToken extends React.Component {
   render() {
     return (
       <TokenContainer>
-        <Amount>{this.props.amount}</Amount>
-        <Token type={this.props.type}>
+        <Amount {...this.props}>{this.props.amount}</Amount>
+        <Token {...this.props}>
           <GemStoneBase
             type={this.props.type}
-            width={theme.token.gemStone.width}
-            height={theme.token.gemStone.height}
+            width={`${this.props.width*2/5}rem`}
+            height={`${this.props.height*2/5}rem`}
             fill="true"
           />
         </Token>

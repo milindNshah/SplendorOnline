@@ -1,5 +1,5 @@
 const cardWidth = 6;
-const cardHeight = 8;
+const cardHeight = cardWidth*4/3;
 
 const theme = {
   color: {
@@ -34,22 +34,27 @@ const theme = {
     errorColor: "red",
   },
   token: {
-    fontSize: "2rem",
-    width: "5rem",
-    height: "5rem",
-    gemStone: {
-      width: "2rem",
-      height: "2rem",
+    fontSize: 2, // TODO: Remove.
+    width: 5,
+    height: 5,
+    modal: {
+      width: 2.5,
+      height: 2.5,
     },
+  },
+  amount: {
+    fontSize: `${cardWidth/6}rem`, // TODO: Remove.
   },
   card: {
     width: `${cardWidth}rem`,
     height: `${cardHeight}rem`,
-    scoreFontSize: "1.5rem",
-    amountFontSize: "0.9rem",
+    score: {
+      fontSize: `${cardWidth/4}rem`,
+      padding: `${cardWidth/24}rem ${cardWidth/12}rem`
+    },
     gemStoneType: {
-      width: "1rem",
-      height: "1rem",
+      width: `${cardWidth/6}`, // TODO: Remove after converting card.width/height. Need to replace this calc code instead of using the theme.
+      height: `${cardWidth/6}`,
     },
     icon: {
       width: `${cardWidth/10}rem`,
@@ -68,8 +73,9 @@ const theme = {
       y2: `0.5rem`,
     },
     gemStone: {
-      width: "0.75rem",
-      height: "0.75rem",
+      padding: `${cardWidth/60}rem ${cardWidth/24}rem`,
+      width: `${cardHeight/10}`,
+      height: `${cardHeight/10}`,
     }
   },
   board: {

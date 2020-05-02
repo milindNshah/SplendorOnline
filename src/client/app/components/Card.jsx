@@ -24,8 +24,8 @@ const ScoreOverlay = styled.div`
   flex-direction: column;
   align-items: center;
   color: ${ props => props.theme.color.white};
-  padding: 0.25rem 0.5rem;
-  font-size: ${ props => props.theme.card.scoreFontSize};
+  padding: ${ props => props.theme.card.score.padding };
+  font-size: ${ props => props.theme.card.score.fontSize};
   font-family: ${ props => props.theme.fontFamily.secondary};
 `;
 
@@ -36,7 +36,7 @@ const RequiredGemStonesOverlay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.1rem 0.25rem;
+  padding: ${ props => props.theme.card.gemStone.padding };
 `;
 
 const DiagonalLine = () => {

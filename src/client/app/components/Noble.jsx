@@ -19,7 +19,7 @@ const ScoreOverlay = styled.div`
   display: flex;
   color: white;
   padding: 0 0.5rem;
-  font-size: ${ props => props.theme.card.scoreFontSize};
+  font-size: ${ props => props.theme.card.score.fontSize };
 `;
 
 const RequiredCardsOverlay = styled.div`
@@ -50,7 +50,7 @@ const Card = styled.div`
 `;
 
 const Amount = styled.span`
-  font-size: ${ props => props.theme.card.amountFontSize};
+  font-size: ${ props => props.theme.amount.fontSize };
   color: ${ props => props.color ?? props.theme.color.white};
   padding-right: 0.2rem;
 `;

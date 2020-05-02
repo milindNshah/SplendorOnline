@@ -11,9 +11,9 @@ const Path = styled.path`
 
 const Amount = styled.span`
   font-family: ${ props => props.theme.fontFamily.secondary };
-  font-size: ${ props => props.fontSize ?? "0.9rem"};
-  color: ${ props => props.color ?? "white"};
-  padding-right: 0.2rem;
+  font-size: ${ props => `${props.width/5}rem` };
+  color: ${ props => props.color ?? props.theme.color.white};
+  padding-right: ${ props => `${props.width/15}rem` };
 `;
 
 const GemStoneContainer = styled.div`
@@ -100,7 +100,7 @@ export const GemStoneBase = (props) => {
   if (amount) {
     return (
       <GemStoneContainer>
-        <Amount>{amount}</Amount>
+        <Amount {...props}>{amount}</Amount>
         <GetSoloGemStone {...props}/>
       </GemStoneContainer>
     );

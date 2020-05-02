@@ -45,6 +45,9 @@ class Game extends React.Component {
     this.socket = socket;
     this.onClientRequestError = this.onClientRequestError.bind(this);
     this.onGameUpdate = this.onGameUpdate.bind(this);
+    this.onPurchaseCard = this.onPurchaseCard.bind(this)
+    this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
+    this.onReserveCard = this.onReserveCard.bind(this)
     this.renderHand = this.renderHand.bind(this);
     this.renderHands = this.renderHands.bind(this);
   }
@@ -100,6 +103,17 @@ class Game extends React.Component {
     return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn} />
   }
 
+  onPurchaseTokens(tokensTaken) {
+    console.log("tokens: ", tokensTaken);
+  }
+
+  onPurchaseCard(card) {
+    console.log("purchase: ", card);
+  }
+  onReserveCard(card) {
+    console.log("reserve: ", card);
+  }
+
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
@@ -124,7 +138,14 @@ class Game extends React.Component {
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
         </Scorebox>
-        <Board board={this.state.board} />
+        <Board
+          board={this.state.board}
+          playerGemStones={this.state.player?.hand?.gemStones}
+          isPlayerTurn={this.state.isPlayerTurn}
+          onPurchaseCard={this.onPurchaseCard}
+          onPurchaseTokens={this.onPurchaseTokens}
+          onReserveCard={this.onReserveCard}
+        />
         {this.renderHands()}
         <InvalidInputError />
         <ServerError />
