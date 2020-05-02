@@ -1,5 +1,6 @@
 const cardWidth = 6;
-const cardHeight = cardWidth*4/3;
+const cardHeight = 8;
+const spaceBetweenCards = 0.5;
 
 const theme = {
   color: {
@@ -34,7 +35,6 @@ const theme = {
     errorColor: "red",
   },
   token: {
-    fontSize: 2, // TODO: Remove.
     width: 5,
     height: 5,
     modal: {
@@ -42,50 +42,22 @@ const theme = {
       height: 2.5,
     },
   },
-  amount: {
-    fontSize: `${cardWidth/6}rem`, // TODO: Remove.
-  },
   card: {
-    width: `${cardWidth}rem`,
-    height: `${cardHeight}rem`,
-    score: {
-      fontSize: `${cardWidth/4}rem`,
-      padding: `${cardWidth/24}rem ${cardWidth/12}rem`
-    },
-    gemStoneType: {
-      width: `${cardWidth/6}`, // TODO: Remove after converting card.width/height. Need to replace this calc code instead of using the theme.
-      height: `${cardWidth/6}`,
-    },
-    icon: {
-      width: `${cardWidth/10}rem`,
-      height: `${cardHeight/10}rem`,
-    },
-    horizontalLine: {
-      x1: `1.75rem`,
-      y1: `0.25rem`,
-      x2: `1.75rem`,
-      y2: `${cardWidth-0.25}rem`,
-    },
-    diagonalLine: {
-      x1: `0.5rem`,
-      y1: `${cardHeight-0.5}rem`,
-      x2: `${cardWidth-0.5}rem`,
-      y2: `0.5rem`,
-    },
-    gemStone: {
-      padding: `${cardWidth/60}rem ${cardWidth/24}rem`,
-      width: `${cardHeight/10}`,
-      height: `${cardHeight/10}`,
+    width: `${cardWidth}`,
+    height: `${cardHeight}`,
+    modal: {
+      width: 12,
+      height: 16,
     }
   },
   board: {
-    colLeftRightMargin: `0.5rem`,
-    width: `${cardWidth*5+0.5*10+5}rem`,
+    spaceBetweenCards: `${spaceBetweenCards}`,
+    width: `${cardWidth*5+spaceBetweenCards*10+5}rem`,
   },
   player: {
-    iconColWidth: `${(cardWidth*5+0.5*10+5)*4/6}rem`,
-    nameColWidth: `${(cardWidth*5+0.5*10+5)*1/6}rem`,
-    iconColWidth: `${(cardWidth*5+0.5*10+5)*1/6}rem`,
+    iconColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*4/6}rem`,
+    nameColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*1/6}rem`,
+    iconColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*1/6}rem`,
   }
 };
 

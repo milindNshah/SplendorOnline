@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import theme from '../styledcomponents/theme.jsx'
 import { GemStoneBase } from './GemStone.jsx'
 import { getColorFromGemStone } from '../enums/gemstones.js'
 
@@ -44,8 +43,8 @@ class GemStoneToken extends React.Component {
         <Token {...this.props}>
           <GemStoneBase
             type={this.props.type}
-            width={`${this.props.width*2/5}rem`}
-            height={`${this.props.height*2/5}rem`}
+            width={`${this.props.width*2/5}`}
+            height={`${this.props.height*2/5}`}
             fill="true"
           />
         </Token>

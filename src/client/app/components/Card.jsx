@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from "styled-components"
 import { GemStoneBase } from './GemStone.jsx'
-import theme from '../styledcomponents/theme.jsx'
 
 const CardContainer = styled.div`
   background: ${ props => props.theme.color.black};
   position: relative;
-  width: ${ props => props.theme.card.width};
-  height: ${ props => props.theme.card.height};
+  width: ${ props => `${props.width}rem`};
+  height: ${ props => `${props.height}rem`};
   border-radius: 5px;
 `;
 
@@ -24,8 +23,8 @@ const ScoreOverlay = styled.div`
   flex-direction: column;
   align-items: center;
   color: ${ props => props.theme.color.white};
-  padding: ${ props => props.theme.card.score.padding };
-  font-size: ${ props => props.theme.card.score.fontSize};
+  padding: ${ props => `${props.width / 24}rem`} ${props => `${props.width / 12}rem`};
+  font-size: ${ props => `${props.width / 4}rem`};
   font-family: ${ props => props.theme.fontFamily.secondary};
 `;
 
@@ -36,20 +35,20 @@ const RequiredGemStonesOverlay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: ${ props => props.theme.card.gemStone.padding };
+  padding: ${ props => `${props.width / 30}rem`} ${props => `${props.width / 24}rem`};
 `;
 
-const DiagonalLine = () => {
+const DiagonalLine = (props) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg"
-      width={theme.card.width}
-      height={theme.card.height}
+      width={`${props.width}rem`}
+      height={`${props.height}rem`}
     >
       <Line
-        x1={theme.card.diagonalLine.x1}
-        y1={theme.card.diagonalLine.y1}
-        x2={theme.card.diagonalLine.x2}
-        y2={theme.card.diagonalLine.y2}
+        x1={`0.5rem`}
+        y1={`${props.height-0.5}rem`}
+        x2={`${props.width-0.5}rem`}
+        y2={`0.5rem`}
       />
     </svg>
   );
@@ -79,8 +78,8 @@ class Card extends React.Component {
         key={type}
         type={type}
         amount={amount}
-        width={theme.card.gemStone.width}
-        height={theme.card.gemStone.height}
+        width={this.props.height / 10}
+        height={this.props.height / 10}
         fill="true"
       />
     )
@@ -88,17 +87,17 @@ class Card extends React.Component {
 
   render() {
     return (
-      <CardContainer>
-        <DiagonalLine />
-        <ScoreOverlay><span>{this.state.pointValue}</span>
+      <CardContainer {...this.props}>
+        <DiagonalLine {...this.props}/>
+        <ScoreOverlay {...this.props}><span>{this.state.pointValue}</span>
           <GemStoneBase
             type={this.state.gemStoneType}
-            width={theme.card.gemStoneType.width}
-            height={theme.card.gemStoneType.height}
+            width={this.props.height / 6}
+            height={this.props.height / 6}
             fill="true"
           />
         </ScoreOverlay>
-        <RequiredGemStonesOverlay>
+        <RequiredGemStonesOverlay {...this.props}>
           {this.renderRequiredGemStones()}
         </RequiredGemStonesOverlay>
       </CardContainer>

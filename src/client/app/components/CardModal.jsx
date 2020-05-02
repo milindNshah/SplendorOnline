@@ -36,7 +36,7 @@ class CardModal extends React.Component {
     }
     return (
       <CardModalContainer>
-        <Card card={this.state.card} />
+        <Card card={this.state.card} width={theme.card.modal.width} height={theme.card.modal.height} />
         {this.state.isPlayerTurn ?
           <div>
             <Button

@@ -49,7 +49,7 @@ const GemRow = styled(Row)`
 `
 const Col = styled.div`
   display: flex;
-  margin: 0rem ${ props => props.theme.board.colLeftRightMargin};
+  margin: 0rem ${props => `${props.board.spaceBetweenCards}rem`};
 `
 
 class Board extends React.Component {
@@ -139,7 +139,7 @@ class Board extends React.Component {
   }
 
   renderNoble(noble) {
-    return (<Col key={noble.id}><Noble noble={noble} /></Col>)
+    return (<Col key={noble.id}><Noble noble={noble} width={theme.card.width} height={theme.card.width}/></Col>)
   }
 
   renderTieredCards() {
@@ -163,7 +163,7 @@ class Board extends React.Component {
   }
 
   renderCard(card) {
-    return (<Col onClick={() => this.onCardClick(card)} key={card.id}><Card card={card} /></Col>)
+    return (<Col onClick={() => this.onCardClick(card)} key={card.id}><Card card={card} width={theme.card.width} height={theme.card.height}/></Col>)
   }
 
   onCardClick(card) {
@@ -193,7 +193,7 @@ class Board extends React.Component {
   }
 
   renderTierCard(tier, remaining) {
-    return (<Col key={tier}><TierCard tier={tier} remaining={remaining} /></Col>)
+    return (<Col key={tier}><TierCard tier={tier} remaining={remaining} width={theme.card.width} height={theme.card.height}/></Col>)
   }
 
   // TODO: Press escape to close modal

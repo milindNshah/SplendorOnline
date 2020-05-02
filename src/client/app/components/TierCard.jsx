@@ -3,25 +3,25 @@ import styled from "styled-components"
 import { getColorFromTier, getNumberFromTier } from '../enums/cardtier'
 
 const Card = styled.div`
-  background-color: ${ props => props.theme.color.black };
+  background-color: ${ props => props.theme.color.black};
   position: relative;
-  width: ${ props => props.theme.card.width };
-  height: ${ props => props.theme.card.height };
-  box-shadow: inset 0px 0px 0px 2px ${ props => getColorFromTier(props.tier) ?? props.theme.color.white };
+  width: ${ props => `${props.width}rem`};
+  height: ${ props => `${props.height}rem`};
+  box-shadow: inset 0px 0px 0px 2px ${ props => getColorFromTier(props.tier) ?? props.theme.color.white};
   border-radius: 5px;
   display: flex;
   justify-content: center;
-  font-family: ${ props => props.theme.fontFamily.secondary };
+  font-family: ${ props => props.theme.fontFamily.secondary};
 `;
 
 const Remaining = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
-  font-size: ${ props => props.fontSize ?? props.theme.token.fontSize};
-  line-height: ${ props => props.fontSize ?? props.theme.token.fontSize};
-  font-family: ${ props => props.theme.fontFamily.secondary };
-  color: ${ props => props.theme.color.white };
+  font-size: ${ props => `${props.width / 3}rem`};
+  line-height: ${ props => `${props.width / 3}rem`};
+  font-family: ${ props => props.theme.fontFamily.secondary};
+  color: ${ props => props.theme.color.white};
   text-shadow: -1px 1px 0 black,
 				  1px 1px 0 black,
 				  1px -1px 0 black,
@@ -29,7 +29,7 @@ const Remaining = styled.div`
 `
 
 const CardTitle = styled.div`
-  color: ${ props => props.theme.color.white };
+  color: ${ props => props.theme.color.white};
   position: absolute;
   top: 0;
   left: 0;
@@ -38,24 +38,24 @@ const CardTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
+`
 
 const DotContainer = styled.div`
-  padding: 0.75rem 0.1rem;
-`;
+  padding: ${ props => `${props.width / 8}rem`} ${props => `${props.width / 30}rem`};
+`
 
 const CardDot = styled.div`
-  height: 0.5rem;
-  width: 0.5rem;
+  height: ${ props => `${props.width / 12}rem`};
+  width: ${ props => `${props.width / 12}rem`};
   background-color: ${props => getColorFromTier(props.tier) ?? props.tier.color.white};
   border-radius: 50%;
-`;
+`
 
 const CardDots = (props) => {
-  const { tier } = props;
-  const dots = [];
-  for(let i=0; i<getNumberFromTier(tier); i++) {
-    dots.push((<DotContainer key={`${i}`}><CardDot {...props}/></DotContainer>))
+  const { tier } = props
+  const dots = []
+  for (let i = 0; i < getNumberFromTier(tier); i++) {
+    dots.push((<DotContainer key={`${i}`} {...props}><CardDot {...props} /></DotContainer>))
   }
   return dots;
 }
@@ -64,11 +64,11 @@ class TierCard extends React.Component {
   render() {
     return (
       <Card {...this.props}>
-        <Remaining>{this.props.remaining}</Remaining>
+        <Remaining {...this.props}>{this.props.remaining}</Remaining>
         <CardDots {...this.props}></CardDots>
         <CardTitle>Splendor</CardTitle>
       </Card>
-    );
+    )
   }
 }
 
