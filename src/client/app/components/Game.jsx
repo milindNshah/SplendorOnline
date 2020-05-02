@@ -103,8 +103,8 @@ class Game extends React.Component {
     return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn} />
   }
 
-  onPurchaseTokens(tokensTaken) {
-    console.log("tokens: ", tokensTaken);
+  onPurchaseTokens(tokensTaken, tokensReturned) {
+    console.log("tokens: ", tokensTaken, tokensReturned);
   }
 
   onPurchaseCard(card) {

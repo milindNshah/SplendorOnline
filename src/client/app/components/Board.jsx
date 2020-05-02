@@ -48,8 +48,7 @@ const GemRow = styled(Row)`
   justify-content: center;
 `
 const Col = styled.div`
-  display: flex;
-  margin: 0rem ${props => `${props.board.spaceBetweenCards}rem`};
+  margin: 0rem ${props => `${props.theme.board.spaceBetweenCards}rem`};
 `
 
 class Board extends React.Component {
@@ -122,8 +121,8 @@ class Board extends React.Component {
     })
   }
 
-  onPurchaseTokens(tokensTaken) {
-    this.props.onPurchaseTokens(tokensTaken);
+  onPurchaseTokens(tokensTaken, tokensReturned) {
+    this.props.onPurchaseTokens(tokensTaken, tokensReturned);
     this.setState({
       tokenClicked: false,
     })

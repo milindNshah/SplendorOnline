@@ -47,11 +47,11 @@ export class Board {
     const numStones: number = this.numPlayers === 4
       ? NUM_GEM_STONES_FOUR_PLAYER : this.numPlayers === 3
         ? NUM_GEM_STONES_THREE_PLAYER : NUM_GEM_STONES_TWO_PLAYER;
-    this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
     this.availableGemStones.set(GemStone.DIAMOND, numStones);
+    this.availableGemStones.set(GemStone.SAPPHIRE, numStones);
     this.availableGemStones.set(GemStone.EMERALD, numStones);
     this.availableGemStones.set(GemStone.RUBY, numStones);
-    this.availableGemStones.set(GemStone.SAPPHIRE, numStones);
+    this.availableGemStones.set(GemStone.CHOCOLATE, numStones);
     this.availableGemStones.set(GemStone.GOLD, 5);
   }
 

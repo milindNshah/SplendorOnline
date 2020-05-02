@@ -66,6 +66,7 @@ export class Game {
 
   async transferGems(inputGemsToTransfer: Map<string, number>, player: Player): Promise<this> {
     try {
+      // TODO: Filter out gold tokens if they somehow come in.
       const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
           let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
@@ -76,7 +77,7 @@ export class Game {
         }, new Map())
       const totalGemsTaken: number = Array.from(gemsToTansfer.values())
         .reduce((acc: number, amount: number) => {
-          return acc = amount > 0 ? acc + amount : 0;
+          return acc = amount > 0 ? acc + amount : 0; // TODO: Shouldn't this be : acc instead of : 0
         }, 0)
       const totalGemsReturned: number = Array.from(gemsToTansfer.values())
         .reduce((acc: number, amount: number) => {

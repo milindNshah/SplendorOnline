@@ -20,7 +20,7 @@ export class Hand {
   constructor () {
     this.id = this.createHandID();
     this.score = 0;
-    this.gemStones = new Map();
+    this.gemStones = this.createGemStones();
     this.purchasedCards = new Map();
     this.reservedCards = new Map();
     this.nobles = new Map();
@@ -29,6 +29,17 @@ export class Hand {
 
   createHandID(): string {
     return GlobalUtils.generateID();
+  }
+
+  createGemStones(): Map<GemStone, number> {
+    return new Map([
+      [GemStone.DIAMOND, 0],
+      [GemStone.SAPPHIRE, 0],
+      [GemStone.EMERALD, 0],
+      [GemStone.RUBY, 0],
+      [GemStone.CHOCOLATE, 0],
+      [GemStone.GOLD, 0],
+    ])
   }
 
   incrementTurn(): this {

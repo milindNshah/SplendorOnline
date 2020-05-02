@@ -38,8 +38,8 @@ const theme = {
     width: 5,
     height: 5,
     modal: {
-      width: 2.5,
-      height: 2.5,
+      width: 3,
+      height: 3,
     },
   },
   card: {
