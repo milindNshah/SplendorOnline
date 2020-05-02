@@ -72,7 +72,7 @@ export class Hand {
     // The checks are being done in Board.transferGems.
     // This function shouldn't be used on its own.
     gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
-      this.gemStones.set(gemStone, amount);
+      this.gemStones.set(gemStone, this.gemStones.get(gemStone)+amount);
     })
     return this;
   }

@@ -20,6 +20,12 @@ const Row = styled.div`
 const Col = styled.div`
   margin: 0rem 0.5rem;
 `
+const InvalidInput = styled.p`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+`
 
 class TokenModal extends React.Component {
   constructor (props) {
@@ -30,6 +36,7 @@ class TokenModal extends React.Component {
       playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
       taken: new Map(),
       returned: new Map(),
+      invalidInputError: null,
     }
     this.onGiveToken = this.onGiveToken.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
@@ -85,47 +92,46 @@ class TokenModal extends React.Component {
     if(gemStone === GemStone.GOLD) {
       return;
     }
-    const totalTaken = Array.from(this.state.taken.values())
-      .reduce((acc, amount) => acc += amount, 0)
-    const totalReturned = Array.from(this.state.returned.values())
-      .reduce((acc, amount) => acc += amount, 0)
-    const totalChange = totalTaken - totalReturned;
-    const takenTwoOfSame = Array.from(this.state.taken.values())
-      .reduce((acc, amount) => acc = acc || amount >= 2, false)
-    const takenDiffType = Array.from(this.state.taken.keys())
-      .reduce((acc, key) => acc = acc || (this.state.taken.get(key) >= 1 && key !== gemStone), false)
-    console.log(totalTaken, totalReturned, takenTwoOfSame, takenDiffType)
+    const taken = this.state.taken;
+    const availableGemStones = this.state.availableGemStones;
 
-    if(totalChange >= 3 || totalTaken >= 3) {
+    const totalTaken = Array.from(taken.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const takenTwoOfSame = Array.from(taken.values())
+      .reduce((acc, amount) => acc = acc || amount >= 2, false)
+    const takenDiffType = Array.from(taken.keys())
+      .reduce((acc, key) => acc = acc || (taken.get(key) >= 1 && key !== gemStone), false)
+
+    if(totalTaken >= 3) {
       return;
     }
-    if(this.state.availableGemStones.get(gemStone) < 1) {
+    if(availableGemStones.get(gemStone) < 1) {
       return;
     }
     if(takenTwoOfSame) {
       return;
     }
-    if(this.state.taken.has(gemStone)
-      && this.state.taken.get(gemStone) >= 1
-      && this.state.availableGemStones.get(gemStone) < 3
+    if(taken.has(gemStone)
+      && taken.get(gemStone) >= 1
+      && availableGemStones.get(gemStone) < 3
     ) {
       return;
     }
-    if (this.state.taken.has(gemStone)
-      && this.state.taken.get(gemStone) >= 1
+    if (taken.has(gemStone)
+      && taken.get(gemStone) >= 1
       && takenDiffType) {
       return;
     }
 
-    if (this.state.taken.has(gemStone)) {
-      this.state.taken.set(gemStone, this.state.taken.get(gemStone) + 1)
+    if (taken.has(gemStone)) {
+      taken.set(gemStone, taken.get(gemStone) + 1)
     } else {
-      this.state.taken.set(gemStone, 1)
+      taken.set(gemStone, 1)
     }
-    this.state.availableGemStones.set(gemStone, this.state.availableGemStones.get(gemStone)-1)
+    availableGemStones.set(gemStone, availableGemStones.get(gemStone)-1)
     this.setState({
-      availableGemStones: this.state.availableGemStones,
-      taken: this.state.taken,
+      availableGemStones: availableGemStones,
+      taken: taken,
     })
   }
 
@@ -136,35 +142,64 @@ class TokenModal extends React.Component {
     if(gemStone === GemStone.GOLD) {
       return;
     }
-    if (this.state.taken.get(gemStone) <= 1) {
-      this.state.taken.delete(gemStone)
+
+    const taken = new Map(this.state.taken);
+    const availableGemStones = new Map(this.state.availableGemStones);
+
+    if (taken.get(gemStone) <= 1) {
+      taken.delete(gemStone)
     } else {
-      this.state.taken.set(gemStone, this.state.taken.get(gemStone) - 1)
+      taken.set(gemStone, taken.get(gemStone) - 1)
     }
-    this.state.availableGemStones.set(gemStone, this.state.availableGemStones.get(gemStone)+1)
+    availableGemStones.set(gemStone, availableGemStones.get(gemStone)+1)
+
     this.setState({
-      availableGemStones: this.state.availableGemStones,
-      taken: this.state.taken,
+      availableGemStones: availableGemStones,
+      taken: taken,
+      invalidInputError: null,
     })
   }
 
   onGiveToken(gemStone) {
-    // TODO: Complete this
     if (!this.state.isPlayerTurn) {
       return;
     }
     if(gemStone === GemStone.GOLD) {
       return;
     }
-    if (this.state.returned.has(gemStone)) {
-      this.state.returned.set(gemStone, this.state.returned.get(gemStone) + 1)
-    } else {
-      this.state.returned.set(gemStone, 1)
+    const returned = this.state.returned;
+    const playerGemStones = this.state.playerGemStones;
+
+    const totalReturned = Array.from(returned.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const totalTaken = Array.from(this.state.taken.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const totalOwned = Array.from(playerGemStones.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const amountCanReturn = totalOwned + totalReturned + totalTaken >= 10
+      ? totalOwned + totalReturned + totalTaken - 10
+      : 0;
+
+    if(totalReturned >= 3) {
+      return;
     }
-    this.state.playerGemStones.set(gemStone, this.state.playerGemStones.get(gemStone)-1)
+    if(totalReturned >= amountCanReturn) {
+      return;
+    }
+    if(playerGemStones.get(gemStone) < 1) {
+      return;
+    }
+
+    if (returned.has(gemStone)) {
+      returned.set(gemStone, returned.get(gemStone) + 1)
+    } else {
+      returned.set(gemStone, 1)
+    }
+    playerGemStones.set(gemStone, playerGemStones.get(gemStone)-1)
     this.setState({
-      playerGemStones: this.state.playerGemStones,
-      returned: this.state.returned,
+      playerGemStones: playerGemStones,
+      returned: returned,
+      invalidInputError: null,
     })
   }
 
@@ -175,19 +210,48 @@ class TokenModal extends React.Component {
     if(gemStone === GemStone.GOLD) {
       return;
     }
-    if (this.state.returned.get(gemStone) <= 1) {
-      this.state.returned.delete(gemStone)
+    const returned = this.state.returned;
+    const playerGemStones = this.state.playerGemStones;
+
+    if (returned.get(gemStone) <= 1) {
+      returned.delete(gemStone)
     } else {
-      this.state.returned.set(gemStone, this.state.returned.get(gemStone) - 1)
+      returned.set(gemStone, returned.get(gemStone) - 1)
     }
-    this.playerGemStones.set(gemStone, this.state.playerGemStones.get(gemStone)+1)
+    playerGemStones.set(gemStone, playerGemStones.get(gemStone) + 1)
     this.setState({
-      playerGemStones: this.state.playerGemStones,
-      returned: this.state.returned,
+      playerGemStones: playerGemStones,
+      returned: returned,
     })
   }
 
   onPurchaseTokens() {
+    const totalTaken = Array.from(this.state.taken.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const totalOwned = Array.from(this.state.playerGemStones.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const totalReturned = Array.from(this.state.returned.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    const totalHas = totalTaken + totalOwned;
+    if (totalHas > 10) {
+      this.setState({
+        invalidInputError: `Cannot have more than 10 gemstones. You must return ${totalHas - 10} token(s).`
+      })
+      return;
+    }
+    if (totalReturned > totalTaken) {
+      this.setState({
+        invalidInputError: `Cannot return more gemstones than you have taken. Please take ${totalReturned - totalTaken} more token(s).`
+      })
+      return;
+    }
+    if (totalOwned + totalTaken < 10 && totalReturned > 0) {
+      this.setState({
+        invalidInputError: `Cannot return gemstones if your total gemstones will be end up less than 10. Please take those gemstones back.`
+      })
+      return;
+    }
+
     this.props.handlePurchaseTokens(this.state.taken, this.state.returned)
     this.setState({
       taken: new Map()
@@ -195,6 +259,13 @@ class TokenModal extends React.Component {
   }
 
   render() {
+    // TODO: Fix UI problem here.
+    const InvalidInputError = () => (
+      this.state.invalidInputError
+        ? <InvalidInput>Invalid Input: {this.state.invalidInputError}</InvalidInput>
+        : null
+    );
+
     return (
       <TokenModalContainer>
         <div>
@@ -216,7 +287,7 @@ class TokenModal extends React.Component {
           : null
         }
         <div>
-          <TokensTitle>Owned:</TokensTitle>
+          <TokensTitle>Yours:</TokensTitle>
           {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken)}
         </div>
         {this.state.isPlayerTurn ?
@@ -224,7 +295,7 @@ class TokenModal extends React.Component {
             <Button
               color={theme.color.secondary}
               onClick={this.onPurchaseTokens}>
-              Take Tokens
+              Exchange
           </Button>
           </div>
           : null
@@ -236,6 +307,7 @@ class TokenModal extends React.Component {
             Close
           </Button>
         </div>
+        <InvalidInputError />
       </TokenModalContainer>
     )
   }

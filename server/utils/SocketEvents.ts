@@ -114,8 +114,9 @@ export class SocketEvents {
       }
     })
 
-    socket.on('endTurn', async function(data: GameEndTurn){
+    socket.on('EndTurn', async function(data: GameEndTurn){
       try {
+        console.log(data);
         const actions: Map<string, any> = new Map(Object.entries(data.actions));
         if(actions.size > 1) {
           throw new InvalidGameError("Can't take more than one action per turn.")

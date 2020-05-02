@@ -66,8 +66,8 @@ export class Game {
 
   async transferGems(inputGemsToTransfer: Map<string, number>, player: Player): Promise<this> {
     try {
-      // TODO: Filter out gold tokens if they somehow come in.
       const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
+        .filter((gemStoneName) => gemStoneName !== GemStone.GOLD)
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
           let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
           if (inputGemsToTransfer.get(gemStoneName) === 0) {
@@ -77,17 +77,21 @@ export class Game {
         }, new Map())
       const totalGemsTaken: number = Array.from(gemsToTansfer.values())
         .reduce((acc: number, amount: number) => {
-          return acc = amount > 0 ? acc + amount : 0; // TODO: Shouldn't this be : acc instead of : 0
+          return acc = amount > 0 ? acc + amount : acc;
         }, 0)
       const totalGemsReturned: number = Array.from(gemsToTansfer.values())
         .reduce((acc: number, amount: number) => {
-          return acc = amount < 0 ? acc - amount : 0;
+          return acc = amount < 0 ? acc - amount : acc;
+        }, 0)
+      const totalGemsOwned: number = Array.from(player.hand.gemStones.values())
+        .reduce((acc: number, amount: number) => {
+          return acc += amount;
         }, 0)
       const totalGemChange = totalGemsTaken - totalGemsReturned;
-      const numGemsAllowedToReturn = (player.hand.gemStones.size > MAX_GEMS_ALLOWED_HAVE - MAX_GEMS_ALLOWED_RETURN)
-        ? MAX_GEMS_ALLOWED_RETURN - (MAX_GEMS_ALLOWED_HAVE - player.hand.gemStones.size)
+      const numGemsAllowedToReturn = (totalGemsOwned > MAX_GEMS_ALLOWED_HAVE - MAX_GEMS_ALLOWED_RETURN)
+        ? MAX_GEMS_ALLOWED_RETURN - (MAX_GEMS_ALLOWED_HAVE - totalGemsOwned)
         : 0;
-
+      console.log(totalGemsTaken, totalGemsReturned, totalGemsOwned, numGemsAllowedToReturn);
       if (totalGemChange > 3 || totalGemsTaken > 3) {
         throw new InvalidGameError(`Can't take more than 3 gem stones`);
       }
@@ -95,7 +99,16 @@ export class Game {
         throw new InvalidGameError(`Can't put back more than 3 gem stones`);
       }
       if (totalGemsReturned > numGemsAllowedToReturn) {
-        throw new InvalidGameError(`Can't return any more gems until total gems in hand is greater than ${MAX_GEMS_ALLOWED_HAVE}`);
+        throw new InvalidGameError(`Can't return any more gems stones until total gems stones in hand is greater than ${MAX_GEMS_ALLOWED_HAVE}`);
+      }
+      if (totalGemsReturned > totalGemsTaken) {
+        throw new InvalidGameError(`Can't return more gem stones than you have taken.`)
+      }
+      if (totalGemsOwned + totalGemsTaken < MAX_GEMS_ALLOWED_HAVE && totalGemsReturned > 0) {
+        throw new InvalidGameError(`Can't return any gem stones while if total gem stone count would become less than ${MAX_GEMS_ALLOWED_HAVE}`)
+      }
+      if (totalGemsOwned + totalGemChange > MAX_GEMS_ALLOWED_HAVE) {
+        throw new InvalidGameError(`Can't take more than a total of ${MAX_GEMS_ALLOWED_HAVE} gems`)
       }
       await this.board.transferGems(gemsToTansfer);
       await player.hand.transferGems(gemsToTansfer);

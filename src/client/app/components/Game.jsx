@@ -5,6 +5,8 @@ import Board from './Board.jsx';
 import Player from './Player.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
+import { ActionType } from '../enums/actiontype';
+import { GemStone } from '../enums/gemstones.js';
 
 const GameContainer = styled.div`
   margin-top: 2.5rem;
@@ -41,15 +43,18 @@ class Game extends React.Component {
       targetScore: null,
       turnOrder: [],
       winner: {},
+      actionType: null,
+      actionData: null,
     }
     this.socket = socket;
-    this.onClientRequestError = this.onClientRequestError.bind(this);
-    this.onGameUpdate = this.onGameUpdate.bind(this);
+    this.onClientRequestError = this.onClientRequestError.bind(this)
+    this.onEndTurn = this.onEndTurn.bind(this)
+    this.onGameUpdate = this.onGameUpdate.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveCard = this.onReserveCard.bind(this)
-    this.renderHand = this.renderHand.bind(this);
-    this.renderHands = this.renderHands.bind(this);
+    this.renderHand = this.renderHand.bind(this)
+    this.renderHands = this.renderHands.bind(this)
   }
 
   componentDidMount() {
@@ -72,6 +77,8 @@ class Game extends React.Component {
     const isPlayerTurn = curPlayerTurn.id === player.id;
 
     this.setState({
+      actionType: null,
+      actionData: null,
       curTurnIndex: game.curTurnIndex,
       gameTurn: game.gameTurn,
       targetScore: game.targetScore,
@@ -104,7 +111,27 @@ class Game extends React.Component {
   }
 
   onPurchaseTokens(tokensTaken, tokensReturned) {
-    console.log("tokens: ", tokensTaken, tokensReturned);
+    const tokens = new Map()
+    tokensTaken.forEach((amount, gemStone) => {
+      tokens.set(gemStone, amount);
+    })
+    // TODO: Test this.
+    tokensReturned.forEach((amount, gemStone) => {
+      if(tokens.has(gemStone)) {
+        tokens.set(gemStone, tokens.get(gemStone)-amount)
+      } else {
+        tokens.set(gemStone, -1*amount)
+      }
+    })
+    const tokenObject = Array.from(tokens.keys())
+      .reduce((acc, gemStone) => {
+        acc[gemStone] = tokens.get(gemStone)
+        return acc;
+      }, {})
+    this.setState({
+      actionData: tokenObject,
+      actionType: ActionType.TAKE_GEMS,
+    }, this.onEndTurn)
   }
 
   onPurchaseCard(card) {
@@ -112,6 +139,15 @@ class Game extends React.Component {
   }
   onReserveCard(card) {
     console.log("reserve: ", card);
+  }
+
+  onEndTurn() {
+    const actions = {[this.state.actionType]: this.state.actionData}
+    this.socket.emit("EndTurn", {
+      actions: actions,
+      gameID: this.state.gameID,
+      playerID: this.state.playerID,
+    })
   }
 
   render() {
