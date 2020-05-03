@@ -158,16 +158,21 @@ export class Game {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
       await this.board.swapActiveCard(card);
+
+      const purchasedCards: Map<GemStone, Card[]> = player.hand.getPurchasedCardsByTypes()
       let goldLeft = player.hand.gemStones.get(GemStone.GOLD);
       const gemStonesToTransfer: Map<GemStone, number> =
         Array.from(card.requiredGemStones.keys())
         .reduce((map: Map<GemStone, number>, gemStone: GemStone) => {
           const have: number = player.hand.gemStones.get(gemStone);
           const need: number = card.requiredGemStones.get(gemStone);
-          if(have >= need) {
-            map.set(gemStone, need)
-          } else if (goldLeft > 0 && have + goldLeft >= need) {
-            goldLeft -= need - have;
+          const purchased: number = purchasedCards.get(gemStone)
+            ? purchasedCards.get(gemStone).length
+            : 0;
+          if(have + purchased >= need) {
+            map.set(gemStone, need-purchased)
+          } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
+            goldLeft -= need - (have + purchased)
             map.set(gemStone, have)
           } else {
             throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);

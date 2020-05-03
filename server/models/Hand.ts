@@ -1,6 +1,6 @@
 "use strict"
 
-import { GemStone } from "./GemStone";
+import { GemStone, CardGemStone } from "./GemStone";
 import { Card } from "./Card";
 import { Noble } from "./Noble";
 import { GlobalUtils } from "../utils/GlobalUtils";
@@ -52,20 +52,40 @@ export class Hand {
   }
 
   canPurchaseCard(card: Card): boolean {
+    const purchasedCards: Map<GemStone, Card[]> = this.getPurchasedCardsByTypes();
     let goldLeft = this.gemStones.get(GemStone.GOLD);
     return Array.from(card.requiredGemStones.keys())
       .map((gemStone: GemStone) => {
-        const have = this.gemStones.get(gemStone);
-        const need = card.requiredGemStones.get(gemStone);
-        if (have >= need) {
+        const have: number = this.gemStones.get(gemStone);
+        const need: number = card.requiredGemStones.get(gemStone);
+        const purchased: number = purchasedCards.get(gemStone)
+        ? purchasedCards.get(gemStone).length
+        : 0;
+        if (have + purchased >= need) {
           return true;
-        }
-        if (goldLeft > 0 && have + goldLeft >= need) {
-          goldLeft -= need - have;
+        } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
+          goldLeft -= need - (have + purchased);
           return true;
         }
         return false;
       }).reduce((prev, cur) => prev && cur)
+  }
+
+  getPurchasedCardsByTypes(): Map<GemStone, Card[]> {
+    return Array.from(this.purchasedCards.keys())
+    .reduce((map: Map<GemStone, Card[]>, key: string) => {
+      const card: Card = this.purchasedCards.get(key)
+      const gemStone: GemStone = GemStone[card.gemStoneType.toString().toUpperCase() as keyof typeof GemStone];  // ew
+      let cardsForType: Card[];
+      if(map.has(gemStone)) {
+        cardsForType = map.get(gemStone)
+        cardsForType.push(card)
+      } else {
+        cardsForType = [];
+        cardsForType.push(card);
+      }
+      return map.set(gemStone, cardsForType)
+    }, new Map())
   }
 
   async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<this> {

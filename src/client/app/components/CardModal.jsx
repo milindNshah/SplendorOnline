@@ -144,16 +144,19 @@ class CardModal extends React.Component {
 
   onPurchaseCard() {
     const requiredGemStones = new Map(Object.entries(this.state.card.requiredGemStones))
+    const getPurchasedCardsByTypes = this.getPurchasedCardsByTypes();
     let goldLeft = this.state.playerGemStones.get(GemStone.GOLD)
     const canPurchaseCard = Array.from(requiredGemStones.keys())
       .map((gemStone) => {
         const have = this.state.playerGemStones.get(gemStone)
         const need = requiredGemStones.get(gemStone)
-        if (have >= need) {
+        const purchased = getPurchasedCardsByTypes.get(gemStone)
+          ? getPurchasedCardsByTypes.get(gemStone).length
+          : 0
+        if (have + purchased >= need) {
           return true
-        }
-        if (goldLeft > 0 && have + goldLeft >= need) {
-          goldLeft -= (need - have)
+        } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
+          goldLeft -= (need - (have + purchased))
           return true;
         }
         return false;
