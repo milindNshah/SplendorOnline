@@ -48,6 +48,10 @@ const theme = {
     modal: {
       width: 12,
       height: 16,
+    },
+    token: {
+      width: 3,
+      height: 4,
     }
   },
   board: {

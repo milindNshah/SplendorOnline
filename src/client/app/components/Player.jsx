@@ -161,7 +161,7 @@ class Player extends React.Component {
     })
   }
 
-  getPurchasedCardsByTypes() { // Map<GemStone, Card[]>
+  getPurchasedCardsByTypes() {
     const purchasedCards = new Map(Object.entries(this.state.hand.purchasedCards))
     const byType = Array.from(purchasedCards.keys())
       .reduce((map, key) => {

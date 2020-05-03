@@ -63,6 +63,7 @@ class Board extends React.Component {
       isPlayerTurn: this.props.isPlayerTurn,
       nobleClicked: null,
       playerGemStones: this.props.hand?.gemStones,
+      playerPurchasedCards: this.props.hand?.purchasedCards,
       playerReservedCards: this.props.hand?.reservedCards,
     }
     this.onCardClick = this.onCardClick.bind(this)
@@ -95,6 +96,7 @@ class Board extends React.Component {
         board: this.props.board,
         isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: this.props.hand?.gemStones,
+        playerPurchasedCards: this.props.hand?.purchasedCards,
         playerReservedCards: this.props.hand?.reservedCards,
       });
     }
@@ -262,6 +264,7 @@ class Board extends React.Component {
                   handlePurchaseCard={this.onPurchaseCard}
                   handleReserveCard={this.onReserveCard}
                   playerGemStones={this.state.playerGemStones}
+                  playerPurchasedCards={this.state.playerPurchasedCards}
                   playerReservedCards={this.state.playerReservedCards}
                   width={theme.board.width}
                 />
