@@ -116,7 +116,6 @@ export class SocketEvents {
 
     socket.on('EndTurn', async function(data: GameEndTurn){
       try {
-        console.log(data);
         const actions: Map<string, any> = new Map(Object.entries(data.actions));
         if(actions.size > 1) {
           throw new InvalidGameError("Can't take more than one action per turn.")
@@ -128,7 +127,6 @@ export class SocketEvents {
         if(actions.has(ActionType.TAKE_GEMS)) {
           await game.transferGems(new Map(Object.entries(actions.get(ActionType.TAKE_GEMS))), player)
         }
-        // TODO: Test all of these...
         if(actions.get(ActionType.RESERVE_ACTIVE_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.RESERVE_ACTIVE_CARD));
           await game.reserveActiveCard(card, player);
@@ -140,6 +138,7 @@ export class SocketEvents {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_ACTIVE_CARD));
           await game.purchaseActiveCard(card, player);
         }
+        // TODO: Test This
         if(actions.get(ActionType.PURCHASE_RESERVED_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_RESERVED_CARD));
           await game.purchaseReservedCard(card, player);

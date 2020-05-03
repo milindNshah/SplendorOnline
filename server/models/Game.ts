@@ -179,9 +179,7 @@ export class Game {
       await player.hand.addToPurchased(gemStonesToTransfer, card);
       await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
       // TODO: Check if Nobles available.
-      // TODO: Update score of player.
-      console.log(this.board.availableGemStones)
-      console.log(player);
+      await player.hand.updateScore();
       return this;
     } catch (err) {
       throw err;

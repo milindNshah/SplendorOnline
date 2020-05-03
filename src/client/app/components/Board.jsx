@@ -6,6 +6,8 @@ import Noble from './Noble.jsx'
 import TierCard from './TierCard.jsx'
 import CardModal from './CardModal.jsx'
 import TokenModal from './TokenModal.jsx'
+import NobleModal from './NobleModal.jsx'
+import TierCardModal from './TierCardModal.jsx'
 import OutsideAlerter from './OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
 
@@ -57,18 +59,25 @@ class Board extends React.Component {
     this.state = {
       board: this.props.board,
       cardClicked: null,
+      tierCardClicked: null,
       tokenClicked: false,
       isPlayerTurn: this.props.isPlayerTurn,
+      nobleClicked: null,
       playerGemStones: this.props.hand?.gemStones,
       playerReservedCards: this.props.hand?.reservedCards,
     }
     this.onCardClick = this.onCardClick.bind(this)
     this.onCardModalClose = this.onCardModalClose.bind(this)
-    this.onTokenClick = this.onTokenClick.bind(this)
-    this.onTokenModalClose = this.onTokenModalClose.bind(this)
+    this.onNobleClick = this.onNobleClick.bind(this)
+    this.onNobleModalClose = this.onNobleModalClose.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveCard = this.onReserveCard.bind(this)
+    this.onReserveTierCard = this.onReserveTierCard.bind(this)
+    this.onTokenClick = this.onTokenClick.bind(this)
+    this.onTokenModalClose = this.onTokenModalClose.bind(this)
+    this.onTierCardClick = this.onTierCardClick.bind(this)
+    this.onTierCardModalClose = this.onTierCardModalClose.bind(this)
     this.renderCard = this.renderCard.bind(this)
     this.renderCards = this.renderCards.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
@@ -141,7 +150,19 @@ class Board extends React.Component {
   }
 
   renderNoble(noble) {
-    return (<Col key={noble.id}><Noble noble={noble} width={theme.card.width} height={theme.card.width}/></Col>)
+    return (<Col key={noble.id} onClick={() => this.onNobleClick(noble)}><Noble noble={noble} width={theme.card.width} height={theme.card.width}/></Col>)
+  }
+
+  onNobleClick(noble) {
+    this.setState({
+      nobleClicked: noble,
+    })
+  }
+
+  onNobleModalClose() {
+    this.setState({
+      nobleClicked: null,
+    })
   }
 
   renderTieredCards() {
@@ -195,14 +216,33 @@ class Board extends React.Component {
   }
 
   renderTierCard(tier, remaining) {
-    return (<Col key={tier}><TierCard tier={tier} remaining={remaining} width={theme.card.width} height={theme.card.height}/></Col>)
+    return (<Col key={tier} onClick={() => this.onTierCardClick(tier, remaining)}><TierCard tier={tier} remaining={remaining} width={theme.card.width} height={theme.card.height}/></Col>)
+  }
+
+  onTierCardClick(tier, remaining) {
+    this.setState({
+      tierCardClicked: {tier: tier, remaining: remaining},
+    })
+  }
+
+  onTierCardModalClose() {
+    this.setState({
+      tierCardClicked: null,
+    })
+  }
+
+  onReserveTierCard() {
+    this.props.onReserveTierCard(this.state.tierCardClicked.tier)
+    this.setState({
+      tierCardClicked: null,
+    })
   }
 
   // TODO: Press escape to close modal
   render() {
     return (
       <BoardContainer>
-        {(this.state.cardClicked || this.state.tokenClicked)
+        {(this.state.cardClicked || this.state.tokenClicked || this.state.nobleClicked || this.state.tierCardClicked)
           ? <Overlay></Overlay>
           : null
         }
@@ -242,6 +282,40 @@ class Board extends React.Component {
                   handleClose={this.onTokenModalClose}
                   handlePurchaseTokens={this.onPurchaseTokens}
                   playerGemStones={this.state.playerGemStones}
+                  width={theme.board.width}
+                />
+              </OutsideAlerter>
+            </ModalContainer>
+          )
+          : null
+        }
+        {this.state.nobleClicked
+          ?
+          (
+            <ModalContainer>
+              <OutsideAlerter handleClose={this.onNobleModalClose}>
+                <NobleModal
+                  handleClose={this.onNobleModalClose}
+                  noble={this.state.nobleClicked}
+                  width={theme.board.width}
+                />
+              </OutsideAlerter>
+            </ModalContainer>
+          )
+          : null
+        }
+        {this.state.tierCardClicked
+          ?
+          (
+            <ModalContainer>
+              <OutsideAlerter handleClose={this.onTierCardModalClose}>
+                <TierCardModal
+                  isPlayerTurn={this.state.isPlayerTurn}
+                  tier={this.state.tierCardClicked.tier}
+                  remaining={this.state.tierCardClicked.remaining}
+                  handleClose={this.onTierCardModalClose}
+                  handleReserveCard={this.onReserveTierCard}
+                  playerReservedCards={this.state.playerReservedCards}
                   width={theme.board.width}
                 />
               </OutsideAlerter>

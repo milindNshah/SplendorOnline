@@ -108,6 +108,13 @@ export class Hand {
     return this;
   }
 
+  async updateScore(): Promise<this> {
+    const score: number = Array.from(this.purchasedCards.values())
+      .reduce((acc, card) => acc += card.pointValue, 0)
+    this.score = score;
+    return this;
+  }
+
   takeGoldGemStone(): this {
     const numGoldGemStones = this.gemStones.get(GemStone.GOLD);
     this.gemStones.set(GemStone.GOLD, numGoldGemStones+1);

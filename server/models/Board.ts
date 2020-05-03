@@ -151,7 +151,7 @@ export class Board {
   }
 
   async swapActiveCard(card: Card): Promise<this> {
-    // TODO: Swap at some position.
+    // TODO: Swap at same position.
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(card.tier);
     if (activeCardTier.has(card.id)) {
@@ -186,9 +186,8 @@ export class Board {
     if(numGoldGemStones > 0) {
       this.availableGemStones.set(GemStone.GOLD, numGoldGemStones-1)
       return true;
-    } else {
-      throw new InvalidGameError(`No more gold tokens left. Card was reserved`);
     }
+    return false;
   }
 
   private addNewActiveCard(tier: CardTier): this {

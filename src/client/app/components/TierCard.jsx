@@ -29,6 +29,7 @@ const Remaining = styled.div`
 `
 
 const CardTitle = styled.div`
+  font-size: ${ props => `${props.width / 6}rem`};
   color: ${ props => props.theme.color.white};
   position: absolute;
   top: 0;
@@ -66,7 +67,7 @@ class TierCard extends React.Component {
       <Card {...this.props}>
         <Remaining {...this.props}>{this.props.remaining}</Remaining>
         <CardDots {...this.props}></CardDots>
-        <CardTitle>Splendor</CardTitle>
+        <CardTitle width={this.props.width}>Splendor</CardTitle>
       </Card>
     )
   }

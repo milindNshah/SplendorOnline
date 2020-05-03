@@ -61,9 +61,9 @@ const HorizontalLine = (props) => {
       height={`${props.height}rem`}
     >
       <Line
-        x1={`1.75rem`}
+        x1={`${props.width/3.5}rem`}
         y1={`0.25rem`}
-        x2={`1.75rem`}
+        x2={`${props.width/3.5}rem`}
         y2={`${props.width-0.25}rem`}
         />
     </svg>

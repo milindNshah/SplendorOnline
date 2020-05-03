@@ -53,6 +53,7 @@ class Game extends React.Component {
     this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
+    this.onReserveTierCard = this.onReserveTierCard.bind(this)
     this.renderHand = this.renderHand.bind(this)
     this.renderHands = this.renderHands.bind(this)
   }
@@ -115,7 +116,6 @@ class Game extends React.Component {
     tokensTaken.forEach((amount, gemStone) => {
       tokens.set(gemStone, amount);
     })
-    // TODO: Test this.
     tokensReturned.forEach((amount, gemStone) => {
       if(tokens.has(gemStone)) {
         tokens.set(gemStone, tokens.get(gemStone)-amount)
@@ -145,6 +145,13 @@ class Game extends React.Component {
     this.setState({
       actionData: card.id,
       actionType: ActionType.RESERVE_ACTIVE_CARD,
+    }, this.onEndTurn)
+  }
+
+  onReserveTierCard(tier) {
+    this.setState({
+      actionData: tier,
+      actionType: ActionType.RESERVE_DECK_CARD,
     }, this.onEndTurn)
   }
 
@@ -188,6 +195,7 @@ class Game extends React.Component {
           onPurchaseCard={this.onPurchaseActiveCard}
           onPurchaseTokens={this.onPurchaseTokens}
           onReserveCard={this.onReserveActiveCard}
+          onReserveTierCard={this.onReserveTierCard}
         />
         {this.renderHands()}
         <InvalidInputError />
