@@ -6,7 +6,7 @@ import Player from './Player.jsx';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
 import { ActionType } from '../enums/actiontype';
-import { GemStone } from '../enums/gemstones.js';
+import theme from '../styledcomponents/theme.jsx'
 
 const GameContainer = styled.div`
   margin-top: 2.5rem;
@@ -98,6 +98,7 @@ class Game extends React.Component {
     });
   }
 
+  // TODO: Make sure "this" player is first. Flexbox Order?
   renderHands() {
     if (!this.state.players) {
       return;
@@ -108,7 +109,7 @@ class Game extends React.Component {
   }
 
   renderHand(player) {
-    return <Player key={player.id} player={player} isPlayerTurn={this.state.isPlayerTurn} />
+    return <Player key={player.id} player={player} width={theme.board.width}/>
   }
 
   onPurchaseTokens(tokensTaken, tokensReturned) {

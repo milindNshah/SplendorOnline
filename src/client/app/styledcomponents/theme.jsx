@@ -54,11 +54,6 @@ const theme = {
     spaceBetweenCards: `${spaceBetweenCards}`,
     width: `${cardWidth*5+spaceBetweenCards*10+5}`,
   },
-  player: {
-    iconColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*4/6}rem`,
-    nameColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*1/6}rem`,
-    iconColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*1/6}rem`,
-  }
 };
 
 export default theme;

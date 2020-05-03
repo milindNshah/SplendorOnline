@@ -97,9 +97,10 @@ class Card extends React.Component {
             fill="true"
           />
         </ScoreOverlay>
-        <RequiredGemStonesOverlay {...this.props}>
-          {this.renderRequiredGemStones()}
-        </RequiredGemStonesOverlay>
+        {this.props.doNotRenderRequired
+          ? null
+          : <RequiredGemStonesOverlay {...this.props}>{this.renderRequiredGemStones()}</RequiredGemStonesOverlay>
+        }
       </CardContainer>
     );
   }

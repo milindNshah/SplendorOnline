@@ -31,6 +31,7 @@ const InvalidInput = styled.p`
   text-align: left;
 `
 
+// TODO: Make this a two step process for better UX: Take and if necessary Return.
 class TokenModal extends React.Component {
   constructor (props) {
     super(props)
@@ -293,6 +294,7 @@ class TokenModal extends React.Component {
           <TokensTitle>Yours:</TokensTitle>
           {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken)}
         </div>
+        {/*  TODO: When clicking exchange and no tokens taken: Display warning/confirmation. */}
         {this.state.isPlayerTurn ?
           <div>
             <Button

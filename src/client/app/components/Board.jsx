@@ -35,7 +35,6 @@ const Overlay = styled.div`
 `
 
 const Table = styled.div`
-  border: 2px solid ${ props => props.theme.color.black};
   display: flex;
   flex-direction: column;
   width: ${ props => `${props.theme.board.width}rem`};

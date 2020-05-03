@@ -40,7 +40,9 @@ class CardModal extends React.Component {
       card: this.props.card,
       invalidInputError: null,
       isPlayerTurn: this.props.isPlayerTurn,
-      playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
+      playerGemStones: this.props.playerGemStones
+        ? new Map(Object.entries(this.props.playerGemStones))
+        : null,
       playerReservedCards: this.props.playerReservedCards,
     }
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
@@ -55,7 +57,9 @@ class CardModal extends React.Component {
       this.setState({
         card: this.props.card,
         isPlayerTurn: this.props.isPlayerTurn,
-        playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
+        playerGemStones: this.props.playerGemStones
+        ? new Map(Object.entries(this.props.playerGemStones))
+        : null,
         playerReservedCards: this.props.playerReservedCards,
       })
     }
@@ -135,11 +139,14 @@ class CardModal extends React.Component {
     return (
       <CardModalContainer width={this.props.width}>
         <Card card={this.state.card} width={theme.card.modal.width} height={theme.card.modal.height} />
-        <TokensOwned>
-          <p>Owned Gemstones</p>
-          {this.renderGemStoneTokens()}
-        </TokensOwned>
-        {this.state.isPlayerTurn ?
+        {this.props.playerGemStones ?
+          <TokensOwned>
+            <p>Owned Gemstones</p>
+            {this.renderGemStoneTokens()}
+          </TokensOwned>
+          : null
+        }
+        {this.state.isPlayerTurn && this.props.handlePurchaseCard ?
           <div>
             <Button
               color={theme.color.primary}
@@ -149,7 +156,7 @@ class CardModal extends React.Component {
           </div>
           : null
         }
-        {this.state.isPlayerTurn ?
+        {this.state.isPlayerTurn && this.props.handleReserveCard?
           <div>
             <Button
               color={theme.color.secondary}
