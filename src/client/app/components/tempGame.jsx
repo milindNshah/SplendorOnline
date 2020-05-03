@@ -137,7 +137,6 @@ class TempGame extends React.Component {
     if(this.state.purchasedReservedCard) {
       actions[ActionType.PURCHASE_RESERVED_CARD] = this.state.purchasedReservedCard.id;
     }
-    console.log(actions);
 
     this.socket.emit("endTurn", {
       actions: actions,

@@ -52,7 +52,7 @@ const theme = {
   },
   board: {
     spaceBetweenCards: `${spaceBetweenCards}`,
-    width: `${cardWidth*5+spaceBetweenCards*10+5}rem`,
+    width: `${cardWidth*5+spaceBetweenCards*10+5}`,
   },
   player: {
     iconColWidth: `${(cardWidth*5+spaceBetweenCards*10+5)*4/6}rem`,

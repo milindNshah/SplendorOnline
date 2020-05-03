@@ -85,21 +85,13 @@ export class Hand {
     return this;
   }
 
-  async addToPurchased(card: Card): Promise<this> {
-    if (!this.canPurchaseCard(card)) {
-      throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
-    }
-    card.requiredGemStones.forEach((required: number, gemStone: GemStone) => {
+  async addToPurchased(gemStonesToRemove: Map<GemStone, number>, card: Card): Promise<this> {
+    gemStonesToRemove.forEach((required: number, gemStone: GemStone) => {
       const have = this.gemStones.get(gemStone);
-      const goldLeft = this.gemStones.get(GemStone.GOLD);
-      if(have >= required) {
-        this.gemStones.set(gemStone, have-required);
-      } else if (have + goldLeft >= required) {
-        this.gemStones.set(gemStone, 0);
-        this.gemStones.set(GemStone.GOLD, goldLeft-(required-have));
-      } else {
+      if (have < required) {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
+      this.gemStones.set(gemStone, have-required)
     })
     this.purchasedCards.set(card.id, card);
     return this;

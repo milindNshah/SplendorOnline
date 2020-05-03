@@ -91,7 +91,6 @@ export class Game {
       const numGemsAllowedToReturn = (totalGemsOwned > MAX_GEMS_ALLOWED_HAVE - MAX_GEMS_ALLOWED_RETURN)
         ? MAX_GEMS_ALLOWED_RETURN - (MAX_GEMS_ALLOWED_HAVE - totalGemsOwned)
         : 0;
-      console.log(totalGemsTaken, totalGemsReturned, totalGemsOwned, numGemsAllowedToReturn);
       if (totalGemChange > 3 || totalGemsTaken > 3) {
         throw new InvalidGameError(`Can't take more than 3 gem stones`);
       }
@@ -159,9 +158,30 @@ export class Game {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
       await this.board.swapActiveCard(card);
-      await player.hand.addToPurchased(card);
+      let goldLeft = player.hand.gemStones.get(GemStone.GOLD);
+      const gemStonesToTransfer: Map<GemStone, number> =
+        Array.from(card.requiredGemStones.keys())
+        .reduce((map: Map<GemStone, number>, gemStone: GemStone) => {
+          const have: number = player.hand.gemStones.get(gemStone);
+          const need: number = card.requiredGemStones.get(gemStone);
+          if(have >= need) {
+            map.set(gemStone, need)
+          } else if (goldLeft > 0 && have + goldLeft >= need) {
+            goldLeft -= need - have;
+            map.set(gemStone, have)
+          } else {
+            throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
+          }
+          return map;
+        }, new Map())
+      gemStonesToTransfer.set(GemStone.GOLD, (player.hand.gemStones.get(GemStone.GOLD) - goldLeft))
+
+      await player.hand.addToPurchased(gemStonesToTransfer, card);
+      await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
       // TODO: Check if Nobles available.
       // TODO: Update score of player.
+      console.log(this.board.availableGemStones)
+      console.log(player);
       return this;
     } catch (err) {
       throw err;

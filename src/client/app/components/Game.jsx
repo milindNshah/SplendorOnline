@@ -50,9 +50,9 @@ class Game extends React.Component {
     this.onClientRequestError = this.onClientRequestError.bind(this)
     this.onEndTurn = this.onEndTurn.bind(this)
     this.onGameUpdate = this.onGameUpdate.bind(this)
-    this.onPurchaseCard = this.onPurchaseCard.bind(this)
+    this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
-    this.onReserveCard = this.onReserveCard.bind(this)
+    this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.renderHand = this.renderHand.bind(this)
     this.renderHands = this.renderHands.bind(this)
   }
@@ -134,11 +134,18 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
-  onPurchaseCard(card) {
-    console.log("purchase: ", card);
+  onPurchaseActiveCard(card) {
+    this.setState({
+      actionData: card.id,
+      actionType: ActionType.PURCHASE_ACTIVE_CARD,
+    }, this.onEndTurn)
   }
-  onReserveCard(card) {
-    console.log("reserve: ", card);
+
+  onReserveActiveCard(card) {
+    this.setState({
+      actionData: card.id,
+      actionType: ActionType.RESERVE_ACTIVE_CARD,
+    }, this.onEndTurn)
   }
 
   onEndTurn() {
@@ -176,11 +183,11 @@ class Game extends React.Component {
         </Scorebox>
         <Board
           board={this.state.board}
-          playerGemStones={this.state.player?.hand?.gemStones}
+          hand={this.state.player?.hand}
           isPlayerTurn={this.state.isPlayerTurn}
-          onPurchaseCard={this.onPurchaseCard}
+          onPurchaseCard={this.onPurchaseActiveCard}
           onPurchaseTokens={this.onPurchaseTokens}
-          onReserveCard={this.onReserveCard}
+          onReserveCard={this.onReserveActiveCard}
         />
         {this.renderHands()}
         <InvalidInputError />

@@ -151,6 +151,7 @@ export class Board {
   }
 
   async swapActiveCard(card: Card): Promise<this> {
+    // TODO: Swap at some position.
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(card.tier);
     if (activeCardTier.has(card.id)) {
@@ -159,6 +160,13 @@ export class Board {
     } else {
       throw new InvalidGameError(`Invalid card given. Unable to get card`)
     }
+    return this;
+  }
+
+  async addGemsFromPurchasedCard(gemStonesToAdd: Map<GemStone, number>): Promise<this> {
+    gemStonesToAdd.forEach((required: number, gemStone: GemStone) => {
+      this.availableGemStones.set(gemStone, this.availableGemStones.get(gemStone)+required)
+    })
     return this;
   }
 

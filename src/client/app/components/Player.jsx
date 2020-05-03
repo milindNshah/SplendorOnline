@@ -6,8 +6,8 @@ const PlayerContainer = styled.div`
   justify-content: center;
 `
 const PlayerWidthContainer = styled.div`
-  width: ${ props => props.theme.board.width};
-  min-width: ${ props => props.theme.board.width};
+  width: ${ props => `${props.theme.board.width}rem`};
+  min-width: ${ props => `${props.theme.board.width}rem`};
 `
 const PlayerHeader = styled.div`
   display: flex;

@@ -36,8 +36,8 @@ const Table = styled.div`
   border: 2px solid ${ props => props.theme.color.black};
   display: flex;
   flex-direction: column;
-  width: ${ props => props.theme.board.width};
-  min-width: ${ props => props.theme.board.width};
+  width: ${ props => `${props.theme.board.width}rem`};
+  min-width: ${ props => `${props.theme.board.width}rem`};
 `
 const Row = styled.div`
   margin: 0.5rem 0rem;
@@ -59,7 +59,8 @@ class Board extends React.Component {
       cardClicked: null,
       tokenClicked: false,
       isPlayerTurn: this.props.isPlayerTurn,
-      playerGemStones: this.props.playerGemStones,
+      playerGemStones: this.props.hand?.gemStones,
+      playerReservedCards: this.props.hand?.reservedCards,
     }
     this.onCardClick = this.onCardClick.bind(this)
     this.onCardModalClose = this.onCardModalClose.bind(this)
@@ -80,11 +81,13 @@ class Board extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.board !== prevProps.board ||
-      this.props.playerGemStones !== prevProps.playerGemStones) {
+      this.props.hand !== prevProps.hand ||
+      this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
         board: this.props.board,
         isPlayerTurn: this.props.isPlayerTurn,
-        playerGemStones: this.props.playerGemStones,
+        playerGemStones: this.props.hand?.gemStones,
+        playerReservedCards: this.props.hand?.reservedCards,
       });
     }
   }
@@ -219,6 +222,9 @@ class Board extends React.Component {
                   handleClose={this.onCardModalClose}
                   handlePurchaseCard={this.onPurchaseCard}
                   handleReserveCard={this.onReserveCard}
+                  playerGemStones={this.state.playerGemStones}
+                  playerReservedCards={this.state.playerReservedCards}
+                  width={theme.board.width}
                 />
               </OutsideAlerter>
             </ModalContainer>
@@ -231,11 +237,12 @@ class Board extends React.Component {
             <ModalContainer>
               <OutsideAlerter handleClose={this.onTokenModalClose}>
                 <TokenModal
-                  isPlayerTurn={this.state.isPlayerTurn}
-                  playerGemStones={this.state.playerGemStones}
                   availableGemStones={this.state.board.availableGemStones}
+                  isPlayerTurn={this.state.isPlayerTurn}
                   handleClose={this.onTokenModalClose}
                   handlePurchaseTokens={this.onPurchaseTokens}
+                  playerGemStones={this.state.playerGemStones}
+                  width={theme.board.width}
                 />
               </OutsideAlerter>
             </ModalContainer>
