@@ -47,6 +47,7 @@ const CardToken = styled.div`
   border: 2px solid ${ props => getColorFromGemStone(props.type) };
   margin-top: 0.5rem;
   font-size: 1.5rem;
+  font-family: ${ props => props.theme.fontFamily.secondary };
   display: flex;
   flex-direction: column;
   align-items: center;

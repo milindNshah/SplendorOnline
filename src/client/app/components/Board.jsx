@@ -284,6 +284,7 @@ class Board extends React.Component {
                   handleClose={this.onTokenModalClose}
                   handlePurchaseTokens={this.onPurchaseTokens}
                   playerGemStones={this.state.playerGemStones}
+                  playerPurchasedCards={this.state.playerPurchasedCards}
                   width={theme.board.width}
                 />
               </OutsideAlerter>

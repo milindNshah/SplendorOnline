@@ -3,7 +3,8 @@ import styled from "styled-components"
 import Button from '../styledcomponents/button.jsx'
 import GemStoneToken from './GemStoneToken.jsx'
 import theme from '../styledcomponents/theme.jsx'
-import { GemStone } from '../enums/gemstones'
+import { GemStone, getColorFromGemStone } from '../enums/gemstones'
+import { GemStoneBase } from './GemStone.jsx'
 
 const TokenModalContainer = styled.div`
   width: ${ props => `${props.width}rem`};
@@ -24,6 +25,23 @@ const Row = styled.div`
 `
 const Col = styled.div`
   margin: 0rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+const CardToken = styled.div`
+  background: ${ props => props.theme.color.black };
+  width: ${ props => `${props.width}rem` };
+  height: ${ props => `${props.height}rem` };
+  color: ${ props => props.theme.color.white };
+  border-radius: 5px;
+  border: 2px solid ${ props => getColorFromGemStone(props.type) };
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-family: ${ props => props.theme.fontFamily.secondary };
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 const InvalidInput = styled.p`
   padding: 1rem;
@@ -40,9 +58,11 @@ class TokenModal extends React.Component {
       invalidInputError: null,
       isPlayerTurn: this.props.isPlayerTurn,
       playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
+      playerPurchasedCards: new Map(Object.entries(this.props.playerPurchasedCards)),
       taken: new Map(),
       returned: new Map(),
     }
+    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onGiveToken = this.onGiveToken.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReturnToken = this.onReturnToken.bind(this)
@@ -58,26 +78,46 @@ class TokenModal extends React.Component {
         availableGemStones: new Map(Object.entries(this.props.availableGemStones)),
         isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
+        playerPurchasedCards: new Map(Object.entries(this.props.playerPurchasedCards)),
       })
     }
   }
 
-  renderGemStoneTokens(tokens, tokenFunc) {
+  getPurchasedCardsByTypes() {
+    const byType = Array.from(this.state.playerPurchasedCards.keys())
+      .reduce((map, key) => {
+        const card = this.state.playerPurchasedCards.get(key)
+        let cardsForType;
+        if(map.has(card.gemStoneType)) {
+          cardsForType = map.get(card.gemStoneType)
+          cardsForType.push(card)
+        } else {
+          cardsForType = []
+          cardsForType.push(card)
+        }
+        return map.set(card.gemStoneType, cardsForType)
+      }, new Map())
+    return byType
+  }
+
+  renderGemStoneTokens(tokens, tokenFunc, renderPurchasedCards) {
     if (!tokens) {
       return
     }
+    const purchasedCards = this.getPurchasedCardsByTypes();
     return (
       <Row>
         {
           Array.from(tokens.keys())
             .filter((gemStone) => gemStone !== GemStone.GOLD)
-            .map((gemstone) => this.renderGemStoneToken(gemstone, tokens.get(gemstone), tokenFunc))
+            .map((gemStone) => this.renderGemStoneToken(gemStone, tokens.get(gemStone), purchasedCards.get(gemStone), renderPurchasedCards, tokenFunc))
         }
       </Row>
     )
   }
 
-  renderGemStoneToken(gemStone, amount, tokenFunc) {
+  renderGemStoneToken(gemStone, amount, cards, renderPurchasedCards, tokenFunc) {
+    const cardAmount = cards ? cards.length : 0;
     return (
       <Col key={gemStone} onClick={() => tokenFunc(gemStone)}>
         <GemStoneToken
@@ -86,6 +126,13 @@ class TokenModal extends React.Component {
           width={theme.token.modal.width}
           height={theme.token.modal.height}
         />
+        {renderPurchasedCards
+          ? <CardToken type={gemStone} width={theme.card.token.width} height={theme.card.token.height}>
+            {cardAmount}
+            <GemStoneBase type={gemStone} width={theme.card.token.width * 2 / 5} height={theme.card.token.width * 2 / 5} fill="true" />
+          </CardToken>
+          : null
+        }
       </Col>)
   }
 
@@ -292,7 +339,7 @@ class TokenModal extends React.Component {
         }
         <div>
           <TokensTitle>Yours:</TokensTitle>
-          {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken)}
+          {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken, true)}
         </div>
         {/*  TODO: When clicking exchange and no tokens taken: Display warning/confirmation. */}
         {this.state.isPlayerTurn ?
