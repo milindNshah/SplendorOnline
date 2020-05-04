@@ -154,6 +154,30 @@ export class Game {
     }
   }
 
+  // async hackForNobles(player: Player): Promise<this> {
+  //   try {
+  //     const unlimitedGems: Map<GemStone, number> = new Map([
+  //       [GemStone.DIAMOND, 99],
+  //       [GemStone.SAPPHIRE, 99],
+  //       [GemStone.EMERALD, 99],
+  //       [GemStone.RUBY, 99],
+  //       [GemStone.CHOCOLATE, 99],
+  //       [GemStone.GOLD, 99],
+  //     ])
+  //     player.hand.transferGems(unlimitedGems);
+  //     const cards = Array.from(this.board.activeTieredCards.get(CardTier.TIER1).values())
+  //     for (let card of cards) {
+  //       await this.board.swapActiveCard(card);
+  //       const gemStonesToTransfer: Map<GemStone, number> = await this.getGemStonesToUseForPurchase(card, player);
+  //       await player.hand.addToPurchased(gemStonesToTransfer, card);
+  //       await player.hand.updateScore();
+  //     }
+  //     return this;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
   async purchaseActiveCard(card: Card, player: Player): Promise<this> {
     try {
       if (!player.hand.canPurchaseCard(card)) {
@@ -163,7 +187,8 @@ export class Game {
       const gemStonesToTransfer: Map<GemStone, number> = await this.getGemStonesToUseForPurchase(card, player);
       await player.hand.addToPurchased(gemStonesToTransfer, card);
       await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
-      // TODO: Check if Nobles available.
+      const noblesToTake = await this.board.takeNoblesIfValid(player);
+      player.hand.addToNobles(noblesToTake)
       await player.hand.updateScore();
       return this;
     } catch (err) {
@@ -183,7 +208,8 @@ export class Game {
       await player.hand.purchaseReservedCard(card);
       await player.hand.addToPurchased(gemStonesToTransfer, card);
       await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
-      // TODO: Check if Nobles available.
+      const noblesToTake = await this.board.takeNoblesIfValid(player);
+      player.hand.addToNobles(noblesToTake)
       await player.hand.updateScore();
       return this;
     } catch (err) {

@@ -128,10 +128,19 @@ export class Hand {
     return this;
   }
 
+  async addToNobles(nobles: Noble[]): Promise<this> {
+    nobles.forEach((noble: Noble) => {
+      this.nobles.set(noble.id, noble);
+    })
+    return this;
+  }
+
   async updateScore(): Promise<this> {
-    const score: number = Array.from(this.purchasedCards.values())
+    const cardScore: number = Array.from(this.purchasedCards.values())
       .reduce((acc, card) => acc += card.pointValue, 0)
-    this.score = score;
+    const nobleScore: number = Array.from(this.nobles.values())
+      .reduce((acc, noble) => acc += noble.pointValue, 0)
+    this.score = cardScore + nobleScore;
     return this;
   }
 

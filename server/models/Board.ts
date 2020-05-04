@@ -1,13 +1,14 @@
 "use strict"
 import { GlobalUtils } from '../utils/GlobalUtils'
 import { CardTier, Card } from './Card';
-import { GemStone } from './GemStone';
+import { GemStone, CardGemStone } from './GemStone';
 import * as CardManager from '../managers/CardManager';
 import * as NobleManager from '../managers/NobleManager';
 import { CardGenerationError, InvalidGameError } from './Errors';
 import { Noble } from './Noble';
 import * as CardService from '../services/CardService';
 import * as NobleService from '../services/NobleService';
+import { Player } from './Player';
 
 const NUM_CARDS_PER_TIER = 4;
 const NUM_GEM_STONES_TWO_PLAYER = 4;
@@ -188,6 +189,28 @@ export class Board {
       return true;
     }
     return false;
+  }
+
+  async takeNoblesIfValid(player: Player): Promise<Noble[]> {
+    let noblesToTake: Noble[] = [];
+    const purchasedCards: Map<GemStone, Card[]> = player.hand.getPurchasedCardsByTypes();
+    this.activeNobles.forEach((noble: Noble, _nobleID: string) => {
+      const canBuy: boolean =
+        Array.from(noble.requiredCards.keys())
+          .reduce((acc: boolean, key: CardGemStone) => {
+            const required: number = noble.requiredCards.get(key);
+            const gemStone: GemStone = GemStone[key.toString().toUpperCase() as keyof typeof GemStone]; // ew
+            const have: number = purchasedCards.has(gemStone)
+              ? purchasedCards.get(gemStone).length
+              : 0;
+            return acc && have >= required;
+          }, true)
+      if(canBuy) {
+        this.activeNobles.delete(noble.id)
+        noblesToTake.push(noble)
+      }
+    })
+    return noblesToTake;
   }
 
   private addNewActiveCard(tier: CardTier): this {

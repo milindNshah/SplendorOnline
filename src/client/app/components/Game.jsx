@@ -171,6 +171,13 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
+  // onHackNobles() {
+  //   this.setState({
+  //     actionData: {},
+  //     actionType: "hackForNobles"
+  //   }, this.onEndTurn)
+  // }
+
   onEndTurn() {
     const actions = {[this.state.actionType]: this.state.actionData}
     this.socket.emit("EndTurn", {
