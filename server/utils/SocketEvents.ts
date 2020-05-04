@@ -142,6 +142,9 @@ export class SocketEvents {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_RESERVED_CARD));
           await game.purchaseReservedCard(card, player);
         }
+        // if(actions.has("hackForNobles")) {
+        //   await game.hackForNobles(player);
+        // }
         game.finishTurn(player);
         io.sockets.in(room.code).emit("UpdateGame", serialize(game))
       } catch (err) {

@@ -2,7 +2,9 @@ import React from 'react';
 import styled from 'styled-components'
 import GemStoneToken from './GemStoneToken.jsx'
 import Card from './Card.jsx'
+import Noble from './Noble.jsx'
 import CardModal from './CardModal.jsx'
+import NobleModal from './NobleModal.jsx'
 import OutsideAlerter from './OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
 
@@ -82,18 +84,24 @@ class Player extends React.Component {
       playerID: this.props.player?.id,
       playerName: this.props.player?.user?.name,
       expandInfo: false,
+      cardClicked: null,
+      reservedCardClicked: null,
+      nobleClicked: null,
     }
     this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onCardClick = this.onCardClick.bind(this)
     this.onCardModalClose = this.onCardModalClose.bind(this)
     this.onCloseInfo = this.onCloseInfo.bind(this)
     this.onExpandInfo = this.onExpandInfo.bind(this)
+    this.onNobleClick = this.onNobleClick.bind(this)
+    this.onNobleModalClose = this.onNobleModalClose.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onReservedCardClick = this.onReservedCardClick.bind(this)
     this.onReservedCardModalClose = this.onReservedCardModalClose.bind(this)
     this.renderExtraInfo = this.renderExtraInfo.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
+    this.renderNobles = this.renderNobles.bind(this)
     this.renderReservedCards = this.renderReservedCards.bind(this)
   }
 
@@ -127,6 +135,7 @@ class Player extends React.Component {
       <div>
         {this.renderGemStoneTokens()}
         {this.renderReservedCards()}
+        {this.renderNobles()}
       </div>)
   }
 
@@ -173,6 +182,19 @@ class Player extends React.Component {
     return (<PlayerRow>{rows}</PlayerRow>)
   }
 
+  renderNobles() {
+    const nobles = new Map(Object.entries(this.state.hand.nobles))
+    const rows = Array.from(nobles.values())
+      .map((noble) => {
+        return (
+          <Col key={noble.id} onClick={() => this.onNobleClick(noble)}>
+            <Noble noble={noble} width={(this.props.width - 10) / 7} height={(this.props.width - 10) / 7} />
+          </Col>
+        )
+      })
+    return (<PlayerRow>{rows}</PlayerRow>)
+  }
+
   onCardClick(card) {
     this.setState({
       cardClicked: card,
@@ -204,6 +226,18 @@ class Player extends React.Component {
     })
   }
 
+  onNobleClick(noble) {
+    this.setState({
+      nobleClicked: noble,
+    })
+  }
+
+  onNobleModalClose() {
+    this.setState({
+      nobleClicked: null,
+    })
+  }
+
   getPurchasedCardsByTypes() {
     const purchasedCards = new Map(Object.entries(this.state.hand.purchasedCards))
     const byType = Array.from(purchasedCards.keys())
@@ -225,7 +259,7 @@ class Player extends React.Component {
   render() {
     return (
       <PlayerContainer>
-        {(this.state.cardClicked || this.state.reservedCardClicked)
+        {(this.state.cardClicked || this.state.reservedCardClicked || this.state.nobleClicked)
           ? <Overlay></Overlay>
           : null
         }
@@ -273,6 +307,21 @@ class Player extends React.Component {
                   handlePurchaseCard={this.onPurchaseCard}
                   playerGemStones={this.state.hand?.gemStones}
                   playerPurchasedCards={this.state.hand?.purchasedCards}
+                  width={theme.board.width}
+                />
+              </OutsideAlerter>
+            </ModalContainer>
+          )
+          : null
+        }
+        {this.state.nobleClicked
+          ?
+          (
+            <ModalContainer>
+              <OutsideAlerter handleClose={this.onNobleModalClose}>
+                <NobleModal
+                  noble={this.state.nobleClicked}
+                  handleClose={this.onNobleModalClose}
                   width={theme.board.width}
                 />
               </OutsideAlerter>

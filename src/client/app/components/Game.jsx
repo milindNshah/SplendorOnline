@@ -223,6 +223,7 @@ class Game extends React.Component {
         {this.renderHands()}
         <InvalidInputError />
         <ServerError />
+        {/* <Button onClick={this.onHackNobles}>Hack Nobles</Button> */}
       </GameContainer>
     )
   }
