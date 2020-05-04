@@ -51,6 +51,7 @@ class Game extends React.Component {
     this.onEndTurn = this.onEndTurn.bind(this)
     this.onGameUpdate = this.onGameUpdate.bind(this)
     this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this)
+    this.onPurchaseReservedCard = this.onPurchaseReservedCard.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
@@ -109,7 +110,20 @@ class Game extends React.Component {
   }
 
   renderHand(player) {
-    return <Player key={player.id} player={player} width={theme.board.width}/>
+    return <Player
+      key={player.id}
+      player={player}
+      width={theme.board.width}
+      handlePurchaseCard={this.onPurchaseReservedCard}
+      isPlayerTurn={this.state.isPlayerTurn}
+    />
+  }
+
+  onPurchaseReservedCard(card) {
+    this.setState({
+      actionData: card.id,
+      actionType: ActionType.PURCHASE_RESERVED_CARD,
+    }, this.onEndTurn)
   }
 
   onPurchaseTokens(tokensTaken, tokensReturned) {

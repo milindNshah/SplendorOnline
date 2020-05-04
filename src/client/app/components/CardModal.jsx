@@ -206,7 +206,7 @@ class CardModal extends React.Component {
               color={theme.color.primary}
               onClick={this.onPurchaseCard}>
               Purchase Card
-          </Button>
+            </Button>
           </div>
           : null
         }

@@ -38,6 +38,9 @@ const Row = styled.div`
   display: flex;
   justify-content: space-evenly;
 `
+const PlayerRow = styled(Row)`
+  justify-content: flex-start;
+`
 const Col = styled.div`
   margin: 0rem 0.5rem;
   display: flex;
@@ -74,7 +77,7 @@ class Player extends React.Component {
     super(props)
     this.state = {
       hand: this.props.player?.hand,
-      isPlayerTurn: this.props.player?.isPlayerTurn,
+      isPlayerTurn: this.props.isPlayerTurn,
       playerID: this.props.player?.id,
       playerName: this.props.player?.user?.name,
       expandInfo: false,
@@ -84,16 +87,21 @@ class Player extends React.Component {
     this.onCardModalClose = this.onCardModalClose.bind(this)
     this.onCloseInfo = this.onCloseInfo.bind(this)
     this.onExpandInfo = this.onExpandInfo.bind(this)
+    this.onPurchaseCard = this.onPurchaseCard.bind(this)
+    this.onReservedCardClick = this.onReservedCardClick.bind(this)
+    this.onReservedCardModalClose = this.onReservedCardModalClose.bind(this)
     this.renderExtraInfo = this.renderExtraInfo.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
+    this.renderReservedCards = this.renderReservedCards.bind(this)
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.player !== prevProps.player) {
+    if (this.props.player !== prevProps.player |
+      this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
         hand: this.props.player.hand,
-        isPlayerTurn: this.props.player.isPlayerTurn,
+        isPlayerTurn: this.props.isPlayerTurn,
         playerID: this.props.player.id,
         playerName: this.props.player.user.name,
       });
@@ -116,6 +124,7 @@ class Player extends React.Component {
     return (
       <div>
         {this.renderGemStoneTokens()}
+        {this.renderReservedCards()}
       </div>)
   }
 
@@ -149,6 +158,19 @@ class Player extends React.Component {
     )
   }
 
+  renderReservedCards() {
+    const reservedCards = new Map(Object.entries(this.state.hand.reservedCards))
+    const rows = Array.from(reservedCards.values())
+      .map((card) => {
+        return (
+          <Col key={card.id} onClick={() => this.onReservedCardClick(card)}>
+            <Card card={card} width={(this.props.width - 10) / 7} height={((this.props.width - 10) / 7) * 4 / 3} />
+          </Col>
+        )
+      })
+    return (<PlayerRow>{rows}</PlayerRow>)
+  }
+
   onCardClick(card) {
     this.setState({
       cardClicked: card,
@@ -158,6 +180,25 @@ class Player extends React.Component {
   onCardModalClose() {
     this.setState({
       cardClicked: null,
+    })
+  }
+
+  onReservedCardClick(card) {
+    this.setState({
+      reservedCardClicked: card,
+    })
+  }
+
+  onReservedCardModalClose() {
+    this.setState({
+      reservedCardClicked: null,
+    })
+  }
+
+  onPurchaseCard() {
+    this.props.handlePurchaseCard(this.state.reservedCardClicked)
+    this.setState({
+      reservedCardClicked: null,
     })
   }
 
@@ -182,7 +223,7 @@ class Player extends React.Component {
   render() {
     return (
       <PlayerContainer>
-        {(this.state.cardClicked)
+        {(this.state.cardClicked || this.state.reservedCardClicked)
           ? <Overlay></Overlay>
           : null
         }
@@ -210,10 +251,25 @@ class Player extends React.Component {
                   card={this.state.cardClicked}
                   isPlayerTurn={this.state.isPlayerTurn}
                   handleClose={this.onCardModalClose}
-                  // handlePurchaseCard={this.onPurchaseCard}
-                  // handleReserveCard={this.onReserveCard}
-                  // playerGemStones={this.state.playerGemStones}
-                  // playerReservedCards={this.state.playerReservedCards}
+                  width={theme.board.width}
+                />
+              </OutsideAlerter>
+            </ModalContainer>
+          )
+          : null
+        }
+        {this.state.reservedCardClicked
+          ?
+          (
+            <ModalContainer>
+              <OutsideAlerter handleClose={this.onReservedCardModalClose}>
+                <CardModal
+                  card={this.state.reservedCardClicked}
+                  isPlayerTurn={this.state.isPlayerTurn}
+                  handleClose={this.onReservedCardModalClose}
+                  handlePurchaseCard={this.onPurchaseCard}
+                  playerGemStones={this.state.hand?.gemStones}
+                  playerPurchasedCards={this.state.hand?.purchasedCards}
                   width={theme.board.width}
                 />
               </OutsideAlerter>

@@ -1,6 +1,6 @@
 "use strict"
 
-import { GemStone, CardGemStone } from "./GemStone";
+import { GemStone } from "./GemStone";
 import { Card } from "./Card";
 import { Noble } from "./Noble";
 import { GlobalUtils } from "../utils/GlobalUtils";

@@ -138,7 +138,6 @@ export class SocketEvents {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_ACTIVE_CARD));
           await game.purchaseActiveCard(card, player);
         }
-        // TODO: Test This
         if(actions.get(ActionType.PURCHASE_RESERVED_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_RESERVED_CARD));
           await game.purchaseReservedCard(card, player);
