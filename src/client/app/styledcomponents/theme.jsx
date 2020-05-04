@@ -19,22 +19,14 @@ const theme = {
     tier1: "green",
     tier2: "purple",
     tier3: "#eb6b34",
+    placeHolder: "#AAA",
+    inputBorder: "#BCBCBC",
   },
   fontFamily: {
     primary: "Raleway",
     secondary: "Roboto Slab",
   },
   fontSize: "1rem",
-  button: {
-    width: "9rem",
-  },
-  input: {
-    width: "15rem",
-    hoverColor: "#17a2b8",
-    borderColor: "#BCBCBC",
-    placeHolderColor: "#AAA",
-    errorColor: "red",
-  },
   token: {
     width: 5,
     height: 5,

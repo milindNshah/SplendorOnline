@@ -33,12 +33,12 @@ class Home extends React.Component {
           <div>
             <Button onClick={this.onCreateRoom}>
               Create Game
-          </Button>
+            </Button>
           </div>
           <div>
             <Button onClick={this.onJoinRoom} color={theme.color.secondary}>
               Join Game
-        </Button>
+            </Button>
           </div>
         </HomeContainer>
       </ThemeProvider>

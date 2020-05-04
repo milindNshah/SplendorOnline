@@ -22,7 +22,7 @@ const Button = styled.button`
   user-select: none;
   vertical-align: middle;
   white-space: nowrap;
-  width: ${props => props.width ?? props.theme.button.width};
+  width: ${props => props.width ?? "9rem"};
 
   &:hover,
   &:focus {

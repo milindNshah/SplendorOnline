@@ -8,14 +8,20 @@ import Game from './Game.jsx';
 import WaitingRoom from './WaitingRoom.jsx';
 import { socket } from '../socket'
 
-const UserNameError = 'User name must be between 1 and 25 characters and may only contain alphanumeric symbols'
+const UserNameError = 'User name must be between 1 and 25 characters and may only contain alphanumeric characters'
 const RoomCodeError = 'Room Code must be a 4 character alphanumeric code'
 
 const RoomContainer = styled.div`
   margin-top: 10rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
   text-align: center;
 `
 const Label = styled.div`
+  margin: 0.5rem 0;
+`
+const ErrorMessage = styled.p`
   margin: 0.5rem 0;
 `
 
@@ -84,7 +90,8 @@ class Room extends React.Component {
     })
   }
 
-  onCreateRoom() {
+  onCreateRoom(e) {
+    e.preventDefault()
     if (!this.checkUserNameIsValid(this.state.userNameInput)) {
       this.setState({ invalidInputError: UserNameError })
       return;
@@ -92,7 +99,8 @@ class Room extends React.Component {
     this.socket.emit('CreateNewRoom', this.state.userNameInput);
   }
 
-  onJoinRoom() {
+  onJoinRoom(e) {
+    e.preventDefault()
     if (!this.checkUserNameIsValid(this.state.userNameInput)) {
       this.setState({ invalidInputError: UserNameError })
       return;
@@ -101,17 +109,17 @@ class Room extends React.Component {
       this.setState({ invalidInputError: RoomCodeError })
       return;
     }
-    this.socket.emit('JoinRoom', { userName: this.state.userNameInput, roomCode: this.state.roomCodeInput })
+    this.socket.emit('JoinRoom', { userName: this.state.userNameInput.trim(), roomCode: this.state.roomCodeInput.trim() })
   }
 
   checkUserNameIsValid(newUserName) {
     const regex = /^[a-zA-Z0-9]{1,25}$/g;
-    return newUserName.match(regex);
+    return newUserName.trim().match(regex);
   }
 
   checkRoomCodeIsValid(newRoomCode) {
     const regex = /^[a-zA-Z0-9]{4}$/g
-    return newRoomCode.match(regex);
+    return newRoomCode.trim().match(regex);
   }
 
   onFormChange(e) {
@@ -139,13 +147,14 @@ class Room extends React.Component {
 
     this.setState({
       invalidInputError: invalidInputError,
+      serverError: null,
       [name]: value
     });
   }
 
   renderCreateRoom() {
     return (
-      <form noValidate>
+      <form noValidate onSubmit={this.onCreateRoom}>
         <Label>Enter your username</Label>
         <div>
           <Input
@@ -169,7 +178,7 @@ class Room extends React.Component {
 
   renderJoinRoom() {
     return (
-      <form noValidate>
+      <form noValidate onSubmit={this.onJoinRoom}>
         <Label>Enter your username</Label>
         <div>
           <Input
@@ -206,12 +215,12 @@ class Room extends React.Component {
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <p>Invalid Input: {this.state.invalidInputError}</p>
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
         : null
     );
     const ServerError = () => (
       (this.state.serverError && !this.state.invalidInputError)
-        ? <p>Server Error: {this.state.serverError.message}</p>
+        ? <ErrorMessage>{this.state.serverError.message}</ErrorMessage>
         : null
     );
 
@@ -224,13 +233,13 @@ class Room extends React.Component {
             : <RoomContainer>
               {this.state.isJoinRoom ? this.renderJoinRoom() : null}
               {this.state.isCreateRoom ? this.renderCreateRoom() : null}
-              <InvalidInputError />
-              <ServerError />
               <Button
                 color={theme.color.error}
                 onClick={this.onLeaveRoom}>
                 Leave Room
-                </Button>
+              </Button>
+              <InvalidInputError />
+              <ServerError />
             </RoomContainer>
         }
       </ThemeProvider>

@@ -4,7 +4,7 @@ const Input = styled.input.attrs(props => ({
   type: props.type,
 }))`
   background-color: ${props => props.backgroundColor ?? props.theme.color.white};
-  border: 2px solid ${ props => props.theme.input.borderColor};
+  border: 2px solid ${ props => props.theme.color.inputBorder};
   border-radius: 0.25rem;
   color: ${props => props.color ?? props.theme.color.black};
   display: inline-block;
@@ -15,20 +15,20 @@ const Input = styled.input.attrs(props => ({
   padding: 0.25rem 0.5rem;
   margin: 0.5rem 0;
   outline: none;
-  width: ${props => props.width ?? props.theme.input.width};
+  width: ${props => props.width ?? "15rem"};
 
   &:hover,
   &:focus {
     outline: none;
-    border: 2px solid ${props => props.hoverColor ?? props.theme.input.hoverColor};
+    border: 2px solid ${props => props.hoverColor ?? props.theme.color.secondary};
   }
 
   &:invalid {
-    border: 2px solid ${ props => props.theme.input.errorColor };
+    border: 2px solid ${ props => props.theme.color.error };
   }
 
   &::placeholder {
-    color: ${ props => props.theme.input.placeHolderColor };
+    color: ${ props => props.theme.color.placeHolder };
   }
 `
 export default Input;
