@@ -7,23 +7,28 @@ import { deserialize } from 'bson';
 import { socket } from '../socket';
 import theme from '../styledcomponents/theme.jsx'
 
+const AtLeastTwoPlayerError = 'Need atleast 2 players to start a game'
+const AtMostFourPlayerError = 'You may only start a game with at most 4 players'
+const AllPlayersNotReadyError = 'All players must be ready'
+
 const WaitingRoomContainer = styled.div`
   margin-top: 10rem;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
   text-align: center;
 `
 const PlayerTableContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 5rem;
+  margin-bottom: 2rem;
 `
-
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
 const CopiedCode = styled.p`
   color: ${ props => props.theme.color.secondary };
 `
-
 const Ready = styled.span`
   color: ${ props => props.isready
     ? props.theme.color.primary
@@ -32,15 +37,13 @@ const Ready = styled.span`
 const Host = styled.span`
   color: ${ props => props.theme.color.secondary };
 `
-
 const Table = styled.div`
   display: flex;
   flex-direction: column;
-  width: 30rem;
-  max-width: 30rem;
+  width: 28rem;
 `
 const Row = styled.div`
-  margin: 0.25rem 0;
+  margin: 0.5rem 0;
   display: flex;
   justify-content: space-evenly;
 `
@@ -53,7 +56,10 @@ const Col = styled.div`
   width: 4rem;
 `
 const NameCol = styled(Col)`
-  width: 22rem;
+  width: 20rem;
+`
+const ErrorMessage = styled.p`
+  margin: 0.5rem 0;
 `
 
 const CopiedCodeDialog = function () {
@@ -113,6 +119,7 @@ class WaitingRoom extends React.Component {
       players: players,
       player: currentPlayer,
       invalidInputError: null,
+      serverError: null,
     });
   }
 
@@ -189,11 +196,11 @@ class WaitingRoom extends React.Component {
     const areAllPlayersReady = this.areAllPlayersReady();
 
     if (this.state.players.size < 2) {
-      message = (<span>Need atleast 2 players to start a game</span>)
+      message = AtLeastTwoPlayerError
     } else if (this.state.players.size > 4) {
-      message = (<span>A room can only have at most 4 players</span>)
+      message = AtMostFourPlayerError
     } else if (!areAllPlayersReady) {
-      message = (<span>All players must be ready</span>)
+      message = AllPlayersNotReadyError
     } else {
       message = null
     }
@@ -202,7 +209,6 @@ class WaitingRoom extends React.Component {
     })
 
     if (message || this.state.invalidInputError) {
-      // TODO: Investigate - strange error when this if statement is not here.
       return;
     }
     this.socket.emit('StartNewGame', this.state.roomCode);
@@ -244,12 +250,12 @@ class WaitingRoom extends React.Component {
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <div>Invalid Input: {this.state.invalidInputError}</div>
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
         : null
     );
     const ServerError = () => (
       (this.state.serverError && !this.state.invalidInputError)
-        ? <p>Server Error: {this.state.serverError.message}</p>
+        ? <ErrorMessage>{this.state.serverError.message}</ErrorMessage>
         : null
     );
 

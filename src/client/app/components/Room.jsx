@@ -52,7 +52,6 @@ class Room extends React.Component {
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
   }
-  // TODO: Stop form submit from going through (ex. enter button)
 
   componentDidMount() {
     if(!this.props.location.state) {
