@@ -22,8 +22,13 @@ const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
   font-weight: bold;
 `
-
-const Hands = styled.div`
+const WinnerScreen = styled.div`
+  background: ${ props => props.theme.color.grey};
+  z-index: 5;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  color: white;
 `
 
 class Game extends React.Component {
@@ -41,8 +46,9 @@ class Game extends React.Component {
       playerID: this.props.playerID,
       players: [],
       targetScore: null,
+      tieBreakerMoreRounds: false,
       turnOrder: [],
-      winner: {},
+      winner: null,
       actionType: null,
       actionData: null,
     }
@@ -57,8 +63,10 @@ class Game extends React.Component {
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
     this.renderHand = this.renderHand.bind(this)
     this.renderHands = this.renderHands.bind(this)
+    this.onHackNobles = this.onHackNobles.bind(this)
   }
 
+  // TODO: Research ComponentWillMount()?
   componentDidMount() {
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
@@ -86,6 +94,7 @@ class Game extends React.Component {
       targetScore: game.targetScore,
       turnOrder: game.turnOrder,
       winner: game.winner,
+      tieBreakerMoreRounds: game.tieBreakerMoreRounds,
       board: board,
       isPlayerTurn: isPlayerTurn,
       player: player,
@@ -106,7 +115,7 @@ class Game extends React.Component {
     }
     const hands = Object.values(this.state.players)
       .map((player) => this.renderHand(player));
-    return (<Hands>{hands}</Hands>)
+    return (hands)
   }
 
   renderHand(player) {
@@ -171,12 +180,12 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
-  // onHackNobles() {
-  //   this.setState({
-  //     actionData: {},
-  //     actionType: "hackForNobles"
-  //   }, this.onEndTurn)
-  // }
+  onHackNobles() {
+    this.setState({
+      actionData: {},
+      actionType: "hackForNobles"
+    }, this.onEndTurn)
+  }
 
   onEndTurn() {
     const actions = {[this.state.actionType]: this.state.actionData}
@@ -204,12 +213,22 @@ class Game extends React.Component {
       : <h2>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</h2>
     );
 
+    const Winner = () => (this.state.winner.id === this.state.playerID
+      ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
+      : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with ${this.state.winner.hand.score} points</h1></WinnerScreen>
+    );
+
     return (
       <GameContainer>
         <Scorebox>
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
+          {this.state.winner && !this.state.tieBreakerMoreRounds
+          /*{ {!this.state.tieBreakerMoreRounds }*/
+            ? <Winner/>
+            : null
+          }
         </Scorebox>
         <Board
           board={this.state.board}
@@ -223,7 +242,8 @@ class Game extends React.Component {
         {this.renderHands()}
         <InvalidInputError />
         <ServerError />
-        {/* <Button onClick={this.onHackNobles}>Hack Nobles</Button> */}
+        <Button onClick={this.onHackNobles}>Hack Nobles</Button>
+
       </GameContainer>
     )
   }

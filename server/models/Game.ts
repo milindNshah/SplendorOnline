@@ -154,29 +154,29 @@ export class Game {
     }
   }
 
-  // async hackForNobles(player: Player): Promise<this> {
-  //   try {
-  //     const unlimitedGems: Map<GemStone, number> = new Map([
-  //       [GemStone.DIAMOND, 99],
-  //       [GemStone.SAPPHIRE, 99],
-  //       [GemStone.EMERALD, 99],
-  //       [GemStone.RUBY, 99],
-  //       [GemStone.CHOCOLATE, 99],
-  //       [GemStone.GOLD, 99],
-  //     ])
-  //     player.hand.transferGems(unlimitedGems);
-  //     const cards = Array.from(this.board.activeTieredCards.get(CardTier.TIER1).values())
-  //     for (let card of cards) {
-  //       await this.board.swapActiveCard(card);
-  //       const gemStonesToTransfer: Map<GemStone, number> = await this.getGemStonesToUseForPurchase(card, player);
-  //       await player.hand.addToPurchased(gemStonesToTransfer, card);
-  //       await player.hand.updateScore();
-  //     }
-  //     return this;
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
+  async hackForNobles(player: Player): Promise<this> {
+    try {
+      const unlimitedGems: Map<GemStone, number> = new Map([
+        [GemStone.DIAMOND, 99],
+        [GemStone.SAPPHIRE, 99],
+        [GemStone.EMERALD, 99],
+        [GemStone.RUBY, 99],
+        [GemStone.CHOCOLATE, 99],
+        [GemStone.GOLD, 99],
+      ])
+      player.hand.transferGems(unlimitedGems);
+      const cards = Array.from(this.board.activeTieredCards.get(CardTier.TIER1).values())
+      for (let card of cards) {
+        await this.board.swapActiveCard(card);
+        const gemStonesToTransfer: Map<GemStone, number> = await this.getGemStonesToUseForPurchase(card, player);
+        await player.hand.addToPurchased(gemStonesToTransfer, card);
+        await player.hand.updateScore();
+      }
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
 
   async purchaseActiveCard(card: Card, player: Player): Promise<this> {
     try {
@@ -263,6 +263,7 @@ export class Game {
     }
     if (playersWon.length === 1) {
       this.winner = playersWon.pop();
+      this.tieBreakerMoreRounds = false;
       return this;
     }
     // Tie Breaker
@@ -270,12 +271,14 @@ export class Game {
       = this.checkHighestScoreOnTie(playersWon);
     if (highestScorePlayers.length === 1) {
       this.winner = highestScorePlayers.pop()
+      this.tieBreakerMoreRounds = false;
       return this;
     }
     const leastCardPlayers: Player[]
       = this.checkLeastCardsOnTie(highestScorePlayers)
     if (leastCardPlayers.length === 1) {
       this.winner = leastCardPlayers.pop()
+      this.tieBreakerMoreRounds = false;
       return this;
     }
     // Go more rounds until someone has more points or

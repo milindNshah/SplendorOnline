@@ -9,6 +9,7 @@ const theme = {
     error: "red",
     white: "white",
     black: "black",
+    grey: "rgba(0, 0, 0, 0.5)",
     diamond: "white",
     sapphire: "blue",
     emerald: "green",
