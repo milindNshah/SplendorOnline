@@ -124,6 +124,7 @@ export class Game {
       }
       await this.board.swapActiveCard(card);
       await player.hand.addToReserved(card);
+      card.setReservedBy(player.id);
       const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
       if (goldGemStoneObtained) {
         player.hand.takeGoldGemStone();
@@ -142,6 +143,7 @@ export class Game {
       const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
       const card = await this.board.reserveDeckCard(tierKey);
       await player.hand.addToReserved(card);
+      card.setReservedBy(player.id);
       const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
       if (goldGemStoneObtained) {
         player.hand.takeGoldGemStone();
@@ -171,6 +173,9 @@ export class Game {
 
   async purchaseReservedCard(card: Card, player: Player): Promise<this> {
     try {
+      if (!card.reservedBy || card.reservedBy !== player.id) {
+        throw new InvalidGameError(`You cannot purchase someone else's reserved card.`)
+      }
       if (!player.hand.canPurchaseCard(card)) {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }

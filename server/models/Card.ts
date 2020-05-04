@@ -27,6 +27,7 @@ export class Card {
   gemStoneType: CardGemStone;
   tier: CardTier;
   requiredGemStones: Map<GemStone, number>;
+  reservedBy: string;
 
   constructor (
     pointValue: number,
@@ -43,5 +44,10 @@ export class Card {
 
   createCardID(): string {
     return GlobalUtils.generateID();
+  }
+
+  setReservedBy(playerID: string): this {
+    this.reservedBy = playerID;
+    return this;
   }
 }

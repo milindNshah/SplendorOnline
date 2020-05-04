@@ -77,6 +77,7 @@ class Player extends React.Component {
     super(props)
     this.state = {
       hand: this.props.player?.hand,
+      isMyHand: this.props.isMyHand,
       isPlayerTurn: this.props.isPlayerTurn,
       playerID: this.props.player?.id,
       playerName: this.props.player?.user?.name,
@@ -100,8 +101,9 @@ class Player extends React.Component {
     if (this.props.player !== prevProps.player |
       this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
-        hand: this.props.player.hand,
+        isMyHand: this.props.isMyHand,
         isPlayerTurn: this.props.isPlayerTurn,
+        hand: this.props.player.hand,
         playerID: this.props.player.id,
         playerName: this.props.player.user.name,
       });
@@ -265,6 +267,7 @@ class Player extends React.Component {
               <OutsideAlerter handleClose={this.onReservedCardModalClose}>
                 <CardModal
                   card={this.state.reservedCardClicked}
+                  isMyHand={this.state.isMyHand}
                   isPlayerTurn={this.state.isPlayerTurn}
                   handleClose={this.onReservedCardModalClose}
                   handlePurchaseCard={this.onPurchaseCard}

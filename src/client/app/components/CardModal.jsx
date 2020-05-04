@@ -59,6 +59,7 @@ class CardModal extends React.Component {
     this.state = {
       card: this.props.card,
       invalidInputError: null,
+      isMyHand: this.props.isMyHand ?? true,
       isPlayerTurn: this.props.isPlayerTurn,
       playerGemStones: this.props.playerGemStones
         ? new Map(Object.entries(this.props.playerGemStones))
@@ -80,6 +81,7 @@ class CardModal extends React.Component {
       this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
         card: this.props.card,
+        isMyHand: this.props.isMyHand ?? true,
         isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: this.props.playerGemStones
           ? new Map(Object.entries(this.props.playerGemStones))
@@ -200,7 +202,7 @@ class CardModal extends React.Component {
           </TokensOwned>
           : null
         }
-        {this.state.isPlayerTurn && this.props.handlePurchaseCard ?
+        {this.state.isPlayerTurn && this.state.isMyHand && this.props.handlePurchaseCard ?
           <div>
             <Button
               color={theme.color.primary}
@@ -210,7 +212,7 @@ class CardModal extends React.Component {
           </div>
           : null
         }
-        {this.state.isPlayerTurn && this.props.handleReserveCard?
+        {this.state.isPlayerTurn && this.state.isMyHand && this.props.handleReserveCard?
           <div>
             <Button
               color={theme.color.secondary}

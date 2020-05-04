@@ -111,6 +111,7 @@ class Game extends React.Component {
 
   renderHand(player) {
     return <Player
+      isMyHand={player.id === this.state.playerID}
       key={player.id}
       player={player}
       width={theme.board.width}
