@@ -117,10 +117,13 @@ class CardModal extends React.Component {
           width={theme.token.modal.width}
           height={theme.token.modal.height}
         />
-        <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
-          {cardAmount}
-          <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true"/>
-        </CardToken>
+        {GemStone.GOLD === gemStone
+          ? null
+          : <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
+            {cardAmount}
+            <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true" />
+          </CardToken>
+        }
       </Col>)
   }
 

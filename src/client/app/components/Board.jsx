@@ -270,7 +270,7 @@ class Board extends React.Component {
                   handlePurchaseTokens={this.onPurchaseTokens}
                   playerGemStones={this.state.playerGemStones}
                   playerPurchasedCards={this.state.playerPurchasedCards}
-                  width={theme.board.width}
+                  width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>
             </Modal>

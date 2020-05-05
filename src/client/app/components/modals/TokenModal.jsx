@@ -5,18 +5,12 @@ import GemStoneToken from '../GemStoneToken.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import { GemStone, getColorFromGemStone } from '../../enums/gemstones'
 import { GemStoneBase } from '../GemStone.jsx'
+import ModalContainer from '../../styledcomponents/modal-container.jsx'
 
-const TokenModalContainer = styled.div`
-  width: ${ props => `${props.width}rem`};
-  max-width: ${ props => `${props.width}rem`};
-  padding: 2rem;
-  background-color: ${ props => props.theme.color.white};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
 const TokensTitle = styled.div`
-  color: ${ props => props.theme.color.secondary};
+  margin: 0.5rem 0rem;
+  color: ${ props => props.theme.color.black };
+  text-decoration: underline;
 `
 const Row = styled.div`
   margin: 0.5rem 0rem;
@@ -43,10 +37,8 @@ const CardToken = styled.div`
   flex-direction: column;
   align-items: center;
 `
-const InvalidInput = styled.p`
-  padding: 1rem;
-  color: ${ props => props.theme.color.error};
-  text-align: left;
+const ErrorMessage = styled.p`
+  margin: 0.5rem 0;
 `
 
 // TODO: Make this a two step process for better UX: Take and if necessary Return.
@@ -100,6 +92,7 @@ class TokenModal extends React.Component {
     return byType
   }
 
+  // TODO: Make re-usable across CardModal, Player, TokenModal.
   renderGemStoneTokens(tokens, tokenFunc, renderPurchasedCards) {
     if (!tokens) {
       return
@@ -127,9 +120,9 @@ class TokenModal extends React.Component {
           height={theme.token.modal.height}
         />
         {renderPurchasedCards
-          ? <CardToken type={gemStone} width={theme.card.token.width} height={theme.card.token.height}>
+          ? <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
             {cardAmount}
-            <GemStoneBase type={gemStone} width={theme.card.token.width * 2 / 5} height={theme.card.token.width * 2 / 5} fill="true" />
+            <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true" />
           </CardToken>
           : null
         }
@@ -313,32 +306,32 @@ class TokenModal extends React.Component {
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <InvalidInput>Invalid Input: {this.state.invalidInputError}</InvalidInput>
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
         : null
     );
 
     return (
-      <TokenModalContainer width={this.props.width}>
+      <ModalContainer width={this.props.width}>
         <div>
-          <TokensTitle>Available:</TokensTitle>
+          <TokensTitle>Available Tokens</TokensTitle>
           {this.renderGemStoneTokens(this.state.availableGemStones, this.onTakeToken)}
         </div>
         {this.state.taken.size > 0
           ? <div>
-            <TokensTitle>Taken:</TokensTitle>
+            <TokensTitle>Selected Tokens</TokensTitle>
             {this.renderGemStoneTokens(this.state.taken, this.onReturnToken)}
           </div>
           : null
         }
         {this.state.returned.size > 0
           ? <div>
-            <TokensTitle>Returned:</TokensTitle>
+            <TokensTitle>Returned Tokens</TokensTitle>
             {this.renderGemStoneTokens(this.state.returned, this.onTakeBackToken)}
           </div>
           : null
         }
         <div>
-          <TokensTitle>Yours:</TokensTitle>
+          <TokensTitle>Your Tokens</TokensTitle>
           {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken, true)}
         </div>
         {/*  TODO: When clicking exchange and no tokens taken: Display warning/confirmation. */}
@@ -347,7 +340,7 @@ class TokenModal extends React.Component {
             <Button
               color={theme.color.secondary}
               onClick={this.onPurchaseTokens}>
-              Exchange
+              Confirm
           </Button>
           </div>
           : null
@@ -360,7 +353,7 @@ class TokenModal extends React.Component {
           </Button>
         </div>
         <InvalidInputError />
-      </TokenModalContainer>
+      </ModalContainer>
     )
   }
 }

@@ -22,9 +22,6 @@ const theme = {
     placeHolder: "#AAA",
     inputBorder: "#BCBCBC",
   },
-  modal: {
-    padding: 2,
-  },
   fontFamily: {
     primary: "Raleway",
     secondary: "Roboto Slab",
@@ -37,6 +34,9 @@ const theme = {
       width: 3,
       height: 3,
     },
+  },
+  modal: {
+    padding: 2,
   },
   card: {
     width: `${cardWidth}`,
@@ -54,10 +54,6 @@ const theme = {
       },
     },
     spaceBetween: `${spaceBetweenCards}`,
-    token: { // TODO: Remove and delete.
-      width: 3,
-      height: 4,
-    }
   },
   board: {
     width: `${cardWidth*5+spaceBetweenCards*10+5}`,
