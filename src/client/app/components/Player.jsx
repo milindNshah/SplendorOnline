@@ -3,10 +3,12 @@ import styled from 'styled-components'
 import GemStoneToken from './GemStoneToken.jsx'
 import Card from './Card.jsx'
 import Noble from './Noble.jsx'
-import CardModal from './CardModal.jsx'
-import NobleModal from './NobleModal.jsx'
-import OutsideAlerter from './OutsideAlerter.jsx'
+import CardModal from './modals/CardModal.jsx'
+import NobleModal from './modals/NobleModal.jsx'
+import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
+import Overlay from '../styledcomponents/overlay.jsx'
+import Modal from '../styledcomponents/modal.jsx'
 
 const PlayerContainer = styled.div`
   display: flex;
@@ -55,23 +57,6 @@ const CardCol = styled.div`
 const CardsCol = styled.div`
   margin-top: 0.5rem;
   margin-bottom: ${ props => `${props.height}rem`};
-`
-const ModalContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 3;
-`
-const Overlay = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.7;
-  z-index: 2;
 `
 
 class Player extends React.Component {
@@ -281,7 +266,7 @@ class Player extends React.Component {
         {this.state.cardClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onCardModalClose}>
                 <CardModal
                   card={this.state.cardClicked}
@@ -290,14 +275,14 @@ class Player extends React.Component {
                   width={theme.board.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }
         {this.state.reservedCardClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onReservedCardModalClose}>
                 <CardModal
                   card={this.state.reservedCardClicked}
@@ -310,22 +295,22 @@ class Player extends React.Component {
                   width={theme.board.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }
         {this.state.nobleClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onNobleModalClose}>
                 <NobleModal
                   noble={this.state.nobleClicked}
                   handleClose={this.onNobleModalClose}
-                  width={theme.board.width}
+                  width={theme.card.modal.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }

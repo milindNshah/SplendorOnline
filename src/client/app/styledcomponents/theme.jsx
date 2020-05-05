@@ -22,6 +22,9 @@ const theme = {
     placeHolder: "#AAA",
     inputBorder: "#BCBCBC",
   },
+  modal: {
+    padding: 2,
+  },
   fontFamily: {
     primary: "Raleway",
     secondary: "Roboto Slab",

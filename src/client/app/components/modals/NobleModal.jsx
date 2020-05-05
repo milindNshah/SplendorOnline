@@ -1,15 +1,15 @@
 import React from 'react'
 import styled from "styled-components"
-import Button from '../styledcomponents/button.jsx'
-import Noble from "./Noble.jsx"
-import theme from '../styledcomponents/theme.jsx'
+import Button from '../../styledcomponents/button.jsx'
+import Noble from "../Noble.jsx"
+import theme from '../../styledcomponents/theme.jsx'
 
 const NobleModalContainer = styled.div`
-  max-width: ${ props => `${props.width}rem`};
+  width: ${ props => `${props.width+2*props.theme.modal.padding}rem`};
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: ${ props => `${props.theme.modal.padding}rem`};
   background-color: ${ props => props.theme.color.white};
 `
 
@@ -21,8 +21,8 @@ class NobleModal extends React.Component {
   render() {
     return (
       <NobleModalContainer width={this.props.width}>
-        <Noble noble={this.props.noble} width={theme.card.modal.width} height={theme.card.modal.width}/>
-        <p>*You will get this automatically if/when eligible</p>
+        <Noble noble={this.props.noble} width={this.props.width} height={this.props.width}/>
+        <p>*You will get nobles automatically if/when eligible</p>
         <div>
           <Button
             color={theme.color.error}

@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from "styled-components"
-import Button from '../styledcomponents/button.jsx'
-import Card from './Card.jsx'
-import theme from '../styledcomponents/theme.jsx'
-import GemStoneToken from './GemStoneToken.jsx'
-import { GemStone, getColorFromGemStone } from '../enums/gemstones.js'
-import { GemStoneBase } from './GemStone.jsx'
+import Button from '../../styledcomponents/button.jsx'
+import Card from '../Card.jsx'
+import theme from '../../styledcomponents/theme.jsx'
+import GemStoneToken from '../GemStoneToken.jsx'
+import { GemStone, getColorFromGemStone } from '../../enums/gemstones.js'
+import { GemStoneBase } from '../GemStone.jsx'
 
 const CardModalContainer = styled.div`
   max-width: ${ props => `${props.width}rem`};

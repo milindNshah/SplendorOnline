@@ -33,7 +33,7 @@ app.get('/*', function (_req, res) {
   })
 })
 
-let port = normalizePort(process.env.PORT || '3234');
+let port = normalizePort(process.env.PORT || '7845');
 app.set('port', port);
 
 function normalizePort(val: any): any {

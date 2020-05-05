@@ -1,21 +1,24 @@
 import React from 'react'
 import styled from "styled-components"
-import Button from '../styledcomponents/button.jsx'
-import TierCard from "./TierCard.jsx"
-import theme from '../styledcomponents/theme.jsx'
+import Button from '../../styledcomponents/button.jsx'
+import TierCard from "../TierCard.jsx"
+import theme from '../../styledcomponents/theme.jsx'
+
+const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
 
 const TierCardModalContainer = styled.div`
-  max-width: ${ props => `${props.width}rem`};
+  width: ${ props => `${props.width + 2 * props.theme.modal.padding}rem`};
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: ${ props => `${props.theme.modal.padding}rem`};
   background-color: ${ props => props.theme.color.white};
 `
-const InvalidInput = styled.p`
-  padding: 1rem;
-  color: ${ props => props.theme.color.error};
-  text-align: left;
+const ErrorMessage = styled.p`
+  margin: 0.5rem 0;
+`
+const TierCardContainer = styled.div`
+  margin-bottom: 1rem;
 `
 
 class TierCardModal extends React.Component {
@@ -42,7 +45,7 @@ class TierCardModal extends React.Component {
   onReserveCard() {
     if (Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({
-        invalidInputError: `Unable to reserve. You may only have 3 reserved cards.`
+        invalidInputError: MaxThreeReservedCardsError
       })
       return;
     }
@@ -52,17 +55,19 @@ class TierCardModal extends React.Component {
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <InvalidInput>Invalid Input: {this.state.invalidInputError}</InvalidInput>
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
         : null
     );
 
     return (
       <TierCardModalContainer width={this.props.width}>
-        <TierCard
-          tier={this.props.tier}
-          remaining={this.props.remaining}
-          width={theme.card.modal.width}
-          height={theme.card.modal.height} />
+        <TierCardContainer>
+          <TierCard
+            tier={this.props.tier}
+            remaining={this.props.remaining}
+            width={this.props.width}
+            height={this.props.height} />
+        </TierCardContainer>
         {this.state.isPlayerTurn ?
           <div>
             <Button

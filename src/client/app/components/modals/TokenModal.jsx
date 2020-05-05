@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from "styled-components"
-import Button from '../styledcomponents/button.jsx'
-import GemStoneToken from './GemStoneToken.jsx'
-import theme from '../styledcomponents/theme.jsx'
-import { GemStone, getColorFromGemStone } from '../enums/gemstones'
-import { GemStoneBase } from './GemStone.jsx'
+import Button from '../../styledcomponents/button.jsx'
+import GemStoneToken from '../GemStoneToken.jsx'
+import theme from '../../styledcomponents/theme.jsx'
+import { GemStone, getColorFromGemStone } from '../../enums/gemstones'
+import { GemStoneBase } from '../GemStone.jsx'
 
 const TokenModalContainer = styled.div`
   width: ${ props => `${props.width}rem`};

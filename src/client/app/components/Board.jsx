@@ -4,34 +4,19 @@ import GemStoneToken from './GemStoneToken.jsx'
 import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 import TierCard from './TierCard.jsx'
-import CardModal from './CardModal.jsx'
-import TokenModal from './TokenModal.jsx'
-import NobleModal from './NobleModal.jsx'
-import TierCardModal from './TierCardModal.jsx'
-import OutsideAlerter from './OutsideAlerter.jsx'
+import CardModal from './modals/CardModal.jsx'
+import TokenModal from './modals/TokenModal.jsx'
+import NobleModal from './modals/NobleModal.jsx'
+import TierCardModal from './modals/TierCardModal.jsx'
+import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
+import Overlay from '../styledcomponents/overlay.jsx'
+import Modal from '../styledcomponents/modal.jsx'
 
 const BoardContainer = styled.div`
   display: flex;
   justify-content: center;
   position: relative;
-`
-const ModalContainer = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 3;
-`
-const Overlay = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0.7;
-  z-index: 2;
 `
 
 const Table = styled.div`
@@ -255,7 +240,7 @@ class Board extends React.Component {
         {this.state.cardClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onCardModalClose}>
                 <CardModal
                   card={this.state.cardClicked}
@@ -269,14 +254,14 @@ class Board extends React.Component {
                   width={theme.board.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }
         {this.state.tokenClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onTokenModalClose}>
                 <TokenModal
                   availableGemStones={this.state.board.availableGemStones}
@@ -288,29 +273,29 @@ class Board extends React.Component {
                   width={theme.board.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }
         {this.state.nobleClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onNobleModalClose}>
                 <NobleModal
                   handleClose={this.onNobleModalClose}
                   noble={this.state.nobleClicked}
-                  width={theme.board.width}
+                  width={theme.card.modal.width}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }
         {this.state.tierCardClicked
           ?
           (
-            <ModalContainer>
+            <Modal>
               <OutsideAlerter handleClose={this.onTierCardModalClose}>
                 <TierCardModal
                   isPlayerTurn={this.state.isPlayerTurn}
@@ -319,10 +304,11 @@ class Board extends React.Component {
                   handleClose={this.onTierCardModalClose}
                   handleReserveCard={this.onReserveTierCard}
                   playerReservedCards={this.state.playerReservedCards}
-                  width={theme.board.width}
+                  width={theme.card.modal.width}
+                  height={theme.card.modal.height}
                 />
               </OutsideAlerter>
-            </ModalContainer>
+            </Modal>
           )
           : null
         }

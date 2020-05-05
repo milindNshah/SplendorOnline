@@ -9,11 +9,11 @@ import { ActionType } from '../enums/actiontype';
 import theme from '../styledcomponents/theme.jsx'
 
 const GameContainer = styled.div`
-  margin-top: 2.5rem;
+  margin: 1rem 0.5rem 2rem 0.5rem;
   text-align: center;
 `
 const Scorebox = styled.div`
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 `
 const TargetScore = styled.h2`
   color: ${ props => props.theme.color.error};
@@ -224,8 +224,7 @@ class Game extends React.Component {
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
-          {this.state.winner && !this.state.tieBreakerMoreRounds
-          /*{ {!this.state.tieBreakerMoreRounds }*/
+          { this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner/>
             : null
           }

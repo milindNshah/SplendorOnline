@@ -10,14 +10,17 @@ export default class OutsideAlerter extends Component {
 
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.handleEscapeKey = this.handleEscapeKey.bind(this);
   }
 
   componentDidMount() {
     document.addEventListener('mousedown', this.handleClickOutside);
+    document.addEventListener("keydown", this.handleEscapeKey);
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClickOutside);
+    document.removeEventListener("keydown", this.handleEscapeKey);
   }
 
   /**
@@ -32,6 +35,12 @@ export default class OutsideAlerter extends Component {
    */
   handleClickOutside(event) {
     if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.props.handleClose();
+    }
+  }
+
+  handleEscapeKey(event) {
+    if(event.keyCode === 27) {
       this.props.handleClose();
     }
   }
