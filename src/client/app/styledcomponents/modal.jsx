@@ -10,7 +10,6 @@ const Modal = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 3;
-  overflow: scroll;
 `;
 
 export default Modal

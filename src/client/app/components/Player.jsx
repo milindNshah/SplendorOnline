@@ -272,7 +272,7 @@ class Player extends React.Component {
                   card={this.state.cardClicked}
                   isPlayerTurn={this.state.isPlayerTurn}
                   handleClose={this.onCardModalClose}
-                  width={theme.board.width}
+                  width={theme.card.modal.width}
                 />
               </OutsideAlerter>
             </Modal>
@@ -292,7 +292,7 @@ class Player extends React.Component {
                   handlePurchaseCard={this.onPurchaseCard}
                   playerGemStones={this.state.hand?.gemStones}
                   playerPurchasedCards={this.state.hand?.purchasedCards}
-                  width={theme.board.width}
+                  width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>
             </Modal>

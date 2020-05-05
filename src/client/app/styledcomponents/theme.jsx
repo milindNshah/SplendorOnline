@@ -45,13 +45,21 @@ const theme = {
       width: 12,
       height: 16,
     },
-    token: {
+    icon: {
+      width: `${cardWidth/2}`,
+      height: `${cardHeight/2}`,
+      gemStone: {
+        width: `${cardWidth*1/5}`,
+        height: `${cardWidth*1/5}`,
+      },
+    },
+    spaceBetween: `${spaceBetweenCards}`,
+    token: { // TODO: Remove and delete.
       width: 3,
       height: 4,
     }
   },
   board: {
-    spaceBetweenCards: `${spaceBetweenCards}`,
     width: `${cardWidth*5+spaceBetweenCards*10+5}`,
   },
 };

@@ -6,26 +6,23 @@ import theme from '../../styledcomponents/theme.jsx'
 import GemStoneToken from '../GemStoneToken.jsx'
 import { GemStone, getColorFromGemStone } from '../../enums/gemstones.js'
 import { GemStoneBase } from '../GemStone.jsx'
+import ModalContainer from '../../styledcomponents/modal-container.jsx'
 
-const CardModalContainer = styled.div`
-  max-width: ${ props => `${props.width}rem`};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2rem;
-  background-color: ${ props => props.theme.color.white};
+const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
+const InsufficientGemsError = `Not sufficient gems to purchase card.`
+
+const CardContainer = styled.div`
+  margin-bottom: 1rem;
 `
 const TokensOwned = styled.div`
-  margin: 1rem 0;
+  margin-bottom: 1rem;
 `
 const TokensOwnedTitle = styled.p`
-  color: ${ props => props.theme.color.secondary};
+  color: ${ props => props.theme.color.black };
   text-decoration: underline;
 `
-const InvalidInput = styled.p`
-  padding: 1rem;
-  color: ${ props => props.theme.color.error};
-  text-align: left;
+const ErrorMessage = styled.p`
+  margin: 0.5rem 0;
 `
 const Row = styled.div`
   margin: 0.5rem 0rem;
@@ -120,9 +117,9 @@ class CardModal extends React.Component {
           width={theme.token.modal.width}
           height={theme.token.modal.height}
         />
-        <CardToken type={gemStone} width={theme.card.token.width} height={theme.card.token.height}>
+        <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
           {cardAmount}
-          <GemStoneBase type={gemStone} width={theme.card.token.width*2/5} height={theme.card.token.width*2/5} fill="true"/>
+          <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true"/>
         </CardToken>
       </Col>)
   }
@@ -165,7 +162,7 @@ class CardModal extends React.Component {
       }).reduce((prev, cur) => prev && cur)
     if (!canPurchaseCard) {
       this.setState({
-        invalidInputError: `Not sufficient gems to purchase card`
+        invalidInputError: InsufficientGemsError
       })
       return;
     }
@@ -175,7 +172,7 @@ class CardModal extends React.Component {
   onReserveCard() {
     if(Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({
-        invalidInputError: `Unable to reserve. You may only have 3 reserved cards.`
+        invalidInputError: MaxThreeReservedCardsError
       })
       return;
     }
@@ -188,16 +185,18 @@ class CardModal extends React.Component {
     }
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <InvalidInput>Invalid Input: {this.state.invalidInputError}</InvalidInput>
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
         : null
     );
 
     return (
-      <CardModalContainer width={this.props.width}>
-        <Card card={this.state.card} width={theme.card.modal.width} height={theme.card.modal.height} />
+      <ModalContainer width={this.props.width}>
+        <CardContainer>
+          <Card card={this.state.card} width={theme.card.modal.width} height={theme.card.modal.height} />
+        </CardContainer>
         {this.props.playerGemStones && this.props.playerPurchasedCards ?
           <TokensOwned>
-            <TokensOwnedTitle>Owned Gemstones</TokensOwnedTitle>
+            <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
             {this.renderGemStoneTokens()}
           </TokensOwned>
           : null
@@ -230,7 +229,7 @@ class CardModal extends React.Component {
           </Button>
         </div>
         <InvalidInputError />
-      </CardModalContainer>)
+      </ModalContainer>)
   }
 }
 

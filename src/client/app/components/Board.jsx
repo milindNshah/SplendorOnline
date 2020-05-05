@@ -34,7 +34,7 @@ const GemRow = styled(Row)`
   justify-content: center;
 `
 const Col = styled.div`
-  margin: 0rem ${props => `${props.theme.board.spaceBetweenCards}rem`};
+  margin: 0rem ${props => `${props.theme.card.spaceBetween}rem`};
 `
 
 class Board extends React.Component {
@@ -251,7 +251,7 @@ class Board extends React.Component {
                   playerGemStones={this.state.playerGemStones}
                   playerPurchasedCards={this.state.playerPurchasedCards}
                   playerReservedCards={this.state.playerReservedCards}
-                  width={theme.board.width}
+                  width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>
             </Modal>

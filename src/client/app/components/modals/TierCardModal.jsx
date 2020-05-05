@@ -3,17 +3,10 @@ import styled from "styled-components"
 import Button from '../../styledcomponents/button.jsx'
 import TierCard from "../TierCard.jsx"
 import theme from '../../styledcomponents/theme.jsx'
+import ModalContainer from "../../styledcomponents/modal-container.jsx"
 
 const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
 
-const TierCardModalContainer = styled.div`
-  width: ${ props => `${props.width + 2 * props.theme.modal.padding}rem`};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: ${ props => `${props.theme.modal.padding}rem`};
-  background-color: ${ props => props.theme.color.white};
-`
 const ErrorMessage = styled.p`
   margin: 0.5rem 0;
 `
@@ -60,7 +53,7 @@ class TierCardModal extends React.Component {
     );
 
     return (
-      <TierCardModalContainer width={this.props.width}>
+      <ModalContainer width={this.props.width}>
         <TierCardContainer>
           <TierCard
             tier={this.props.tier}
@@ -86,7 +79,7 @@ class TierCardModal extends React.Component {
           </Button>
         </div>
         <InvalidInputError />
-      </TierCardModalContainer>
+      </ModalContainer>
     )
   }
 }
