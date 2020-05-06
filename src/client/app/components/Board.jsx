@@ -13,17 +13,9 @@ import theme from '../styledcomponents/theme.jsx'
 import Overlay from '../styledcomponents/overlay.jsx'
 import Modal from '../styledcomponents/modal.jsx'
 
-const BoardContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  position: relative;
-`
-
 const Table = styled.div`
   display: flex;
   flex-direction: column;
-  width: ${ props => `${props.theme.board.width}rem`};
-  min-width: ${ props => `${props.theme.board.width}rem`};
 `
 const Row = styled.div`
   margin: 0.5rem 0rem;
@@ -224,10 +216,9 @@ class Board extends React.Component {
     })
   }
 
-  // TODO: Press escape to close modal
   render() {
     return (
-      <BoardContainer>
+      <div>
         {(this.state.cardClicked || this.state.tokenClicked || this.state.nobleClicked || this.state.tierCardClicked)
           ? <Overlay></Overlay>
           : null
@@ -312,7 +303,7 @@ class Board extends React.Component {
           )
           : null
         }
-      </BoardContainer>
+      </div>
     )
   }
 }

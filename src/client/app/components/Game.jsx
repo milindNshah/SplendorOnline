@@ -10,10 +10,27 @@ import theme from '../styledcomponents/theme.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
+`
+const BoardPlayerContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+`
+const BoardContainer = styled.div`
+  padding: 1rem;
+`
+const PlayersContainer = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 1rem;
+`
+const Title = styled.h1`
   text-align: center;
+  text-decoration: underline;
 `
 const Scorebox = styled.div`
   margin-bottom: 1rem;
+  text-align: center;
 `
 const TargetScore = styled.h2`
   color: ${ props => props.theme.color.error};
@@ -61,7 +78,6 @@ class Game extends React.Component {
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
-    this.renderHand = this.renderHand.bind(this)
     this.renderHands = this.renderHands.bind(this)
     this.onHackNobles = this.onHackNobles.bind(this)
   }
@@ -114,19 +130,15 @@ class Game extends React.Component {
       return;
     }
     const hands = Object.values(this.state.players)
-      .map((player) => this.renderHand(player));
+      .map((player) => <Player
+        isMyHand={player.id === this.state.playerID}
+        key={player.id}
+        player={player}
+        width={theme.card.icon.width*6+theme.card.spaceBetween*12+2}
+        handlePurchaseCard={this.onPurchaseReservedCard}
+        isPlayerTurn={this.state.isPlayerTurn}
+      />);
     return (hands)
-  }
-
-  renderHand(player) {
-    return <Player
-      isMyHand={player.id === this.state.playerID}
-      key={player.id}
-      player={player}
-      width={theme.board.width}
-      handlePurchaseCard={this.onPurchaseReservedCard}
-      isPlayerTurn={this.state.isPlayerTurn}
-    />
   }
 
   onPurchaseReservedCard(card) {
@@ -229,20 +241,24 @@ class Game extends React.Component {
             : null
           }
         </Scorebox>
-        <Board
-          board={this.state.board}
-          hand={this.state.player?.hand}
-          isPlayerTurn={this.state.isPlayerTurn}
-          onPurchaseCard={this.onPurchaseActiveCard}
-          onPurchaseTokens={this.onPurchaseTokens}
-          onReserveCard={this.onReserveActiveCard}
-          onReserveTierCard={this.onReserveTierCard}
-        />
-        {this.renderHands()}
-        <InvalidInputError />
-        <ServerError />
+        <BoardPlayerContainer>
+          <BoardContainer>
+            <Title>Board</Title>
+            <Board
+              board={this.state.board}
+              hand={this.state.player?.hand}
+              isPlayerTurn={this.state.isPlayerTurn}
+              onPurchaseCard={this.onPurchaseActiveCard}
+              onPurchaseTokens={this.onPurchaseTokens}
+              onReserveCard={this.onReserveActiveCard}
+              onReserveTierCard={this.onReserveTierCard}
+            />
+          </BoardContainer>
+          <PlayersContainer><Title>Players</Title>{this.renderHands()}</PlayersContainer>
+          <InvalidInputError />
+          <ServerError />
+        </BoardPlayerContainer>
         <Button onClick={this.onHackNobles}>Hack Nobles</Button>
-
       </GameContainer>
     )
   }

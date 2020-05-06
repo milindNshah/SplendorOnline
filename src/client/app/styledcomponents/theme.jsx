@@ -56,7 +56,7 @@ const theme = {
     spaceBetween: `${spaceBetweenCards}`,
   },
   board: {
-    width: `${cardWidth*5+spaceBetweenCards*10+5}`,
+    width: `${cardWidth*5+spaceBetweenCards*10}`,
   },
 };
 

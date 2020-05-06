@@ -3,10 +3,9 @@ import styled from "styled-components"
 import Button from '../../styledcomponents/button.jsx'
 import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
-import GemStoneToken from '../GemStoneToken.jsx'
-import { GemStone, getColorFromGemStone } from '../../enums/gemstones.js'
-import { GemStoneBase } from '../GemStone.jsx'
+import { GemStone } from '../../enums/gemstones.js'
 import ModalContainer from '../../styledcomponents/modal-container.jsx'
+import GemStoneTokens from './../GemStoneTokens.jsx'
 
 const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
@@ -35,20 +34,6 @@ const Col = styled.div`
   flex-direction: column;
   align-items: center;
 `
-const CardToken = styled.div`
-  background: ${ props => props.theme.color.black };
-  width: ${ props => `${props.width}rem` };
-  height: ${ props => `${props.height}rem` };
-  color: ${ props => props.theme.color.white };
-  border-radius: 5px;
-  border: 2px solid ${ props => getColorFromGemStone(props.type) };
-  margin-top: 0.5rem;
-  font-size: 1.5rem;
-  font-family: ${ props => props.theme.fontFamily.secondary };
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
 
 class CardModal extends React.Component {
   constructor (props) {
@@ -58,16 +43,10 @@ class CardModal extends React.Component {
       invalidInputError: null,
       isMyHand: this.props.isMyHand ?? true,
       isPlayerTurn: this.props.isPlayerTurn,
-      playerGemStones: this.props.playerGemStones
-        ? new Map(Object.entries(this.props.playerGemStones))
-        : null,
-      playerPurchasedCards: this.props.playerPurchasedCards
-        ? new Map(Object.entries(this.props.playerPurchasedCards))
-        : null,
+      playerGemStones: this.props.playerGemStones,
+      playerPurchasedCards: this.props.playerPurchasedCards,
       playerReservedCards: this.props.playerReservedCards,
     }
-    this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
-    this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onReserveCard = this.onReserveCard.bind(this)
     this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
@@ -80,57 +59,18 @@ class CardModal extends React.Component {
         card: this.props.card,
         isMyHand: this.props.isMyHand ?? true,
         isPlayerTurn: this.props.isPlayerTurn,
-        playerGemStones: this.props.playerGemStones
-          ? new Map(Object.entries(this.props.playerGemStones))
-          : null,
-        playerPurchasedCards: this.props.playerPurchasedCards
-          ? new Map(Object.entries(this.props.playerPurchasedCards))
-          : null,
+        playerGemStones: this.props.playerGemStones,
+        playerPurchasedCards: this.props.playerPurchasedCards,
         playerReservedCards: this.props.playerReservedCards,
       })
     }
   }
 
-  renderGemStoneTokens() {
-    if (!this.state.playerGemStones || !this.state.playerPurchasedCards) {
-      return
-    }
-    const purchasedCards = this.getPurchasedCardsByTypes();
-    return (
-      <Row>
-        {
-          Array.from(this.state.playerGemStones.keys())
-            .map((gemStone) => this.renderGemStoneToken(gemStone, this.state.playerGemStones.get(gemStone), purchasedCards.get(gemStone)))
-        }
-      </Row>
-    )
-  }
-
-  renderGemStoneToken(gemStone, amount, cards) {
-    const cardAmount = cards ? cards.length : 0;
-
-    return (
-      <Col key={gemStone}>
-        <GemStoneToken
-          type={gemStone}
-          amount={amount}
-          width={theme.token.modal.width}
-          height={theme.token.modal.height}
-        />
-        {GemStone.GOLD === gemStone
-          ? null
-          : <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
-            {cardAmount}
-            <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true" />
-          </CardToken>
-        }
-      </Col>)
-  }
-
   getPurchasedCardsByTypes() {
-    const byType = Array.from(this.state.playerPurchasedCards.keys())
+    const purchasedCards = new Map(Object.entries(this.state.playerPurchasedCards))
+    const byType = Array.from(purchasedCards.keys())
       .reduce((map, key) => {
-        const card = this.state.playerPurchasedCards.get(key)
+        const card = purchasedCards.get(key)
         let cardsForType;
         if(map.has(card.gemStoneType)) {
           cardsForType = map.get(card.gemStoneType)
@@ -147,10 +87,11 @@ class CardModal extends React.Component {
   onPurchaseCard() {
     const requiredGemStones = new Map(Object.entries(this.state.card.requiredGemStones))
     const getPurchasedCardsByTypes = this.getPurchasedCardsByTypes();
-    let goldLeft = this.state.playerGemStones.get(GemStone.GOLD)
+    const playerGemStones = new Map(Object.entries(this.state.playerGemStones));
+    let goldLeft = playerGemStones.get(GemStone.GOLD)
     const canPurchaseCard = Array.from(requiredGemStones.keys())
       .map((gemStone) => {
-        const have = this.state.playerGemStones.get(gemStone)
+        const have = playerGemStones.get(gemStone)
         const need = requiredGemStones.get(gemStone)
         const purchased = getPurchasedCardsByTypes.get(gemStone)
           ? getPurchasedCardsByTypes.get(gemStone).length
@@ -200,7 +141,7 @@ class CardModal extends React.Component {
         {this.props.playerGemStones && this.props.playerPurchasedCards ?
           <TokensOwned>
             <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
-            {this.renderGemStoneTokens()}
+            <GemStoneTokens gemStones={this.state.playerGemStones} purchasedCards={this.state.playerPurchasedCards} reservedCards={this.state.playerReservedCards}/>
           </TokensOwned>
           : null
         }
