@@ -5,6 +5,9 @@ import Button from '../../styledcomponents/button.jsx'
 import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import GemStoneTokens from '../GemStoneTokens.jsx'
+import { GemStone } from '../../enums/gemstones.js'
+
+const InsufficientGemsError = `Not sufficient gems to purchase card.`
 
 const CardContainer = styled.div`
   margin-bottom: 1rem;
@@ -33,16 +36,67 @@ const CardsContainer = styled.div`
   flex-direction: row;
   justify-content: center;
 `
+const ErrorMessage = styled.p`
+  margin: 0.5rem 0;
+`
+
 
 class ReservedCardsModal extends React.Component {
   constructor (props) {
     super(props)
-    this.renderCards = this.renderCards.bind(this)
+    this.state = {
+      invalidInputError: null,
+    }
+    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
+    this.renderCards = this.renderCards.bind(this)
   }
 
+  getPurchasedCardsByTypes() {
+    const purchasedCards = new Map(Object.entries(this.props.purchasedCards))
+    return Array.from(purchasedCards.keys())
+      .reduce((map, key) => {
+        const card = purchasedCards.get(key)
+        let cardsForType;
+        if(map.has(card.gemStoneType)) {
+          cardsForType = map.get(card.gemStoneType)
+          cardsForType.push(card)
+        } else {
+          cardsForType = []
+          cardsForType.push(card)
+        }
+        return map.set(card.gemStoneType, cardsForType)
+      }, new Map())
+  }
+
+
   onPurchaseCard(card) {
-    console.log("purchasing card", card);
+    const requiredGemStones = new Map(Object.entries(card.requiredGemStones))
+    const getPurchasedCardsByTypes = this.getPurchasedCardsByTypes();
+    const playerGemStones = new Map(Object.entries(this.props.gemStones));
+    let goldLeft = playerGemStones.get(GemStone.GOLD)
+    const canPurchaseCard = Array.from(requiredGemStones.keys())
+      .map((gemStone) => {
+        const have = playerGemStones.get(gemStone)
+        const need = requiredGemStones.get(gemStone)
+        const purchased = getPurchasedCardsByTypes.get(gemStone)
+          ? getPurchasedCardsByTypes.get(gemStone).length
+          : 0
+        if (have + purchased >= need) {
+          return true
+        } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
+          goldLeft -= (need - (have + purchased))
+          return true;
+        }
+        return false;
+      }).reduce((prev, cur) => prev && cur)
+    if (!canPurchaseCard) {
+      this.setState({
+        invalidInputError: InsufficientGemsError
+      })
+      return;
+    }
+    this.props.handlePurchaseCard(card)
   }
 
   renderCards() {
@@ -53,6 +107,7 @@ class ReservedCardsModal extends React.Component {
     const cards = Array.from(reservedCards.values())
       .map((card) => {
         return (
+          // TODO: Use CardModal instead of manual layout/functions
           <Col key={card.id}>
             <CardContainer>
               <Card card={card} width={theme.card.modal.width} height={theme.card.modal.height} />
@@ -81,6 +136,7 @@ class ReservedCardsModal extends React.Component {
             reservedCards={this.props.reservedCards}
             handleClick={() => { }}
             handleReservedClick={() => { }}
+            handleTokenClick={() => { }}
           />
         </TokensOwned>
         : null
@@ -94,6 +150,11 @@ class ReservedCardsModal extends React.Component {
         ? <p>You have no reserved cards yet.</p>
         : <p>This player has no reserved cards.</p>
     )
+    const InvalidInputError = () => (
+      this.state.invalidInputError
+        ? <ErrorMessage>{this.state.invalidInputError}</ErrorMessage>
+        : null
+    );
 
     return (
       <ModalContainer width={this.props.width}>
@@ -105,6 +166,7 @@ class ReservedCardsModal extends React.Component {
             Close
           </Button>
         </div>
+        <InvalidInputError/>
       </ModalContainer>
     )
   }

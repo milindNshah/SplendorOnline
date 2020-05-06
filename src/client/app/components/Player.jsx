@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components'
-import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 import NobleModal from './modals/NobleModal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
@@ -153,6 +152,7 @@ class Player extends React.Component {
             reservedCards={this.state.hand.reservedCards}
             handleClick={this.onCardClick}
             handleReservedClick={this.onReservedCardClick}
+            handleTokenClick={() => { }}
           />
           {this.renderNobles()}
         </PlayerWidthContainer>

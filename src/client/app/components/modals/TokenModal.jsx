@@ -1,28 +1,20 @@
 import React from 'react'
 import styled from "styled-components"
 import Button from '../../styledcomponents/button.jsx'
-import GemStoneToken from '../GemStoneToken.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import { GemStone } from '../../enums/gemstones'
-import { GemStoneBase } from '../GemStone.jsx'
 import ModalContainer from '../../styledcomponents/modal-container.jsx'
-import CardToken from '../../styledcomponents/card-token.jsx'
+import GemStoneTokens from './../GemStoneTokens.jsx'
+
+const MoreThanTenError = `Cannot have more than 10 tokens.`
+const ReturnMoreThanTakenError = `Cannot return more tokens than you have taken.`
+const ReturnLessThanTenError = `Cannot return tokens such that you have less than 10 tokens.`
 
 const TokensTitle = styled.div`
   margin: 0.5rem 0rem;
   color: ${ props => props.theme.color.black };
   text-decoration: underline;
-`
-const Row = styled.div`
-  margin: 0.5rem 0rem;
-  display: flex;
-  justify-content: flex-start;
-`
-const Col = styled.div`
-  margin: 0rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  text-align: center;
 `
 const ErrorMessage = styled.p`
   margin: 0.5rem 0;
@@ -41,14 +33,11 @@ class TokenModal extends React.Component {
       taken: new Map(),
       returned: new Map(),
     }
-    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onGiveToken = this.onGiveToken.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReturnToken = this.onReturnToken.bind(this)
     this.onTakeToken = this.onTakeToken.bind(this)
     this.onTakeBackToken = this.onTakeBackToken.bind(this)
-    this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
-    this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
   }
 
   componentDidUpdate(prevProps) {
@@ -62,62 +51,9 @@ class TokenModal extends React.Component {
     }
   }
 
-  getPurchasedCardsByTypes() {
-    const byType = Array.from(this.state.playerPurchasedCards.keys())
-      .reduce((map, key) => {
-        const card = this.state.playerPurchasedCards.get(key)
-        let cardsForType;
-        if(map.has(card.gemStoneType)) {
-          cardsForType = map.get(card.gemStoneType)
-          cardsForType.push(card)
-        } else {
-          cardsForType = []
-          cardsForType.push(card)
-        }
-        return map.set(card.gemStoneType, cardsForType)
-      }, new Map())
-    return byType
-  }
-
-  // TODO: Make re-usable across CardModal, Player, TokenModal. See: GemStoneTokens.
-  renderGemStoneTokens(tokens, tokenFunc, renderPurchasedCards) {
-    if (!tokens) {
-      return
-    }
-    const purchasedCards = this.getPurchasedCardsByTypes();
-    return (
-      <Row>
-        {
-          Array.from(tokens.keys())
-            .filter((gemStone) => gemStone !== GemStone.GOLD)
-            .map((gemStone) => this.renderGemStoneToken(gemStone, tokens.get(gemStone), purchasedCards.get(gemStone), renderPurchasedCards, tokenFunc))
-        }
-      </Row>
-    )
-  }
-
-  renderGemStoneToken(gemStone, amount, cards, renderPurchasedCards, tokenFunc) {
-    const cardAmount = cards ? cards.length : 0;
-    return (
-      <Col key={gemStone} onClick={() => tokenFunc(gemStone)}>
-        <GemStoneToken
-          type={gemStone}
-          amount={amount}
-          width={theme.token.modal.width}
-          height={theme.token.modal.height}
-        />
-        {renderPurchasedCards
-          ? <CardToken type={gemStone} width={theme.card.icon.width} height={theme.card.icon.height}>
-            {cardAmount}
-            <GemStoneBase type={gemStone} width={theme.card.icon.gemStone.width} height={theme.card.icon.gemStone.height} fill="true" />
-          </CardToken>
-          : null
-        }
-      </Col>)
-  }
-
   onTakeToken(gemStone) {
     // TODO: Show disabled tokens somehow.
+    console.log("taking Token");
     if (!this.state.isPlayerTurn) {
       return;
     }
@@ -168,6 +104,7 @@ class TokenModal extends React.Component {
   }
 
   onReturnToken(gemStone) {
+    console.log("returning Token");
     if (!this.state.isPlayerTurn) {
       return;
     }
@@ -193,6 +130,7 @@ class TokenModal extends React.Component {
   }
 
   onGiveToken(gemStone) {
+    console.log("giving token")
     if (!this.state.isPlayerTurn) {
       return;
     }
@@ -236,6 +174,7 @@ class TokenModal extends React.Component {
   }
 
   onTakeBackToken(gemStone) {
+    console.log("taking back token")
     if (!this.state.isPlayerTurn) {
       return;
     }
@@ -267,19 +206,19 @@ class TokenModal extends React.Component {
     const totalHas = totalTaken + totalOwned;
     if (totalHas > 10) {
       this.setState({
-        invalidInputError: `Cannot have more than 10 gemstones. You must return ${totalHas - 10} token(s).`
+        invalidInputError: MoreThanTenError
       })
       return;
     }
     if (totalReturned > totalTaken) {
       this.setState({
-        invalidInputError: `Cannot return more gemstones than you have taken. Please take ${totalReturned - totalTaken} more token(s).`
+        invalidInputError: ReturnMoreThanTakenError
       })
       return;
     }
     if (totalOwned + totalTaken < 10 && totalReturned > 0) {
       this.setState({
-        invalidInputError: `Cannot return gemstones if your total gemstones will be end up less than 10. Please take those gemstones back.`
+        invalidInputError: ReturnLessThanTenError
       })
       return;
     }
@@ -301,25 +240,57 @@ class TokenModal extends React.Component {
       <ModalContainer width={this.props.width}>
         <div>
           <TokensTitle>Available Tokens</TokensTitle>
-          {this.renderGemStoneTokens(this.state.availableGemStones, this.onTakeToken)}
+          <GemStoneTokens
+            gemStones={Object.fromEntries(this.state.availableGemStones)}
+            purchasedCards={this.props.playerPurchasedCards}
+            handleClick={() => { }}
+            handleReservedClick={() => { }}
+            handleTokenClick={this.onTakeToken}
+            filterOutGold={true}
+            filterOutPurchasedCardTokens={true}
+          />
         </div>
         {this.state.taken.size > 0
           ? <div>
             <TokensTitle>Selected Tokens</TokensTitle>
-            {this.renderGemStoneTokens(this.state.taken, this.onReturnToken)}
+            <GemStoneTokens
+              gemStones={Object.fromEntries(this.state.taken)}
+              purchasedCards={this.props.playerPurchasedCards}
+              handleClick={() => { }}
+              handleReservedClick={() => { }}
+              handleTokenClick={this.onReturnToken}
+              filterOutGold={true}
+              filterOutPurchasedCardTokens={true}
+            />
           </div>
           : null
         }
         {this.state.returned.size > 0
           ? <div>
             <TokensTitle>Returned Tokens</TokensTitle>
-            {this.renderGemStoneTokens(this.state.returned, this.onTakeBackToken)}
+            <GemStoneTokens
+              gemStones={Object.fromEntries(this.state.returned)}
+              purchasedCards={this.props.playerPurchasedCards}
+              handleClick={() => { }}
+              handleTokenClick={this.onReturnToken}
+              handleReservedClick={() => { }}
+              filterOutGold={false}
+              filterOutPurchasedCardTokens={true}
+            />
           </div>
           : null
         }
         <div>
           <TokensTitle>Your Tokens</TokensTitle>
-          {this.renderGemStoneTokens(this.state.playerGemStones, this.onGiveToken, true)}
+          <GemStoneTokens
+              gemStones={Object.fromEntries(this.state.playerGemStones)}
+              purchasedCards={this.props.playerPurchasedCards}
+              handleClick={() => { }}
+              handleTokenClick={this.onGiveToken}
+              handleReservedClick={() => { }}
+              filterOutGold={false}
+              filterOutPurchasedCardTokens={false}
+            />
         </div>
         {/*  TODO: When clicking exchange and no tokens taken: Display warning/confirmation. */}
         {this.state.isPlayerTurn ?

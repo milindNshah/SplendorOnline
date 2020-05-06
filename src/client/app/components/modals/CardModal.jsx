@@ -134,6 +134,7 @@ class CardModal extends React.Component {
               reservedCards={this.state.playerReservedCards}
               handleClick={() => {}}
               handleReservedClick={() => {}}
+              handleTokenClick={() => {}}
             />
           </TokensOwned>
           : null
