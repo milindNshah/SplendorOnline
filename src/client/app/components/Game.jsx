@@ -137,7 +137,7 @@ class Game extends React.Component {
         width={theme.card.icon.width*6+theme.card.spaceBetween*12+2}
         handlePurchaseCard={this.onPurchaseReservedCard}
         isPlayerTurn={this.state.isPlayerTurn}
-      />);
+      />)
     return (hands)
   }
 

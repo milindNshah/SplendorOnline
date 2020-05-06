@@ -71,7 +71,7 @@ class GemStoneTokens extends React.Component {
     const resCardsAmount = this.props.reservedCards ? Object.keys(this.props.reservedCards).length : 0
 
     return (
-      <Col key={gemStone} onClick={() => this.props.handleClick(gemStone)}>
+      <Col key={gemStone}>
         <GemStoneToken
           type={gemStone}
           amount={amount}
@@ -79,7 +79,7 @@ class GemStoneTokens extends React.Component {
           height={theme.token.modal.height}
         />
         {GemStone.GOLD === gemStone
-          ? <CardToken
+          ? <CardToken onClick={() => this.props.handleReservedClick()}
             type={gemStone}
             width={theme.card.icon.width}
             height={theme.card.icon.height}>
@@ -91,7 +91,7 @@ class GemStoneTokens extends React.Component {
                 R
             </ReservedCardIcon>
           </CardToken>
-          : <CardToken
+          : <CardToken onClick={() => this.props.handleClick(gemStone)}
             type={gemStone}
             width={theme.card.icon.width}
             height={theme.card.icon.height}

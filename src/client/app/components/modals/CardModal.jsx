@@ -23,17 +23,6 @@ const TokensOwnedTitle = styled.p`
 const ErrorMessage = styled.p`
   margin: 0.5rem 0;
 `
-const Row = styled.div`
-  margin: 0.5rem 0rem;
-  display: flex;
-  justify-content: center;
-`
-const Col = styled.div`
-  margin: 0rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`
 
 class CardModal extends React.Component {
   constructor (props) {
@@ -41,7 +30,6 @@ class CardModal extends React.Component {
     this.state = {
       card: this.props.card,
       invalidInputError: null,
-      isMyHand: this.props.isMyHand ?? true,
       isPlayerTurn: this.props.isPlayerTurn,
       playerGemStones: this.props.playerGemStones,
       playerPurchasedCards: this.props.playerPurchasedCards,
@@ -57,7 +45,6 @@ class CardModal extends React.Component {
       this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
         card: this.props.card,
-        isMyHand: this.props.isMyHand ?? true,
         isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: this.props.playerGemStones,
         playerPurchasedCards: this.props.playerPurchasedCards,
@@ -141,11 +128,17 @@ class CardModal extends React.Component {
         {this.props.playerGemStones && this.props.playerPurchasedCards ?
           <TokensOwned>
             <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
-            <GemStoneTokens gemStones={this.state.playerGemStones} purchasedCards={this.state.playerPurchasedCards} reservedCards={this.state.playerReservedCards}/>
+            <GemStoneTokens
+              gemStones={this.state.playerGemStones}
+              purchasedCards={this.state.playerPurchasedCards}
+              reservedCards={this.state.playerReservedCards}
+              handleClick={() => {}}
+              handleReservedClick={() => {}}
+            />
           </TokensOwned>
           : null
         }
-        {this.state.isPlayerTurn && this.state.isMyHand && this.props.handlePurchaseCard ?
+        {this.state.isPlayerTurn && this.props.handlePurchaseCard ?
           <div>
             <Button
               color={theme.color.primary}
@@ -155,7 +148,7 @@ class CardModal extends React.Component {
           </div>
           : null
         }
-        {this.state.isPlayerTurn && this.state.isMyHand && this.props.handleReserveCard?
+        {this.state.isPlayerTurn && this.props.handleReserveCard?
           <div>
             <Button
               color={theme.color.secondary}
