@@ -31,6 +31,7 @@ class GemStoneTokens extends React.Component {
       filterOutGold: this.props.filterOutGold ?? false,
       filterOutPurchasedCardTokens: this.props.filterOutPurchasedCardTokens ?? false,
     }
+    console.log(this.props.isCardTokenClickable)
     this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
@@ -82,13 +83,16 @@ class GemStoneTokens extends React.Component {
           amount={amount}
           width={theme.token.modal.width}
           height={theme.token.modal.height}
+          isClickable={this.props.isGemStoneTokenClickable}
         />
         { this.state.filterOutPurchasedCardTokens ? null
         : GemStone.GOLD === gemStone
           ? <CardToken onClick={() => this.props.handleReservedClick()}
             type={gemStone}
             width={theme.card.icon.width}
-            height={theme.card.icon.height}>
+            height={theme.card.icon.height}
+            isClickable={this.props.isCardTokenClickable}
+          >
             {resCardsAmount}
             <ReservedCardIcon
               type={gemStone}
@@ -101,6 +105,7 @@ class GemStoneTokens extends React.Component {
             type={gemStone}
             width={theme.card.icon.width}
             height={theme.card.icon.height}
+            isClickable={this.props.isCardTokenClickable}
           >
             {cardAmount}
             <GemStoneBase

@@ -27,6 +27,7 @@ const GemRow = styled(Row)`
 `
 const Col = styled.div`
   margin: 0rem ${props => `${props.theme.card.spaceBetween}rem`};
+  cursor: pointer;
 `
 
 class Board extends React.Component {
@@ -95,6 +96,7 @@ class Board extends React.Component {
         amount={amount}
         width={theme.token.width}
         height={theme.token.height}
+        isClickable={true}
         />
       </Col>)
   }

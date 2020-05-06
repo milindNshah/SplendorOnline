@@ -6,6 +6,7 @@ const theme = {
   color: {
     primary: "#28a745",
     secondary: '#17a2b8',
+    orangeSelect: "rgba(255, 127, 80, 1)",
     error: "red",
     white: "white",
     black: "black",

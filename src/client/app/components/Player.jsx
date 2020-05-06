@@ -11,7 +11,7 @@ import CardsByGemStoneModal from './modals/CardsByGemStoneModal.jsx'
 import ReservedCardsModal from './modals/ReservedCardsModal.jsx'
 
 const PlayerWidthContainer = styled.div`
-  border: 1px solid ${props => props.theme.color.black};
+  border-bottom: 1px solid ${props => props.theme.color.black};
   width: ${ props => `${props.width}rem`};
   padding: 1rem;
 `
@@ -147,6 +147,7 @@ class Player extends React.Component {
             <ScoreCol width={this.props.width}>Score: {this.state.hand.score}</ScoreCol>
           </PlayerHeader>
           <GemStoneTokens
+            isCardTokenClickable={true}
             gemStones={this.state.hand.gemStones}
             purchasedCards={this.state.hand.purchasedCards}
             reservedCards={this.state.hand.reservedCards}

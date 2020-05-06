@@ -248,6 +248,7 @@ class TokenModal extends React.Component {
             handleTokenClick={this.onTakeToken}
             filterOutGold={true}
             filterOutPurchasedCardTokens={true}
+            isGemStoneTokenClickable={true}
           />
         </div>
         {this.state.taken.size > 0
@@ -261,6 +262,7 @@ class TokenModal extends React.Component {
               handleTokenClick={this.onReturnToken}
               filterOutGold={true}
               filterOutPurchasedCardTokens={true}
+              isGemStoneTokenClickable={true}
             />
           </div>
           : null
@@ -276,6 +278,7 @@ class TokenModal extends React.Component {
               handleReservedClick={() => { }}
               filterOutGold={false}
               filterOutPurchasedCardTokens={true}
+              isGemStoneTokenClickable={true}
             />
           </div>
           : null
@@ -290,6 +293,7 @@ class TokenModal extends React.Component {
               handleReservedClick={() => { }}
               filterOutGold={false}
               filterOutPurchasedCardTokens={false}
+              isGemStoneTokenClickable={true}
             />
         </div>
         {/*  TODO: When clicking exchange and no tokens taken: Display warning/confirmation. */}

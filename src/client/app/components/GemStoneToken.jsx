@@ -5,6 +5,7 @@ import { getColorFromGemStone } from '../enums/gemstones.js'
 
 const TokenContainer = styled.div`
   position: relative;
+  cursor: ${ props => props.isClickable ? "pointer" : "default" };
 `
 
 const Amount = styled.div`
@@ -38,7 +39,7 @@ class GemStoneToken extends React.Component {
 
   render() {
     return (
-      <TokenContainer>
+      <TokenContainer {...this.props}>
         <Amount {...this.props}>{this.props.amount}</Amount>
         <Token {...this.props}>
           <GemStoneBase

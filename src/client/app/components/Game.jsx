@@ -24,9 +24,13 @@ const PlayersContainer = styled.div`
   flex-flow: column nowrap;
   padding: 1rem;
 `
+const ButtonContainer = styled.div`
+  text-align: center;
+`
 const Title = styled.h1`
   text-align: center;
   text-decoration: underline;
+  font-weight: 300;
 `
 const Scorebox = styled.div`
   margin-bottom: 1rem;
@@ -258,7 +262,8 @@ class Game extends React.Component {
           <InvalidInputError />
           <ServerError />
         </BoardPlayerContainer>
-        <Button onClick={this.onHackNobles}>Hack Nobles</Button>
+        <ButtonContainer><Button onClick={this.onEndTurn} color={theme.color.error }>Skip Turn</Button></ButtonContainer>
+        <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
       </GameContainer>
     )
   }
