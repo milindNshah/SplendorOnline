@@ -28,6 +28,7 @@ export class Card {
   tier: CardTier;
   requiredGemStones: Map<GemStone, number>;
   reservedBy: string;
+  boardPosition: number;
 
   constructor (
     pointValue: number,
@@ -48,6 +49,11 @@ export class Card {
 
   setReservedBy(playerID: string): this {
     this.reservedBy = playerID;
+    return this;
+  }
+
+  setBoardPosition(pos: number): this {
+    this.boardPosition = pos;
     return this;
   }
 }

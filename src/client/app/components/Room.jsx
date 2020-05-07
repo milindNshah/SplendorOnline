@@ -18,6 +18,9 @@ const RoomContainer = styled.div`
   margin-right: 2rem;
   text-align: center;
 `
+const Form = styled.form`
+  margin: 0rem;
+`
 const Label = styled.div`
   margin: 0.5rem 0;
 `
@@ -153,7 +156,7 @@ class Room extends React.Component {
 
   renderCreateRoom() {
     return (
-      <form noValidate onSubmit={this.onCreateRoom}>
+      <Form noValidate onSubmit={this.onCreateRoom}>
         <Label>Enter your username</Label>
         <div>
           <Input
@@ -171,13 +174,13 @@ class Room extends React.Component {
             Create Game
           </Button>
         </div>
-      </form>
+      </Form>
     )
   }
 
   renderJoinRoom() {
     return (
-      <form noValidate onSubmit={this.onJoinRoom}>
+      <Form noValidate onSubmit={this.onJoinRoom}>
         <Label>Enter your username</Label>
         <div>
           <Input
@@ -203,7 +206,7 @@ class Room extends React.Component {
           onClick={this.onJoinRoom}>
           Join Game
         </Button></div>
-      </form>
+      </Form>
     )
   }
 

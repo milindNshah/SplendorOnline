@@ -28,6 +28,7 @@ const GemRow = styled(Row)`
 const Col = styled.div`
   margin: 0rem ${props => `${props.theme.card.spaceBetween}rem`};
   cursor: pointer;
+  order: ${ props => props.order ?? 0};
 `
 
 class Board extends React.Component {
@@ -166,7 +167,9 @@ class Board extends React.Component {
   }
 
   renderCard(card) {
-    return (<Col onClick={() => this.onCardClick(card)} key={card.id}><Card card={card} width={theme.card.width} height={theme.card.height}/></Col>)
+    return (<Col order={card.boardPosition} onClick={() => this.onCardClick(card)} key={card.id}>
+      <Card card={card} width={theme.card.width} height={theme.card.height} />
+    </Col>)
   }
 
   onCardClick(card) {

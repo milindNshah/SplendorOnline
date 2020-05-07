@@ -8,7 +8,7 @@ const Button = styled.button`
   color: ${ props => props.color ?? props.theme.color.primary };
   cursor: pointer;
   display: inline-block;
-  height: "auto";
+  height: auto;
   font-family: ${ props => props.fontFamily ?? props.theme.fontFamily.primary };
   font-size: ${ props => props.fontSize ?? props.theme.fontSize };
   font-weight: 400;

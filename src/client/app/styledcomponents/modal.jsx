@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Modal = styled.div`
   position: absolute;
-  top: 0;
+  top: 4rem;
   left: 0;
   width: 100%;
   height: 100%;
@@ -10,6 +10,7 @@ const Modal = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 3;
+  text-align: center;
 `;
 
 export default Modal

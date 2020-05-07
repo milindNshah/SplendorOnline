@@ -56,9 +56,6 @@ const theme = {
     },
     spaceBetween: `${spaceBetweenCards}`,
   },
-  board: {
-    width: `${cardWidth*5+spaceBetweenCards*10}`,
-  },
 };
 
 export default theme;

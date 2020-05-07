@@ -67,7 +67,6 @@ export class Game {
   async transferGems(inputGemsToTransfer: Map<string, number>, player: Player): Promise<this> {
     try {
       const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
-        .filter((gemStoneName) => gemStoneName !== GemStone.GOLD)
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
           let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
           if (inputGemsToTransfer.get(gemStoneName) === 0) {

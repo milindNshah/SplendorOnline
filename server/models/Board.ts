@@ -82,6 +82,7 @@ export class Board {
         activeCards: Map<CardTier, Map<string, Card>>,
         tier: CardTier
       ) => {
+        let position = 1;
         const remainingCardsForTier: Map<string, Card> = this.remainingTieredCards.get(tier);
         const activeCardsForTier = Array.from(remainingCardsForTier.keys())
           .slice(0, NUM_CARDS_PER_TIER)
@@ -89,9 +90,11 @@ export class Board {
             map: Map<string, Card>,
             cardID: string,
           ) => {
-            const card: Card = remainingCardsForTier.get(cardID);
+            const card: Card = remainingCardsForTier.get(cardID)
             remainingCardsForTier.delete(cardID)
-            return map.set(cardID, card);
+            card.setBoardPosition(position)
+            position += 1
+            return map.set(cardID, card)
           }, new Map());
         return activeCards.set(tier, activeCardsForTier);
       }, new Map())
@@ -152,14 +155,13 @@ export class Board {
   }
 
   async swapActiveCard(card: Card): Promise<this> {
-    // TODO: Swap at same position.
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(card.tier);
     if (activeCardTier.has(card.id)) {
       activeCardTier.delete(card.id);
-      this.addNewActiveCard(card.tier);
+      this.addNewActiveCard(card.tier, card.boardPosition);
     } else {
-      throw new InvalidGameError(`Invalid card given. Unable to get card`)
+      throw new InvalidGameError(`Invalid card given.`)
     }
     return this;
   }
@@ -213,7 +215,7 @@ export class Board {
     return noblesToTake;
   }
 
-  private addNewActiveCard(tier: CardTier): this {
+  private addNewActiveCard(tier: CardTier, position: number): this {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);
     const remainingCardTier: Map<string, Card> =
@@ -225,6 +227,7 @@ export class Board {
     }
     remainingCardTier.delete(cardToMove.id);
     activeCardTier.set(cardToMove.id, cardToMove);
+    cardToMove.setBoardPosition(position);
     return this;
   }
 }

@@ -31,7 +31,6 @@ class GemStoneTokens extends React.Component {
       filterOutGold: this.props.filterOutGold ?? false,
       filterOutPurchasedCardTokens: this.props.filterOutPurchasedCardTokens ?? false,
     }
-    console.log(this.props.isCardTokenClickable)
     this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)

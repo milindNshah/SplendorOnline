@@ -10,6 +10,7 @@ import theme from '../styledcomponents/theme.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
+  min-width: ${ props => `${props.theme.card.width * 5 + props.theme.card.spaceBetween * 10}rem`};
 `
 const BoardPlayerContainer = styled.div`
   display: flex;
@@ -119,6 +120,7 @@ class Game extends React.Component {
       isPlayerTurn: isPlayerTurn,
       player: player,
       players: players,
+      serverError: null,
     });
   }
 
@@ -138,7 +140,7 @@ class Game extends React.Component {
         isMyHand={player.id === this.state.playerID}
         key={player.id}
         player={player}
-        width={theme.card.icon.width*6+theme.card.spaceBetween*12+2}
+        width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
         handlePurchaseCard={this.onPurchaseReservedCard}
         isPlayerTurn={this.state.isPlayerTurn}
       />)
@@ -158,10 +160,10 @@ class Game extends React.Component {
       tokens.set(gemStone, amount);
     })
     tokensReturned.forEach((amount, gemStone) => {
-      if(tokens.has(gemStone)) {
-        tokens.set(gemStone, tokens.get(gemStone)-amount)
+      if (tokens.has(gemStone)) {
+        tokens.set(gemStone, tokens.get(gemStone) - amount)
       } else {
-        tokens.set(gemStone, -1*amount)
+        tokens.set(gemStone, -1 * amount)
       }
     })
     const tokenObject = Array.from(tokens.keys())
@@ -204,7 +206,7 @@ class Game extends React.Component {
   }
 
   onEndTurn() {
-    const actions = {[this.state.actionType]: this.state.actionData}
+    const actions = { [this.state.actionType]: this.state.actionData }
     this.socket.emit("EndTurn", {
       actions: actions,
       gameID: this.state.gameID,
@@ -240,8 +242,8 @@ class Game extends React.Component {
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
-          { this.state.winner && !this.state.tieBreakerMoreRounds
-            ? <Winner/>
+          {this.state.winner && !this.state.tieBreakerMoreRounds
+            ? <Winner />
             : null
           }
         </Scorebox>
@@ -262,7 +264,7 @@ class Game extends React.Component {
           <InvalidInputError />
           <ServerError />
         </BoardPlayerContainer>
-        <ButtonContainer><Button onClick={this.onEndTurn} color={theme.color.error }>Skip Turn</Button></ButtonContainer>
+        {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onEndTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
         <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
       </GameContainer>
     )
