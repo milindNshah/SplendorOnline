@@ -107,7 +107,6 @@ class ReservedCardsModal extends React.Component {
     const cards = Array.from(reservedCards.values())
       .map((card) => {
         return (
-          // TODO: Use CardModal instead of manual layout/functions
           <Col key={card.id}>
             <CardContainer>
               <Card card={card} width={theme.card.modal.width} height={theme.card.modal.height} />

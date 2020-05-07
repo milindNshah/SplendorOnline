@@ -2,7 +2,8 @@
 import { GlobalUtils } from '../utils/GlobalUtils'
 import { GemStone, CardGemStone } from './GemStone'
 
-/* TODO: This was converted to be of type string
+/*
+* This was converted to be of type string
 * cause bson.serialize wouldn't accept number values.
 * Maybe eventually create a toBSON or something that
 * can accept it

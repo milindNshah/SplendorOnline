@@ -38,7 +38,7 @@ const Scorebox = styled.div`
   margin-bottom: 1rem;
   text-align: center;
 `
-const TargetScore = styled.h2`
+const TargetScore = styled.p`
   color: ${ props => props.theme.color.error};
 `
 const TurnName = styled.span`
@@ -88,8 +88,8 @@ class Game extends React.Component {
       actionType: null,
       actionData: null,
       timeleft: {
-        seconds: 0,
-        minutes: 0
+        minutes: 1,
+        seconds: 30,
       },
     }
     this.socket = socket;
@@ -107,7 +107,6 @@ class Game extends React.Component {
     this.onHackNobles = this.onHackNobles.bind(this)
   }
 
-  // TODO: Research ComponentWillMount()?
   componentDidMount() {
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
@@ -161,7 +160,6 @@ class Game extends React.Component {
     });
   }
 
-  // TODO: Make sure "this" player is first. Flexbox Order?
   renderHands() {
     if (!this.state.players) {
       return;
@@ -215,7 +213,9 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
-  onReserveActiveCard(card) {
+  onReserveActiveCard(card, returnedToken) {
+    // TODO: Add logic on backend to remove this token.
+    console.log(returnedToken);
     this.setState({
       actionData: card.id,
       actionType: ActionType.RESERVE_ACTIVE_CARD,
@@ -286,9 +286,9 @@ class Game extends React.Component {
     return (
       <GameContainer>
         <Scorebox>
+          <Turn />
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
-          <Turn />
           <TimerContainer><Timer /></TimerContainer>
           {this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner />

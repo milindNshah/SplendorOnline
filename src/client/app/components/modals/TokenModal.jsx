@@ -47,6 +47,8 @@ class TokenModal extends React.Component {
         isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
         playerPurchasedCards: new Map(Object.entries(this.props.playerPurchasedCards)),
+        phase1: true,
+        phase2: false,
       })
     }
   }
@@ -243,12 +245,13 @@ class TokenModal extends React.Component {
             <GemStoneTokens
               gemStones={Object.fromEntries(this.state.availableGemStones)}
               purchasedCards={this.props.playerPurchasedCards}
+              // TODO: reservedCards doesn't show up since it's not set here or change logic so you dont' see that icon.
               handleClick={() => { }}
               handleReservedClick={() => { }}
               handleTokenClick={this.onTakeToken}
               filterOutGold={true}
               filterOutPurchasedCardTokens={true}
-              isGemStoneTokenClickable={true}
+              isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
             {this.state.isPlayerTurn ? <TokensTitle>Selected Tokens</TokensTitle> : null}
             {this.state.taken.size > 0 && this.state.isPlayerTurn ?
@@ -260,7 +263,7 @@ class TokenModal extends React.Component {
                 handleTokenClick={this.onReturnToken}
                 filterOutGold={true}
                 filterOutPurchasedCardTokens={true}
-                isGemStoneTokenClickable={true}
+                isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
               : null
             }
@@ -299,7 +302,7 @@ class TokenModal extends React.Component {
               handleReservedClick={() => { }}
               filterOutGold={false}
               filterOutPurchasedCardTokens={false}
-              isGemStoneTokenClickable={true}
+              isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
             {this.state.isPlayerTurn ? <TokensTitle>Returned Tokens</TokensTitle> : null}
             {this.state.returned.size > 0 && this.state.isPlayerTurn ?
@@ -311,7 +314,7 @@ class TokenModal extends React.Component {
                 handleReservedClick={() => { }}
                 filterOutGold={false}
                 filterOutPurchasedCardTokens={true}
-                isGemStoneTokenClickable={true}
+                isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
               : null
             }

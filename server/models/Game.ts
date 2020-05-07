@@ -54,10 +54,10 @@ export class Game {
     this.gameTurn = 1;
     this.winner = null;
     this.tieBreakerMoreRounds = false;
-    this.initialMinutes = 0;
-    this.initialSeconds = 20;
-    this.currentMinutes = 0;
-    this.currentSeconds = 20;
+    this.initialMinutes = 1;
+    this.initialSeconds = 30;
+    this.currentMinutes = 1;
+    this.currentSeconds = 30;
     this.timerStarted = false;
   }
 
@@ -333,9 +333,7 @@ export class Game {
       this.tieBreakerMoreRounds = false;
       return this;
     }
-    // Go more rounds until someone has more points or
-    // breaks one of the other tie conditions
-    // TODO: Implement more options that users can select for tiebreaker
+    // Go more rounds until someone breaks a tie breaker condition
     this.tieBreakerMoreRounds = true;
     return this;
   }
