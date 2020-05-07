@@ -16,7 +16,7 @@ const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  background: ${ props => props.theme.color.lightgrey};
+  background: ${ props => props.theme.color.white};
 `
 const BoardContainer = styled.div`
   padding: 1rem;
@@ -45,7 +45,20 @@ const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
   font-weight: bold;
 `
+const TimerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`
+const Time = styled.span`
+  color: ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.black};
+  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.black};
+  font-size: 1.5rem;
+  font-family: ${ props => props.theme.fontFamily.secondary};
+  padding: 0.25rem 0rem;
+  width: 5rem;
+`
 const WinnerScreen = styled.div`
+  margin-top: 1rem;
   background: ${ props => props.theme.color.grey};
   z-index: 5;
   display: flex;
@@ -109,11 +122,10 @@ class Game extends React.Component {
   }
 
   onTimerUpdate(data) {
-    console.log("updating: ", data, this.state.isPlayerTurn);
     this.setState({
       timeleft: data,
     })
-    if(data.seconds === 0 && data.minutes === 0 && this.state.isPlayerTurn) {
+    if (data.seconds === 0 && data.minutes === 0 && this.state.isPlayerTurn) {
       this.onSkipTurn();
     }
   }
@@ -225,7 +237,7 @@ class Game extends React.Component {
   }
 
   onSkipTurn() {
-    if(this.state.isPlayerTurn) {
+    if (this.state.isPlayerTurn) {
       this.setState({
         actionData: null,
         actionType: ActionType.SKIP_TURN,
@@ -259,19 +271,17 @@ class Game extends React.Component {
       : <h2>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</h2>
     );
 
+    const Timer = () => (this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
+      ? <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>0:00</Time>
+      : <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>
+        {this.state.timeleft.minutes}:{this.state.timeleft.seconds < 10 ? `0${this.state.timeleft.seconds}` : this.state.timeleft.seconds}
+      </Time>
+    )
+
     const Winner = () => (this.state.winner.id === this.state.playerID
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
       : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with {this.state.winner.hand.score} points</h1></WinnerScreen>
     );
-
-    const Timer = () => (
-      <div>
-        {this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
-          ? null
-          : <p>Time Remaining: {this.state.timeleft.minutes}:{this.state.timeleft.seconds < 10 ? `0${this.state.timeleft.seconds}` : this.state.timeleft.seconds}</p>
-        }
-      </div>
-    )
 
     return (
       <GameContainer>
@@ -279,7 +289,7 @@ class Game extends React.Component {
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
-          <Timer />
+          <TimerContainer><Timer /></TimerContainer>
           {this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner />
             : null

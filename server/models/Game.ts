@@ -55,9 +55,9 @@ export class Game {
     this.winner = null;
     this.tieBreakerMoreRounds = false;
     this.initialMinutes = 0;
-    this.initialSeconds = 10;
+    this.initialSeconds = 20;
     this.currentMinutes = 0;
-    this.currentSeconds = 10;
+    this.currentSeconds = 20;
     this.timerStarted = false;
   }
 
@@ -69,6 +69,7 @@ export class Game {
     return GlobalUtils.shuffle(playerIDs);
   }
 
+  // This feels very hacky.
   startTimer(io: SocketIO.Server): this {
     if(this.timerStarted === false) {
       this.timerStarted = true;
@@ -79,7 +80,7 @@ export class Game {
         })
         if(this.currentSeconds > 0) {
           this.currentSeconds -= 1;
-        } // TODO: Not sure if needs to be if or else if.
+        }
         else if (this.currentSeconds === 0) {
           if (this.currentMinutes === 0) {
             GameManager.clearIntervalByID(this.id)
@@ -100,6 +101,12 @@ export class Game {
     this.currentMinutes = this.initialMinutes;
     this.currentSeconds = this.initialSeconds;
     this.startTimer(io);
+    return this;
+  }
+
+  stopTimer(): this {
+    GameManager.clearIntervalByID(this.id)
+    this.timerStarted = false;
     return this;
   }
 

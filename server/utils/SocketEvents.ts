@@ -147,7 +147,11 @@ export class SocketEvents {
           await game.hackForNobles(player);
         }
         game.finishTurn(player);
-        game.resetTimer(io);
+        if(!game.winner) {
+          game.resetTimer(io);
+        } else {
+          game.stopTimer();
+        }
         io.sockets.in(room.code).emit("UpdateGame", serialize(game))
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
