@@ -6,6 +6,7 @@ import { InvalidGameError } from './Errors';
 import { Player } from './Player';
 import { GemStone } from './GemStone';
 import { Card, CardTier } from './Card';
+import * as GameManager from '../managers/GameManager';
 
 const TARGET_SCORE = 15;
 const MAX_GEMS_ALLOWED_HAVE = 10;
@@ -24,7 +25,11 @@ export enum ActionType {
   PURCHASE_RESERVED_CARD = "PurchaseReservedCard",
   RESERVE_ACTIVE_CARD = "ReserveActiveCard",
   RESERVE_DECK_CARD = "ReserveDeckCard",
+  SKIP_TURN = "SkipTurn",
 }
+
+// TODO: Move into game manager. intervals map by gameid.
+let gameInterval: NodeJS.Timeout = null;
 
 export class Game {
   id: string;
@@ -36,6 +41,11 @@ export class Game {
   gameTurn: number;
   winner: Player;
   tieBreakerMoreRounds: boolean;
+  initialMinutes: number;
+  initialSeconds: number;
+  currentMinutes: number;
+  currentSeconds: number;
+  timerStarted: boolean;
 
   constructor (room: Room, board: Board, targetScore?: number) {
     this.id = this.createGameID();
@@ -47,6 +57,11 @@ export class Game {
     this.gameTurn = 1;
     this.winner = null;
     this.tieBreakerMoreRounds = false;
+    this.initialMinutes = 0;
+    this.initialSeconds = 10;
+    this.currentMinutes = 0;
+    this.currentSeconds = 10;
+    this.timerStarted = false;
   }
 
   createGameID(): string {
@@ -55,6 +70,49 @@ export class Game {
 
   generateTurnOrder(playerIDs: string[]): string[] {
     return GlobalUtils.shuffle(playerIDs);
+  }
+
+  startTimer(io: SocketIO.Server): this {
+    // let gameInterval: NodeJS.Timeout = GameManager.getIntervalByID(this.id);
+    // if(gameInterval !== null) {
+    //   GameManager.clearIntervalByID(this.id)
+    // }
+    if(this.timerStarted === false) {
+      console.log("timer Start: ", this.timerStarted);
+      this.timerStarted = true;
+      gameInterval = setInterval(() => {
+        console.log(this.currentMinutes, this.currentSeconds)
+        io.sockets.in(this.room.code).emit("TimerUpdate", {
+          seconds: this.currentSeconds,
+          minutes: this.currentMinutes,
+        })
+        if(this.currentSeconds > 0) {
+          this.currentSeconds -= 1;
+        } // TODO: Not sure if needs to be if or else if.
+        else if (this.currentSeconds === 0) {
+          if (this.currentMinutes === 0) {
+            clearInterval(gameInterval)
+            // GameManager.clearIntervalByID(this.id)
+            this.timerStarted = false;
+          } else {
+            this.currentMinutes -= 1
+            this.currentSeconds = 59
+          }
+        }
+      }, 1000)
+    }
+    return this;
+  }
+
+  resetTimer(io: SocketIO.Server): this {
+    // let gameInterval: NodeJS.Timeout = GameManager.getIntervalByID(this.id);
+    // GameManager.clearIntervalByID(this.id)
+    clearInterval(gameInterval)
+    this.timerStarted = false;
+    this.currentMinutes = this.initialMinutes;
+    this.currentSeconds = this.initialSeconds;
+    this.startTimer(io);
+    return this;
   }
 
   async checkValidTurn(playerID: string): Promise<boolean> {

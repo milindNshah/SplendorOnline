@@ -16,6 +16,7 @@ const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  background: ${ props => props.theme.color.lightgrey};
 `
 const BoardContainer = styled.div`
   padding: 1rem;
@@ -73,6 +74,10 @@ class Game extends React.Component {
       winner: null,
       actionType: null,
       actionData: null,
+      timeleft: {
+        seconds: 0,
+        minutes: 0
+      },
     }
     this.socket = socket;
     this.onClientRequestError = this.onClientRequestError.bind(this)
@@ -83,6 +88,8 @@ class Game extends React.Component {
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
+    this.onSkipTurn = this.onSkipTurn.bind(this)
+    this.onTimerUpdate = this.onTimerUpdate.bind(this)
     this.renderHands = this.renderHands.bind(this)
     this.onHackNobles = this.onHackNobles.bind(this)
   }
@@ -91,12 +98,24 @@ class Game extends React.Component {
   componentDidMount() {
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
+    this.socket.on('TimerUpdate', this.onTimerUpdate)
     this.socket.emit('RequestGameUpdate', this.state.gameID);
   }
 
   componentWillUnmount() {
     this.socket.off('UpdateGame', this.onGameUpdate);
     this.socket.off('ClientRequestError', this.onClientRequestError);
+    this.socket.off('TimerUpdate', this.onTimerUpdate);
+  }
+
+  onTimerUpdate(data) {
+    console.log("updating: ", data, this.state.isPlayerTurn);
+    this.setState({
+      timeleft: data,
+    })
+    if(data.seconds === 0 && data.minutes === 0 && this.state.isPlayerTurn) {
+      this.onSkipTurn();
+    }
   }
 
   onGameUpdate(data) {
@@ -205,6 +224,15 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
+  onSkipTurn() {
+    if(this.state.isPlayerTurn) {
+      this.setState({
+        actionData: null,
+        actionType: ActionType.SKIP_TURN,
+      }, this.onEndTurn)
+    }
+  }
+
   onEndTurn() {
     const actions = { [this.state.actionType]: this.state.actionData }
     this.socket.emit("EndTurn", {
@@ -233,8 +261,17 @@ class Game extends React.Component {
 
     const Winner = () => (this.state.winner.id === this.state.playerID
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
-      : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with ${this.state.winner.hand.score} points</h1></WinnerScreen>
+      : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with {this.state.winner.hand.score} points</h1></WinnerScreen>
     );
+
+    const Timer = () => (
+      <div>
+        {this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
+          ? null
+          : <p>Time Remaining: {this.state.timeleft.minutes}:{this.state.timeleft.seconds < 10 ? `0${this.state.timeleft.seconds}` : this.state.timeleft.seconds}</p>
+        }
+      </div>
+    )
 
     return (
       <GameContainer>
@@ -242,6 +279,7 @@ class Game extends React.Component {
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
           <Turn />
+          <Timer />
           {this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner />
             : null
@@ -264,7 +302,7 @@ class Game extends React.Component {
           <InvalidInputError />
           <ServerError />
         </BoardPlayerContainer>
-        {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onEndTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
+        {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
         <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
       </GameContainer>
     )

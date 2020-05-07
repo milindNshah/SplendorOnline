@@ -11,6 +11,7 @@ const theme = {
     white: "white",
     black: "black",
     grey: "rgba(0, 0, 0, 0.5)",
+    lightgrey: "rgba(0, 0, 0, 0.2)",
     diamond: "white",
     sapphire: "blue",
     emerald: "green",

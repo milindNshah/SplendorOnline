@@ -108,6 +108,8 @@ export class SocketEvents {
     socket.on('RequestGameUpdate', async function (gameID: string) {
       try {
         const game: Game = await GameManager.getGameByID(gameID);
+        console.log("requested game updated");
+        game.startTimer(io);
         io.to(socket.id).emit("UpdateGame", serialize(game));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
@@ -146,6 +148,7 @@ export class SocketEvents {
           await game.hackForNobles(player);
         }
         game.finishTurn(player);
+        game.resetTimer(io);
         io.sockets.in(room.code).emit("UpdateGame", serialize(game))
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);

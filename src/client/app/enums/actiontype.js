@@ -5,4 +5,5 @@ export const ActionType = {
   PURCHASE_RESERVED_CARD: "PurchaseReservedCard",
   RESERVE_ACTIVE_CARD: "ReserveActiveCard",
   RESERVE_DECK_CARD: "ReserveDeckCard",
+  SKIP_TURN: "SkipTurn",
 }
