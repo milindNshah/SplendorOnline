@@ -28,9 +28,6 @@ export enum ActionType {
   SKIP_TURN = "SkipTurn",
 }
 
-// TODO: Move into game manager. intervals map by gameid.
-let gameInterval: NodeJS.Timeout = null;
-
 export class Game {
   id: string;
   board: Board;
@@ -73,15 +70,9 @@ export class Game {
   }
 
   startTimer(io: SocketIO.Server): this {
-    // let gameInterval: NodeJS.Timeout = GameManager.getIntervalByID(this.id);
-    // if(gameInterval !== null) {
-    //   GameManager.clearIntervalByID(this.id)
-    // }
     if(this.timerStarted === false) {
-      console.log("timer Start: ", this.timerStarted);
       this.timerStarted = true;
-      gameInterval = setInterval(() => {
-        console.log(this.currentMinutes, this.currentSeconds)
+      GameManager.setIntervalByID(this.id, setInterval(() => {
         io.sockets.in(this.room.code).emit("TimerUpdate", {
           seconds: this.currentSeconds,
           minutes: this.currentMinutes,
@@ -91,23 +82,20 @@ export class Game {
         } // TODO: Not sure if needs to be if or else if.
         else if (this.currentSeconds === 0) {
           if (this.currentMinutes === 0) {
-            clearInterval(gameInterval)
-            // GameManager.clearIntervalByID(this.id)
+            GameManager.clearIntervalByID(this.id)
             this.timerStarted = false;
           } else {
             this.currentMinutes -= 1
             this.currentSeconds = 59
           }
         }
-      }, 1000)
+      }, 1000))
     }
     return this;
   }
 
   resetTimer(io: SocketIO.Server): this {
-    // let gameInterval: NodeJS.Timeout = GameManager.getIntervalByID(this.id);
-    // GameManager.clearIntervalByID(this.id)
-    clearInterval(gameInterval)
+    GameManager.clearIntervalByID(this.id)
     this.timerStarted = false;
     this.currentMinutes = this.initialMinutes;
     this.currentSeconds = this.initialSeconds;

@@ -31,8 +31,11 @@ export function getIntervalByID(gameID: string): NodeJS.Timeout {
   return gameIntervals.get(gameID);
 }
 
+export function setIntervalByID(gameID: string, interval: NodeJS.Timeout) {
+  gameIntervals.set(gameID, interval);
+}
+
 export function clearIntervalByID(gameID: string) {
-  const gameInterval: NodeJS.Timeout = gameIntervals.get(gameID);
-  clearInterval(gameInterval)
-  gameIntervals.set(gameID, null)
+  clearInterval(gameIntervals.get(gameID));
+  gameIntervals.set(gameID, null);
 }

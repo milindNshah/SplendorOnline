@@ -97,6 +97,7 @@ export class SocketEvents {
           throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
         const game: Game = await GameService.createNewGame(room);
+        game.startTimer(io);
         io.sockets.in(room.code).emit("GameStarted", {
           gameID: game.id,
         });
@@ -108,8 +109,6 @@ export class SocketEvents {
     socket.on('RequestGameUpdate', async function (gameID: string) {
       try {
         const game: Game = await GameManager.getGameByID(gameID);
-        console.log("requested game updated");
-        game.startTimer(io);
         io.to(socket.id).emit("UpdateGame", serialize(game));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
