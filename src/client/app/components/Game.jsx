@@ -7,6 +7,10 @@ import { deserialize } from 'bson';
 import { socket } from '../socket';
 import { ActionType } from '../enums/actiontype';
 import theme from '../styledcomponents/theme.jsx'
+import Overlay from '../styledcomponents/overlay.jsx'
+import Modal from '../styledcomponents/modal.jsx'
+import OutsideAlerter from './modals/OutsideAlerter.jsx'
+import RulesModal from './modals/RulesModal.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
@@ -57,6 +61,11 @@ const Time = styled.span`
   padding: 0.25rem 0rem;
   width: 5rem;
 `
+const Rules = styled.p`
+  color: ${ props => props.theme.color.primary };
+  border: 1px solid ${ props => props.theme.color.primary };
+  padding: 0.25rem 0.5rem;
+`
 const WinnerScreen = styled.div`
   margin-top: 1rem;
   background: ${ props => props.theme.color.grey};
@@ -87,6 +96,7 @@ class Game extends React.Component {
       winner: null,
       actionType: null,
       actionData: null,
+      rulesClicked: false,
       timeleft: {
         minutes: 1,
         seconds: 30,
@@ -105,6 +115,8 @@ class Game extends React.Component {
     this.onTimerUpdate = this.onTimerUpdate.bind(this)
     this.renderHands = this.renderHands.bind(this)
     this.onHackNobles = this.onHackNobles.bind(this)
+    this.onRulesClick = this.onRulesClick.bind(this)
+    this.onRulesClosed = this.onRulesClosed.bind(this)
   }
 
   componentDidMount() {
@@ -158,6 +170,18 @@ class Game extends React.Component {
     this.setState({
       serverError: err,
     });
+  }
+
+  onRulesClick() {
+    this.setState({
+      rulesClicked: true,
+    })
+  }
+
+  onRulesClosed() {
+    this.setState({
+      rulesClicked: false,
+    })
   }
 
   renderHands() {
@@ -283,6 +307,10 @@ class Game extends React.Component {
 
     return (
       <GameContainer>
+        {(this.state.rulesClicked)
+          ? <Overlay></Overlay>
+          : null
+        }
         <Scorebox>
           <Turn />
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
@@ -292,6 +320,7 @@ class Game extends React.Component {
             ? <Winner />
             : null
           }
+          <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         </Scorebox>
         <BoardPlayerContainer>
           <BoardContainer>
@@ -312,6 +341,17 @@ class Game extends React.Component {
         </BoardPlayerContainer>
         {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
         <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
+        {this.state.rulesClicked ?
+          <Modal>
+            <OutsideAlerter handleClose={this.onRulesClosed}>
+              <RulesModal
+                handleClose={this.onRulesClosed}
+                // width={theme.card.icon.width*6+theme.card.spaceBetween*12}
+              />
+            </OutsideAlerter>
+          </Modal>
+          : null
+        }
       </GameContainer>
     )
   }
