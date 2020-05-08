@@ -319,7 +319,7 @@ class Game extends React.Component {
 
     return (
       <GameContainer>
-        {(this.state.rulesClicked)
+        {this.state.rulesClicked
           ? <Overlay></Overlay>
           : null
         }
@@ -349,7 +349,7 @@ class Game extends React.Component {
           </BoardContainer>
           <PlayersContainer><Title>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
-          <ServerError />
+          {/* <ServerError /> */}
         </BoardPlayerContainer>
         {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
         <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>

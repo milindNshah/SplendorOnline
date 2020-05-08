@@ -124,11 +124,11 @@ class RulesModal extends React.Component {
   renderSection(section, sectionText) {
     return (
       <Section>
-        <SectionHeader onClick={() => this.toggleSection(section)}>
+        <SectionHeader>
           {getDisplayNameFromSection(section)}
           {this.state[section]
-            ? <HeaderIcon><i className="fa fa-chevron-up" /></HeaderIcon>
-            : <HeaderIcon><i className="fa fa-chevron-down" /></HeaderIcon>
+            ? <HeaderIcon onClick={() => this.toggleSection(section)}><i className="fa fa-chevron-up" /></HeaderIcon>
+            : <HeaderIcon onClick={() => this.toggleSection(section)}><i className="fa fa-chevron-down" /></HeaderIcon>
           }
         </SectionHeader>
         {this.state[section] ? <SectionContent>{sectionText}</SectionContent> : null}

@@ -6,6 +6,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
 import theme from '../styledcomponents/theme.jsx'
+import Overlay from '../styledcomponents/overlay.jsx'
+import Modal from '../styledcomponents/modal.jsx'
+import OutsideAlerter from './modals/OutsideAlerter.jsx'
+import RulesModal from './modals/RulesModal.jsx'
 
 const AtLeastTwoPlayerError = 'Need atleast 2 players to start a game'
 const AtMostFourPlayerError = 'You may only start a game with at most 4 players'
@@ -28,6 +32,23 @@ const ClipBoard = styled.span`
 `
 const CopiedCode = styled.p`
   color: ${ props => props.theme.color.secondary };
+`
+const RulesContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0rem;
+`
+const Rules = styled.div`
+  color: ${ props => props.theme.color.primary };
+  background-color: ${ props=> props.theme.color.white };
+  border: 1px solid ${ props => props.theme.color.primary };
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+  cursor: pointer;
+  &:hover {
+    color: ${ props=> props.theme.color.white };
+    background-color: ${ props => props.theme.color.primary };
+  }
 `
 const Ready = styled.span`
   color: ${ props => props.isready
@@ -77,6 +98,7 @@ class WaitingRoom extends React.Component {
       players: [{}],
       roomCode: this.props.roomCode,
       serverError: null,
+      rulesClicked: false,
     }
 
     this.socket = socket;
@@ -86,6 +108,8 @@ class WaitingRoom extends React.Component {
     this.onLeaveRoom = this.onLeaveRoom.bind(this);
     this.onReady = this.onReady.bind(this);
     this.onRoomUpdate = this.onRoomUpdate.bind(this);
+    this.onRulesClick = this.onRulesClick.bind(this)
+    this.onRulesClosed = this.onRulesClosed.bind(this)
     this.onStartGame = this.onStartGame.bind(this);
     this.onUnReady = this.onUnReady.bind(this);
     this.renderPlayerTable = this.renderPlayerTable.bind(this);
@@ -107,6 +131,18 @@ class WaitingRoom extends React.Component {
   onClientRequestError(err) {
     this.setState({
       serverError: err,
+    })
+  }
+
+  onRulesClick() {
+    this.setState({
+      rulesClicked: true,
+    })
+  }
+
+  onRulesClosed() {
+    this.setState({
+      rulesClicked: false,
     })
   }
 
@@ -261,6 +297,10 @@ class WaitingRoom extends React.Component {
 
     return (
       <WaitingRoomContainer>
+        {this.state.rulesClicked
+          ? <Overlay></Overlay>
+          : null
+        }
         <div>
           <p>Room Code</p>
           <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
@@ -276,6 +316,9 @@ class WaitingRoom extends React.Component {
               ? <CopiedCodeDialog />
               : null
           }
+          <RulesContainer>
+            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+          </RulesContainer>
         </div>
         <h2>Players in Room</h2>
         <PlayerTableContainer>{this.renderPlayerTable()}</PlayerTableContainer>
@@ -291,6 +334,16 @@ class WaitingRoom extends React.Component {
         </div>
         <InvalidInputError />
         <ServerError />
+        {this.state.rulesClicked ?
+          <Modal>
+            <OutsideAlerter handleClose={this.onRulesClosed}>
+              <RulesModal
+                handleClose={this.onRulesClosed}
+              />
+            </OutsideAlerter>
+          </Modal>
+          : null
+        }
       </WaitingRoomContainer>
     );
   }
