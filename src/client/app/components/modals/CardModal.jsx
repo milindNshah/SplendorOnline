@@ -154,9 +154,13 @@ class CardModal extends React.Component {
     if(this.state.returnedToken !== null){
       return;
     }
-    const playerGemStones = this.state.playerGemStones;
-    playerGemStones[gemStone] = playerGemStones[gemStone]-1
 
+    const playerGemStones = this.state.playerGemStones;
+    if (playerGemStones[gemStone] < 1) {
+      return;
+    }
+
+    playerGemStones[gemStone] = playerGemStones[gemStone]-1
     this.setState({
       playerGemStones: playerGemStones,
       returnedToken: gemStone,

@@ -220,10 +220,9 @@ class Game extends React.Component {
     }, this.onEndTurn)
   }
 
-  onReserveTierCard(tier) {
-    // TODO: Need to be able to check gold tokens for this too :(.
+  onReserveTierCard(tier, returnedToken) {
     this.setState({
-      actionData: tier,
+      actionData: { tier: tier, returnedToken: returnedToken },
       actionType: ActionType.RESERVE_DECK_CARD,
     }, this.onEndTurn)
   }

@@ -174,8 +174,9 @@ export class Game {
       if (!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
-      if (!player.hand.canTakeGoldToken()) {
-        if(!returnedToken) {
+      const goldTokensLeft: number = this.board.availableGemStones.get(GemStone.GOLD)
+      if (!player.hand.canTakeGoldToken() && goldTokensLeft > 0) {
+        if (!returnedToken) {
           throw new InvalidGameError(`Must return a token in order to take another gold token`)
         }
         const returnedGemStone: GemStone = GemStone[returnedToken.toUpperCase() as keyof typeof GemStone] // ew
@@ -195,10 +196,19 @@ export class Game {
     }
   }
 
-  async reserveDeckCard(player: Player, tier: string): Promise<this> {
+  async reserveDeckCard(player: Player, tier: string, returnedToken: string): Promise<this> {
     try {
       if (!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
+      }
+      const goldTokensLeft: number = this.board.availableGemStones.get(GemStone.GOLD)
+      if (!player.hand.canTakeGoldToken() && goldTokensLeft > 0) {
+        if (!returnedToken) {
+          throw new InvalidGameError(`Must return a token in order to take another gold token`)
+        }
+        const returnedGemStone: GemStone = GemStone[returnedToken.toUpperCase() as keyof typeof GemStone] // ew
+        await player.hand.returnGemStone(returnedGemStone)
+        await this.board.addGemStone(returnedGemStone)
       }
       const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
       const card = await this.board.reserveDeckCard(tierKey);

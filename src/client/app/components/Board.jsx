@@ -214,8 +214,8 @@ class Board extends React.Component {
     })
   }
 
-  onReserveTierCard() {
-    this.props.onReserveTierCard(this.state.tierCardClicked.tier)
+  onReserveTierCard(returnedToken) {
+    this.props.onReserveTierCard(this.state.tierCardClicked.tier, returnedToken)
     this.setState({
       tierCardClicked: null,
     })
@@ -295,14 +295,16 @@ class Board extends React.Component {
             <Modal>
               <OutsideAlerter handleClose={this.onTierCardModalClose}>
                 <TierCardModal
+                  availableGemStones={this.state.board.availableGemStones}
                   isPlayerTurn={this.state.isPlayerTurn}
                   tier={this.state.tierCardClicked.tier}
                   remaining={this.state.tierCardClicked.remaining}
                   handleClose={this.onTierCardModalClose}
                   handleReserveCard={this.onReserveTierCard}
+                  playerGemStones={this.state.playerGemStones}
+                  playerPurchasedCards={this.state.playerPurchasedCards}
                   playerReservedCards={this.state.playerReservedCards}
-                  width={theme.card.modal.width}
-                  height={theme.card.modal.height}
+                  width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>
             </Modal>

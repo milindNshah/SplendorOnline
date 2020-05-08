@@ -245,7 +245,6 @@ class TokenModal extends React.Component {
             <GemStoneTokens
               gemStones={Object.fromEntries(this.state.availableGemStones)}
               purchasedCards={this.props.playerPurchasedCards}
-              // TODO: reservedCards doesn't show up since it's not set here or change logic so you dont' see that icon.
               handleClick={() => { }}
               handleReservedClick={() => { }}
               handleTokenClick={this.onTakeToken}

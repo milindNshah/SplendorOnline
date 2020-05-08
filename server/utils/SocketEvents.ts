@@ -134,7 +134,8 @@ export class SocketEvents {
           await game.reserveActiveCard(card, player, actionData.returnedToken);
         }
         if(actions.has(ActionType.RESERVE_DECK_CARD)) {
-          await game.reserveDeckCard(player, actions.get(ActionType.RESERVE_DECK_CARD));
+          const actionData = actions.get(ActionType.RESERVE_DECK_CARD)
+          await game.reserveDeckCard(player, actionData.tier, actionData.returnedToken);
         }
         if(actions.has(ActionType.PURCHASE_ACTIVE_CARD)) {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_ACTIVE_CARD));
