@@ -169,10 +169,18 @@ export class Game {
     }
   }
 
-  async reserveActiveCard(card: Card, player: Player): Promise<this> {
+  async reserveActiveCard(card: Card, player: Player, returnedToken: string): Promise<this> {
     try {
       if (!player.hand.canReserveCard()) {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
+      }
+      if (!player.hand.canTakeGoldToken()) {
+        if(!returnedToken) {
+          throw new InvalidGameError(`Must return a token in order to take another gold token`)
+        }
+        const returnedGemStone: GemStone = GemStone[returnedToken.toUpperCase() as keyof typeof GemStone] // ew
+        await player.hand.returnGemStone(returnedGemStone)
+        await this.board.addGemStone(returnedGemStone)
       }
       await this.board.swapActiveCard(card);
       await player.hand.addToReserved(card);

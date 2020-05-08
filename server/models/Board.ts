@@ -184,6 +184,14 @@ export class Board {
     return cardToTake;
   }
 
+  async addGemStone(returnedGemStone: GemStone): Promise<this> {
+    if (!returnedGemStone || !this.availableGemStones.has(returnedGemStone)) {
+      throw new InvalidGameError(`The returned gemstone paramater is invalid.`)
+    }
+    this.availableGemStones.set(returnedGemStone, this.availableGemStones.get(returnedGemStone)+1)
+    return this;
+  }
+
   async removeGoldGemStone(): Promise<boolean> {
     const numGoldGemStones = this.availableGemStones.get(GemStone.GOLD);
     if(numGoldGemStones > 0) {

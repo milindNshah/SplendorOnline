@@ -129,8 +129,9 @@ export class SocketEvents {
           await game.transferGems(new Map(Object.entries(actions.get(ActionType.TAKE_GEMS))), player)
         }
         if(actions.has(ActionType.RESERVE_ACTIVE_CARD)) {
-          const card: Card = CardManager.getCardByID(actions.get(ActionType.RESERVE_ACTIVE_CARD));
-          await game.reserveActiveCard(card, player);
+          const actionData = actions.get(ActionType.RESERVE_ACTIVE_CARD)
+          const card: Card = CardManager.getCardByID(actionData.cardID);
+          await game.reserveActiveCard(card, player, actionData.returnedToken);
         }
         if(actions.has(ActionType.RESERVE_DECK_CARD)) {
           await game.reserveDeckCard(player, actions.get(ActionType.RESERVE_DECK_CARD));

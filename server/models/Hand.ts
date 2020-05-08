@@ -51,6 +51,12 @@ export class Hand {
     return this.reservedCards.size < MAX_NUM_RESERVED_CARDS;
   }
 
+  canTakeGoldToken(): boolean {
+    const totalOwned: number = Array.from(this.gemStones.values())
+      .reduce((acc, amount) => acc += amount, 0)
+    return totalOwned < 10;
+  }
+
   canPurchaseCard(card: Card): boolean {
     const purchasedCards: Map<GemStone, Card[]> = this.getPurchasedCardsByTypes();
     let goldLeft = this.gemStones.get(GemStone.GOLD);
@@ -59,8 +65,8 @@ export class Hand {
         const have: number = this.gemStones.get(gemStone);
         const need: number = card.requiredGemStones.get(gemStone);
         const purchased: number = purchasedCards.get(gemStone)
-        ? purchasedCards.get(gemStone).length
-        : 0;
+          ? purchasedCards.get(gemStone).length
+          : 0;
         if (have + purchased >= need) {
           return true;
         } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
@@ -73,26 +79,26 @@ export class Hand {
 
   getPurchasedCardsByTypes(): Map<GemStone, Card[]> {
     return Array.from(this.purchasedCards.keys())
-    .reduce((map: Map<GemStone, Card[]>, key: string) => {
-      const card: Card = this.purchasedCards.get(key)
-      const gemStone: GemStone = GemStone[card.gemStoneType.toString().toUpperCase() as keyof typeof GemStone];  // ew
-      let cardsForType: Card[];
-      if(map.has(gemStone)) {
-        cardsForType = map.get(gemStone)
-        cardsForType.push(card)
-      } else {
-        cardsForType = [];
-        cardsForType.push(card);
-      }
-      return map.set(gemStone, cardsForType)
-    }, new Map())
+      .reduce((map: Map<GemStone, Card[]>, key: string) => {
+        const card: Card = this.purchasedCards.get(key)
+        const gemStone: GemStone = GemStone[card.gemStoneType.toString().toUpperCase() as keyof typeof GemStone];  // ew
+        let cardsForType: Card[];
+        if (map.has(gemStone)) {
+          cardsForType = map.get(gemStone)
+          cardsForType.push(card)
+        } else {
+          cardsForType = [];
+          cardsForType.push(card);
+        }
+        return map.set(gemStone, cardsForType)
+      }, new Map())
   }
 
   async transferGems(gemsToTransfer: Map<GemStone, number>): Promise<this> {
     // The checks are being done in Board.transferGems.
     // This function shouldn't be used on its own.
     gemsToTransfer.forEach((amount: number, gemStone: GemStone) => {
-      this.gemStones.set(gemStone, this.gemStones.get(gemStone)+amount);
+      this.gemStones.set(gemStone, this.gemStones.get(gemStone) + amount);
     })
     return this;
   }
@@ -111,14 +117,14 @@ export class Hand {
       if (have < required) {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
-      this.gemStones.set(gemStone, have-required)
+      this.gemStones.set(gemStone, have - required)
     })
     this.purchasedCards.set(card.id, card);
     return this;
   }
 
   async purchaseReservedCard(card: Card): Promise<this> {
-    if(!this.reservedCards.has(card.id)) {
+    if (!this.reservedCards.has(card.id)) {
       throw new InvalidGameError(`Couldn't find the reserved card.`)
     }
     if (!this.canPurchaseCard(card)) {
@@ -144,9 +150,17 @@ export class Hand {
     return this;
   }
 
+  async returnGemStone(returnedGemStone: GemStone): Promise<this> {
+    if (!returnedGemStone || !this.gemStones.has(returnedGemStone) || this.gemStones.get(returnedGemStone) <= 0) {
+      throw new InvalidGameError(`You cannot return a token (${returnedGemStone}) you do not have.`)
+    }
+    this.gemStones.set(returnedGemStone, this.gemStones.get(returnedGemStone) - 1);
+    return this;
+  }
+
   takeGoldGemStone(): this {
     const numGoldGemStones = this.gemStones.get(GemStone.GOLD);
-    this.gemStones.set(GemStone.GOLD, numGoldGemStones+1);
+    this.gemStones.set(GemStone.GOLD, numGoldGemStones + 1);
     return this;
   }
 }

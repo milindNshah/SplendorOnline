@@ -113,7 +113,7 @@ class CardModal extends React.Component {
     this.props.handlePurchaseCard()
   }
 
-  // TODO: Refactor this and ReservedCardsModal and TokenModal and GemStoneTokens.
+  // TODO: Refactor this and ReservedCardsModal and TokenModal and GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
   onReserveCardPhase1() {
     if(Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({
@@ -123,7 +123,8 @@ class CardModal extends React.Component {
     }
     const totalOwned = Object.values(this.state.playerGemStones)
       .reduce((acc, amount) => acc += amount, 0)
-    if(totalOwned >= 10) { // TODO: Need to check state of the board to see if there are gold tokens available.
+    const availableGoldTokens = this.props.availableGemStones[GemStone.GOLD];
+    if(totalOwned >= 10 && availableGoldTokens > 0) {
       this.setState({
         invalidInputError: `You will have more than 10 tokens after reserving. Please return 1 token.`,
         phase1: false,

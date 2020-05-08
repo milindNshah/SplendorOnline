@@ -251,6 +251,7 @@ class TokenModal extends React.Component {
               handleTokenClick={this.onTakeToken}
               filterOutGold={true}
               filterOutPurchasedCardTokens={true}
+              filterOutReservedCardToken={true}
               isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
             {this.state.isPlayerTurn ? <TokensTitle>Selected Tokens</TokensTitle> : null}
@@ -263,6 +264,7 @@ class TokenModal extends React.Component {
                 handleTokenClick={this.onReturnToken}
                 filterOutGold={true}
                 filterOutPurchasedCardTokens={true}
+                filterOutReservedCardToken={true}
                 isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
               : null
@@ -276,6 +278,7 @@ class TokenModal extends React.Component {
               handleReservedClick={() => { }}
               filterOutGold={false}
               filterOutPurchasedCardTokens={false}
+              filterOutReservedCardToken={true}
               isGemStoneTokenClickable={false}
             />
             {this.state.isPlayerTurn ?
@@ -302,6 +305,7 @@ class TokenModal extends React.Component {
               handleReservedClick={() => { }}
               filterOutGold={false}
               filterOutPurchasedCardTokens={false}
+              filterOutReservedCardToken={true}
               isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
             {this.state.isPlayerTurn ? <TokensTitle>Returned Tokens</TokensTitle> : null}
@@ -314,6 +318,7 @@ class TokenModal extends React.Component {
                 handleReservedClick={() => { }}
                 filterOutGold={false}
                 filterOutPurchasedCardTokens={true}
+                filterOutReservedCardToken={true}
                 isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
               : null

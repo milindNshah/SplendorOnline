@@ -239,6 +239,7 @@ class Board extends React.Component {
             <Modal>
               <OutsideAlerter handleClose={this.onCardModalClose}>
                 <CardModal
+                  availableGemStones={this.state.board.availableGemStones}
                   card={this.state.cardClicked}
                   isPlayerTurn={this.state.isPlayerTurn}
                   handleClose={this.onCardModalClose}

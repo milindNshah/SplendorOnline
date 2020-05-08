@@ -214,15 +214,14 @@ class Game extends React.Component {
   }
 
   onReserveActiveCard(card, returnedToken) {
-    // TODO: Add logic on backend to remove this token.
-    console.log(returnedToken);
     this.setState({
-      actionData: card.id,
+      actionData: { cardID: card.id, returnedToken: returnedToken },
       actionType: ActionType.RESERVE_ACTIVE_CARD,
     }, this.onEndTurn)
   }
 
   onReserveTierCard(tier) {
+    // TODO: Need to be able to check gold tokens for this too :(.
     this.setState({
       actionData: tier,
       actionType: ActionType.RESERVE_DECK_CARD,
