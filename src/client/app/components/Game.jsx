@@ -61,10 +61,22 @@ const Time = styled.span`
   padding: 0.25rem 0rem;
   width: 5rem;
 `
-const Rules = styled.p`
+const Rules = styled.div`
   color: ${ props => props.theme.color.primary };
+  background-color: ${ props=> props.theme.color.white };
   border: 1px solid ${ props => props.theme.color.primary };
   padding: 0.25rem 0.5rem;
+  width: 5rem;
+  cursor: pointer;
+  &:hover {
+    color: ${ props=> props.theme.color.white };
+    background-color: ${ props => props.theme.color.primary };
+  }
+`
+const RulesContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0rem;
 `
 const WinnerScreen = styled.div`
   margin-top: 1rem;
@@ -320,7 +332,7 @@ class Game extends React.Component {
             ? <Winner />
             : null
           }
-          <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+          <RulesContainer><Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules></RulesContainer>
         </Scorebox>
         <BoardPlayerContainer>
           <BoardContainer>
@@ -346,7 +358,6 @@ class Game extends React.Component {
             <OutsideAlerter handleClose={this.onRulesClosed}>
               <RulesModal
                 handleClose={this.onRulesClosed}
-                // width={theme.card.icon.width*6+theme.card.spaceBetween*12}
               />
             </OutsideAlerter>
           </Modal>
