@@ -207,6 +207,7 @@ class CardModal extends React.Component {
                   handleClick={() => { }}
                   handleReservedClick={() => { }}
                   handleTokenClick={() => { }}
+                  filterOutReservedCardToken={true}
                 />
               </TokensOwned>
               : null
@@ -247,6 +248,7 @@ class CardModal extends React.Component {
                 handleReservedClick={() => { }}
                 filterOutGold={false}
                 filterOutPurchasedCardTokens={false}
+                filterOutReservedCardToken={true}
                 isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
             </TokensOwned>

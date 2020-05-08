@@ -30,6 +30,7 @@ class GemStoneTokens extends React.Component {
     this.state = {
       filterOutGold: this.props.filterOutGold ?? false,
       filterOutPurchasedCardTokens: this.props.filterOutPurchasedCardTokens ?? false,
+      filterOutReservedCardToken: this.props.filterOutReservedCardToken ?? false,
     }
     this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
@@ -84,36 +85,37 @@ class GemStoneTokens extends React.Component {
           height={theme.token.modal.height}
           isClickable={this.props.isGemStoneTokenClickable}
         />
-        { this.state.filterOutPurchasedCardTokens ? null
-        : GemStone.GOLD === gemStone
-          ? <CardToken onClick={() => this.props.handleReservedClick()}
-            type={gemStone}
-            width={theme.card.icon.width}
-            height={theme.card.icon.height}
-            isClickable={this.props.isCardTokenClickable}
-          >
-            {resCardsAmount}
-            <ReservedCardIcon
+        {this.state.filterOutPurchasedCardTokens ? null
+          : GemStone.GOLD === gemStone ?
+            this.state.filterOutReservedCardToken ? null
+              : <CardToken onClick={() => this.props.handleReservedClick()}
+                type={gemStone}
+                width={theme.card.icon.width}
+                height={theme.card.icon.height}
+                isClickable={this.props.isCardTokenClickable}
+              >
+                {resCardsAmount}
+                <ReservedCardIcon
+                  type={gemStone}
+                  width={theme.card.icon.gemStone.width}
+                  height={theme.card.icon.gemStone.height}>
+                  R
+                </ReservedCardIcon>
+              </CardToken>
+            : <CardToken onClick={() => this.props.handleClick(gemStone)}
               type={gemStone}
-              width={theme.card.icon.gemStone.width}
-              height={theme.card.icon.gemStone.height}>
-                R
-            </ReservedCardIcon>
-          </CardToken>
-          : <CardToken onClick={() => this.props.handleClick(gemStone)}
-            type={gemStone}
-            width={theme.card.icon.width}
-            height={theme.card.icon.height}
-            isClickable={this.props.isCardTokenClickable}
-          >
-            {cardAmount}
-            <GemStoneBase
-              type={gemStone}
-              width={theme.card.icon.gemStone.width}
-              height={theme.card.icon.gemStone.height}
-              fill="true"
-            />
-          </CardToken>
+              width={theme.card.icon.width}
+              height={theme.card.icon.height}
+              isClickable={this.props.isCardTokenClickable}
+            >
+              {cardAmount}
+              <GemStoneBase
+                type={gemStone}
+                width={theme.card.icon.gemStone.width}
+                height={theme.card.icon.gemStone.height}
+                fill="true"
+              />
+            </CardToken>
         }
       </Col>
     )

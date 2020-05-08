@@ -136,6 +136,7 @@ class ReservedCardsModal extends React.Component {
             handleClick={() => { }}
             handleReservedClick={() => { }}
             handleTokenClick={() => { }}
+            filterOutReservedCardToken={true}
           />
         </TokensOwned>
         : null
