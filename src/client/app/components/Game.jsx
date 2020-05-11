@@ -129,9 +129,11 @@ class Game extends React.Component {
     this.onHackNobles = this.onHackNobles.bind(this)
     this.onRulesClick = this.onRulesClick.bind(this)
     this.onRulesClosed = this.onRulesClosed.bind(this)
+    this.onLeaveGame = this.onLeaveGame.bind(this);
   }
 
   componentDidMount() {
+    window.onpopstate = () => {} // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
     this.socket.on('TimerUpdate', this.onTimerUpdate)
@@ -139,6 +141,7 @@ class Game extends React.Component {
   }
 
   componentWillUnmount() {
+    this.onLeaveGame();
     this.socket.off('UpdateGame', this.onGameUpdate);
     this.socket.off('ClientRequestError', this.onClientRequestError);
     this.socket.off('TimerUpdate', this.onTimerUpdate);
@@ -288,6 +291,14 @@ class Game extends React.Component {
     })
   }
 
+  onLeaveGame() {
+    this.socket.emit('LeftGame', {
+      gameID: this.state.gameID,
+      playerID: this.state.playerID,
+    });
+    this.props.history.push('/')
+  }
+
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
@@ -352,6 +363,16 @@ class Game extends React.Component {
           {/* <ServerError /> */}
         </BoardPlayerContainer>
         {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
+        {this.state.winner && !this.state.tieBreakerMoreRounds ?
+          <ButtonContainer>
+            <Button
+              color={theme.color.error}
+              onClick={this.onLeaveGame}>
+              Leave Game
+          </Button>
+          </ButtonContainer>
+          : null
+        }
         <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
         {this.state.rulesClicked ?
           <Modal>

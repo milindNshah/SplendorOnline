@@ -27,12 +27,14 @@ export interface PlayerRoom {
 export class Room {
   id: string;
   code: string;
+  gameID: string;
   gameStarted: boolean;
   players: Map<string, Player>;
 
   constructor (host: Player) {
     this.id = this.createRoomID();
     this.code = this.createRoomCode();
+    this.gameID = null;
     this.gameStarted = false;
     this.players = new Map();
     this.players.set(host.id, host);
@@ -48,7 +50,7 @@ export class Room {
 
   async addPlayer(newPlayer: Player): Promise<this> {
     if (this.gameStarted) {
-      throw new UserServiceError(`Game has already started for Room:.`);
+      throw new UserServiceError(`Game has already started for Room: ${this.code}.`);
     }
 
     if (!this.canAddPlayer()) {
@@ -104,6 +106,11 @@ export class Room {
 
   toggleGameStarted(startGame: boolean): this {
     this.gameStarted = startGame;
+    return this;
+  }
+
+  setGameID(gameID: string): this {
+    this.gameID = gameID;
     return this;
   }
 

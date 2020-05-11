@@ -223,6 +223,14 @@ export class Board {
     return noblesToTake;
   }
 
+  takeAllGemStonesFromDisconnectedPlayer(player: Player): this {
+    const playerGemStones: Map<GemStone, number> = player.hand.gemStones;
+    playerGemStones.forEach((amount: number, gemStone: GemStone) => {
+      this.availableGemStones.set(gemStone, this.availableGemStones.get(gemStone) + amount)
+    })
+    return this;
+  }
+
   private addNewActiveCard(tier: CardTier, position: number): this {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);

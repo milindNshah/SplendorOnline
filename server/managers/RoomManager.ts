@@ -27,19 +27,13 @@ export async function getRoomByCode(roomCode: string): Promise<Room> {
   return room;
 }
 
-export async function removePlayerFromRooms(player: Player): Promise<Room[]> {
-  const modifiedRooms: Room[] = [];
-  try {
-    for (let room of Array.from(rooms.values())) {
-      if (room.hasPlayer(player.id)) {
-        await removePlayerFromRoom(room, player);
-        modifiedRooms.push(room);
-      }
+export function getRoomByPlayer(playerID: string): Room {
+  for (let room of Array.from(rooms.values())) {
+    if(room.hasPlayer(playerID)) {
+      return room;
     }
-    return modifiedRooms;
-  } catch (err) {
-    return err;
   }
+  return null;
 }
 
 export async function removePlayerFromRoom(room: Room, player: Player): Promise<Room> {

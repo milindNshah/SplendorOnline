@@ -229,7 +229,7 @@ class Room extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         {this.state.gameStarted
-          ? <Game gameID={this.state.gameID} playerID={this.state.playerID} />
+          ? <Game {...this.props} gameID={this.state.gameID} playerID={this.state.playerID} />
           : this.state.loadWaitingRoom
             ? <WaitingRoom {...this.props} roomCode={this.state.roomCode} playerID={this.state.playerID} />
             : <RoomContainer>

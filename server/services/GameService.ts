@@ -13,11 +13,12 @@ export async function createNewGame(room: Room): Promise<Game> {
     if (!room || !room.id || !room.code) {
       throw new InvalidInputError("Invalid room given");
     }
-    room.toggleGameStarted(true);
     const board: Board = await BoardService.createNewBoard(room.players.size);
     const game: Game = new Game(room, board);
     Array.from(room.players.values())
       .forEach((player) => player.setHand(HandService.createHand()))
+    room.toggleGameStarted(true);
+    room.setGameID(game.id);
     GameManager.addGame(game);
     return game;
   } catch (err) {

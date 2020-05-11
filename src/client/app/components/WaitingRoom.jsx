@@ -121,11 +121,12 @@ class WaitingRoom extends React.Component {
     this.socket.emit('RequestRoomUpdate', this.state.roomCode);
     this.socket.on('ClientRequestError', this.onClientRequestError);
     this.socket.on('UpdateRoom', this.onRoomUpdate);
+    window.onpopstate = this.onLeaveRoom;
   }
 
   componentWillUnmount() {
-    this.socket.off('UpdateRoom', this.onRoomUpdate);
-    this.socket.off('ClientRequestError', this.onClientRequestError);
+    this.socket.off('UpdateRoom', this.onRoomUpdate)
+    this.socket.off('ClientRequestError', this.onClientRequestError)
   }
 
   onClientRequestError(err) {

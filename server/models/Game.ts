@@ -323,6 +323,30 @@ export class Game {
     return this;
   }
 
+  handlePlayerLeftGame(player: Player, io: SocketIO.Server): this {
+    let wasDisconnetedPlayerTurn: boolean = false;
+    if(player.id === this.turnOrder[this.curTurnIndex]) {
+      wasDisconnetedPlayerTurn = true;
+      this.finishTurn(player);
+    }
+    const curPlayerID = this.turnOrder[this.curTurnIndex];
+    this.turnOrder = this.turnOrder.filter((playerID) => playerID !== player.id);
+    this.curTurnIndex = this.turnOrder.indexOf(curPlayerID);
+    // Not sure this will make sense once a player is allowed to rejoin. Should just end the game tbh.
+    this.board.takeAllGemStonesFromDisconnectedPlayer(player);
+    if(wasDisconnetedPlayerTurn) {
+      if (!this.winner) {
+        this.resetTimer(io);
+      } else {
+        this.stopTimer();
+      }
+    }
+    if(this.turnOrder.length <= 0) {
+      GameManager.removeGame(this);
+    }
+    return this;
+  }
+
   private checkScores(): this {
     const players: Map<string, Player> = this.room.players;
     const playersWon = Array.from(players.values())

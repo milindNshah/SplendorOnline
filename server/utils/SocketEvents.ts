@@ -73,6 +73,7 @@ export class SocketEvents {
     });
 
     socket.on('LeftRoom', async function (data: LeaveRoomParams) {
+      console.log("leaving room");
       try {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
@@ -160,6 +161,25 @@ export class SocketEvents {
       }
     })
 
+    socket.on('LeftGame', async function (data: GameEndTurn) {
+      try {
+        const game: Game = await GameManager.getGameByID(data.gameID);
+        const room: Room = game.room;
+        const player: Player = room.getPlayer(data.playerID);
+        if (!game || game === null || game === undefined
+          || !player || player === null || player === undefined) {
+            throw new InvalidGameError("Invalid game or player given")
+        }
+        game.handlePlayerLeftGame(player, io);
+        await RoomManager.removePlayerFromRoom(room, player);
+        socket.leave(room.code);
+        io.sockets.in(room.code).emit("UpdateGame", serialize(game));
+        await PlayerManager.removePlayer(player);
+      } catch (err) {
+        await ErrorHandler.handleError(err, io, socket.id)
+      }
+    })
+
     socket.on('disconnect', async function () {
       try {
         const player: Player = PlayerManager.getPlayerBySocketID(socket.id);
@@ -168,10 +188,18 @@ export class SocketEvents {
           return;
         }
         // TODO: Need to add extra functionality if player disconnects from game.
-        const modifiedRooms: Room[] = await RoomManager.removePlayerFromRooms(player);
-        modifiedRooms.forEach((room) => {
-          io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
-        });
+        const room: Room = RoomManager.getRoomByPlayer(player.id);
+        if(room.gameID) {
+          let game: Game = await GameManager.getGameByID(room.gameID);
+          game.handlePlayerLeftGame(player, io)
+        }
+        await RoomManager.removePlayerFromRoom(room, player);
+        socket.leave(room.code);
+        io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
+        if(room.gameID) {
+          let game: Game = await GameManager.getGameByID(room.gameID);
+          io.sockets.in(room.code).emit("UpdateGame", serialize(game));
+        }
         await PlayerManager.removePlayer(player);
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
