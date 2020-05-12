@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import theme from '../styledcomponents/theme.jsx'
 import { ActionType } from '../enums/actiontype'
 import { GemStoneBase } from './GemStone.jsx'
-// import Card from './Card.jsx'
+import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 
 const ActionLogContainer = styled.div`
@@ -52,6 +52,13 @@ const InlineCard = styled.div`
   padding: 0rem 0.25rem;
   color: ${ props => props.theme.color.white };
   text-decoration: underline;
+  position: relative;
+`
+const HoverCardContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
 `
 
 class ActionLog extends React.Component {
@@ -59,6 +66,7 @@ class ActionLog extends React.Component {
     super(props)
     this.state = {
       cardHover: null,
+      lineIndex: null,
       nobleHover: null,
     }
     // TODO: Why does this scroll entire page. Figure out how to only scroll the actionLog box.
@@ -150,15 +158,24 @@ class ActionLog extends React.Component {
   }
 
   renderPurchaseCard(index, playerName, actionLine) {
-    // TODO: Make a better icon. Click/hover to see actual card.
-    // const card = <Card card={actionLine.card} width={1.5} height={2} doNotRenderRequired={"true"} />
     return [
       <ActionLineContainer key={`purchased${index}`}>
         <PlayerName>{playerName}</PlayerName>
         {'\u00A0'}
-        purchased
+        purchased a
         {'\u00A0'}
-        <InlineCard>a card</InlineCard>
+        <InlineCard
+          onMouseEnter={() => this.setState({ cardHover: actionLine.card, lineIndex: index })}
+          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
+        >
+          {this.state.cardHover && this.state.lineIndex === index ?
+            <HoverCardContainer>
+              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
+            </HoverCardContainer>
+            : null
+          }
+          card
+        </InlineCard>
         {'\u00A0'}
         {actionLine.type === ActionType.PURCHASE_RESERVED_CARD ? "from their reserved cards" : "from the board"}
       </ActionLineContainer>,
@@ -167,15 +184,24 @@ class ActionLog extends React.Component {
   }
 
   renderReserveCard(index, playerName, actionLine) {
-    // TODO: Make a better icon. Click/hover to see actual card.
-    // const card = <Card card={actionLine.card} width={1.5} height={2} doNotRenderRequired={"true"} />
     return [
       <ActionLineContainer key={`reserved${index}`}>
         <PlayerName>{playerName}</PlayerName>
         {'\u00A0'}
-        reserved
+        reserved a
         {'\u00A0'}
-        <InlineCard>a card</InlineCard>
+        <InlineCard
+          onMouseEnter={() => this.setState({ cardHover: actionLine.card, lineIndex: index })}
+          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
+        >
+          {this.state.cardHover && this.state.lineIndex === index ?
+            <HoverCardContainer>
+              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
+            </HoverCardContainer>
+            : null
+          }
+          card
+        </InlineCard>
         {'\u00A0'}
         {actionLine.type === ActionType.RESERVE_DECK_CARD ? "from the deck" : "from the board"}
       </ActionLineContainer>,
@@ -184,16 +210,21 @@ class ActionLog extends React.Component {
   }
 
   renderNewActiveCard(index, newCard) {
-    // TODO: Make a better icon. Click/hover to see actual card.
-    // const card = <Card card={newCard} width={1.5} height={2} doNotRenderRequired={"true"} />
-
     return (
       <ActionLineContainer key={`newactivecard${index}`}>
+        A
+        {'\u00A0'}
         <InlineCard
-          onMouseEnter={() => this.setState({ cardHover: newCard })}
-          onMouseLeave={() => this.setState({ cardHover: null })}
+          onMouseEnter={() => this.setState({ cardHover: newCard, lineIndex: index })}
+          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
         >
-          A card
+          {this.state.cardHover && this.state.lineIndex === index ?
+            <HoverCardContainer>
+              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
+            </HoverCardContainer>
+            : null
+          }
+          card
         </InlineCard>
         {'\u00A0'}
         was flipped onto the board
@@ -290,7 +321,7 @@ class ActionLog extends React.Component {
   renderGemsFromMap(gemsMap) {
     const gems = Array.from(gemsMap.keys())
       .filter((key) => gemsMap.get(key) !== 0)
-      .map((key) => <GemStoneBaseContainer><GemStoneBase key={key} type={key} amount={gemsMap.get(key)} width={1} height={1} fill="true" /></GemStoneBaseContainer>)
+      .map((key) => <GemStoneBaseContainer key={key} ><GemStoneBase type={key} amount={gemsMap.get(key)} width={1} height={1} fill="true" /></GemStoneBaseContainer>)
     return <GemsContainer>
       (
       {'\u00A0'}
