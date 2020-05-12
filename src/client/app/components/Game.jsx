@@ -314,19 +314,16 @@ class Game extends React.Component {
         ? <p>Server Error: {this.state.serverError.message}</p>
         : null
     );
-
     const Turn = () => (this.state.isPlayerTurn
       ? <h2>It is <TurnName>your</TurnName> turn!</h2>
       : <h2>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</h2>
     );
-
     const Timer = () => (this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
       ? <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>0:00</Time>
       : <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>
         {this.state.timeleft.minutes}:{this.state.timeleft.seconds < 10 ? `0${this.state.timeleft.seconds}` : this.state.timeleft.seconds}
       </Time>
     )
-
     const Winner = () => (this.state.winner.id === this.state.playerID
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
       : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with {this.state.winner.hand.score} points</h1></WinnerScreen>
@@ -369,7 +366,6 @@ class Game extends React.Component {
           </BoardContainer>
           <PlayersContainer><Title>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
-          {/* <ServerError /> */}
         </BoardPlayerContainer>
         {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
