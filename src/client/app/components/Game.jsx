@@ -138,7 +138,7 @@ class Game extends React.Component {
     window.onpopstate = () => {} // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
-    // TODO: Maybe move into it's own component, so it doesn't update everything else every second.
+    // TODO: Move timer into it's own component, so it doesn't update everything else every second.
     // this.socket.on('TimerUpdate', this.onTimerUpdate)
     this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID });
   }

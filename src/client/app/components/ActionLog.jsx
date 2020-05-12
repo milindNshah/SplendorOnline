@@ -13,7 +13,7 @@ const ActionLogContainer = styled.div`
   text-align: end;
 `
 const ActionsContainer = styled.div`
-  padding: 1rem;
+  padding: 0rem 1rem;
   height: ${ props => `${props.height}rem`};
   overflow: scroll;
 `
@@ -42,6 +42,7 @@ const PlayerName = styled.span`
 `
 const Title = styled.span`
   padding-right: 1rem;
+  margin-bottom: 1rem;
   color: ${ props => props.theme.color.secondary };
   font-size: 1rem;
   text-decoration: underline;
@@ -58,6 +59,12 @@ const HoverCardContainer = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 2;
+`
+const HoverNobleContainer = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
   z-index: 2;
 `
 
@@ -77,6 +84,7 @@ class ActionLog extends React.Component {
     this.renderPurchaseCard = this.renderPurchaseCard.bind(this)
     this.renderReserveCard = this.renderReserveCard.bind(this)
     this.renderNewActiveCard = this.renderNewActiveCard.bind(this)
+    this.renderPlayerCardAction = this.renderPlayerCardAction.bind(this)
     this.renderObtainNoble = this.renderObtainNoble.bind(this)
     this.renderSkipTurn = this.renderSkipTurn.bind(this)
     this.renderLeaveGame = this.renderLeaveGame.bind(this)
@@ -159,36 +167,45 @@ class ActionLog extends React.Component {
 
   renderPurchaseCard(index, playerName, actionLine) {
     return [
-      <ActionLineContainer key={`purchased${index}`}>
-        <PlayerName>{playerName}</PlayerName>
-        {'\u00A0'}
-        purchased a
-        {'\u00A0'}
-        <InlineCard
-          onMouseEnter={() => this.setState({ cardHover: actionLine.card, lineIndex: index })}
-          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
-        >
-          {this.state.cardHover && this.state.lineIndex === index ?
-            <HoverCardContainer>
-              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
-            </HoverCardContainer>
-            : null
-          }
-          card
-        </InlineCard>
-        {'\u00A0'}
-        {actionLine.type === ActionType.PURCHASE_RESERVED_CARD ? "from their reserved cards" : "from the board"}
-      </ActionLineContainer>,
+      this.renderPlayerCardAction(index, playerName, actionLine),
       this.renderReturnedGems(index, playerName, new Map(Object.entries(actionLine.transferredGems)))
     ]
   }
 
   renderReserveCard(index, playerName, actionLine) {
     return [
-      <ActionLineContainer key={`reserved${index}`}>
+      this.renderPlayerCardAction(index, playerName, actionLine),
+      this.renderTakeGems(index, playerName, actionLine.transferredGems),
+    ]
+  }
+
+  renderPlayerCardAction(index, playerName, actionLine) {
+    let from = null;
+    let actionVerb = null;
+    switch(actionLine.type) {
+      case(ActionType.PURCHASE_ACTIVE_CARD):
+        from="from the board"
+        actionVerb = "purchased a"
+        break;
+      case(ActionType.PURCHASE_RESERVED_CARD):
+        from="from their reserved cards"
+        actionVerb = "purchased a"
+        break;
+      case(ActionType.RESERVE_ACTIVE_CARD):
+        from = "from the board"
+        actionVerb = "reserved a"
+        break;
+      case(ActionType.RESERVE_DECK_CARD):
+        from = "from the deck"
+        actionVerb = "reserved a"
+        break;
+    }
+
+    return (
+      <ActionLineContainer key={`${actionVerb}${index}`}>
         <PlayerName>{playerName}</PlayerName>
         {'\u00A0'}
-        reserved a
+        {actionVerb}
         {'\u00A0'}
         <InlineCard
           onMouseEnter={() => this.setState({ cardHover: actionLine.card, lineIndex: index })}
@@ -203,10 +220,9 @@ class ActionLog extends React.Component {
           card
         </InlineCard>
         {'\u00A0'}
-        {actionLine.type === ActionType.RESERVE_DECK_CARD ? "from the deck" : "from the board"}
-      </ActionLineContainer>,
-      this.renderTakeGems(index, playerName, actionLine.transferredGems),
-    ]
+        {from}
+      </ActionLineContainer>
+    )
   }
 
   renderNewActiveCard(index, newCard) {
@@ -233,18 +249,27 @@ class ActionLog extends React.Component {
   }
 
   renderObtainNoble(index, playerName, obtainedNobles) {
-    // TODO: Make a better icon. Click/hover to see actual noble.
-    const nobles = obtainedNobles.map((noble) => <Noble key={noble.id} noble={noble} width={1.5} height={2} />)
-    if (nobles.length > 0) {
+    if (obtainedNobles.length > 0) {
       return (
         <ActionLineContainer key={`noble${index}`}>
           <PlayerName>{playerName}</PlayerName>
           {'\u00A0'}
           received
           {'\u00A0'}
-          <GemsContainer>{nobles}</GemsContainer>
+          a
           {'\u00A0'}
-          nobles
+          <InlineCard
+            onMouseEnter={() => this.setState({ nobleHover: obtainedNobles[0], lineIndex: index })}
+            onMouseLeave={() => this.setState({ nobleHover: null, lineIndex: null })}
+          >
+            {this.state.nobleHover && this.state.lineIndex === index ?
+              <HoverNobleContainer>
+                <Noble noble={this.state.nobleHover} width={theme.card.width} height={theme.card.width} />
+              </HoverNobleContainer>
+              : null
+            }
+          noble
+        </InlineCard>
         </ActionLineContainer>
       )
     }
