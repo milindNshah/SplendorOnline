@@ -15,6 +15,7 @@ const CardToken = styled.div`
   flex-direction: column;
   align-items: center;
   cursor: ${ props => props.isClickable ? "pointer" : "default" };
+  opacity: ${ props => props.opacity ?? 1};
 `;
 
 export default CardToken

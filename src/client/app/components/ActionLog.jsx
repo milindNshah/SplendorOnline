@@ -8,30 +8,34 @@ import Noble from './Noble.jsx'
 
 const ActionLogContainer = styled.div`
   font-family: ${ props => props.theme.fontFamily.secondary};
+  font-size: 0.75rem;
+  color: ${ props => props.theme.color.darkgrey };
   border-right: 2px solid ${ props => props.theme.color.secondary};
   width: ${ props => `${props.width}rem`};
   text-align: end;
 `
 const ActionsContainer = styled.div`
+  margin-top: 1rem;
   padding: 0rem 1rem;
   height: ${ props => `${props.height}rem`};
   overflow: scroll;
 `
 const TurnContainer = styled.div`
   border-bottom: 1px solid ${ props => props.theme.color.lightgrey };
-  margin: 0.5rem 0rem;
+  margin: 0.25rem 0rem;
 `
 const ActionLineContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-flow: row wrap;
-  margin: 0.5rem 0rem;
+  margin: 0.25rem 0rem;
 `
 const GemsContainer = styled.span`
   display: flex;
   flex-flow: row wrap;
   background-color: ${ props => props.theme.color.black};
+  padding: 0rem 0.25rem;
   color: white;
 `
 const GemStoneBaseContainer = styled.div`
@@ -42,7 +46,6 @@ const PlayerName = styled.span`
 `
 const Title = styled.span`
   padding-right: 1rem;
-  margin-bottom: 1rem;
   color: ${ props => props.theme.color.secondary };
   font-size: 1rem;
   text-decoration: underline;
@@ -346,7 +349,7 @@ class ActionLog extends React.Component {
   renderGemsFromMap(gemsMap) {
     const gems = Array.from(gemsMap.keys())
       .filter((key) => gemsMap.get(key) !== 0)
-      .map((key) => <GemStoneBaseContainer key={key} ><GemStoneBase type={key} amount={gemsMap.get(key)} width={1} height={1} fill="true" /></GemStoneBaseContainer>)
+      .map((key) => <GemStoneBaseContainer key={key} ><GemStoneBase type={key} amount={gemsMap.get(key)} width={0.75} height={0.75} fill="true" /></GemStoneBaseContainer>)
     return <GemsContainer>
       (
       {'\u00A0'}

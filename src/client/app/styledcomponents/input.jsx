@@ -8,9 +8,10 @@ const Input = styled.input.attrs(props => ({
   border-radius: 0.25rem;
   color: ${props => props.color ?? props.theme.color.black};
   display: inline-block;
+  font-family: ${ props => props.fontFamily ?? props.theme.fontFamily.primary };
   font-size: ${ props => props.fontSize ?? props.theme.fontSize };
   font-weight: 400;
-  height: "auto";
+  height: auto;
   line-height: 1.5rem;
   padding: 0.25rem 0.5rem;
   margin: 0.5rem 0;

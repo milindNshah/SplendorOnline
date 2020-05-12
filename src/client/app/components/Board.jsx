@@ -98,6 +98,7 @@ class Board extends React.Component {
         width={theme.token.width}
         height={theme.token.height}
         isClickable={true}
+        opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
         />
       </Col>)
   }

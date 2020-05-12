@@ -17,6 +17,9 @@ const TokensTitle = styled.div`
 const ErrorMessage = styled.p`
   margin: 0.5rem 0;
 `
+const GemstoneTokensPlaceholder = styled.div`
+  height: ${ props => `${props.theme.token.modal.height}rem`};
+`
 
 class TokenModal extends React.Component {
   constructor (props) {
@@ -253,19 +256,24 @@ class TokenModal extends React.Component {
               filterOutReservedCardToken={true}
               isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
-            {this.state.isPlayerTurn ? <TokensTitle>Selected Tokens</TokensTitle> : null}
-            {this.state.taken.size > 0 && this.state.isPlayerTurn ?
-              <GemStoneTokens
-                gemStones={Object.fromEntries(this.state.taken)}
-                purchasedCards={this.props.playerPurchasedCards}
-                handleClick={() => { }}
-                handleReservedClick={() => { }}
-                handleTokenClick={this.onReturnToken}
-                filterOutGold={true}
-                filterOutPurchasedCardTokens={true}
-                filterOutReservedCardToken={true}
-                isGemStoneTokenClickable={this.state.isPlayerTurn}
-              />
+            {this.state.isPlayerTurn ?
+              <>
+                <TokensTitle>Selected Tokens</TokensTitle>
+                {this.state.taken.size > 0 ?
+                  <GemStoneTokens
+                    gemStones={Object.fromEntries(this.state.taken)}
+                    purchasedCards={this.props.playerPurchasedCards}
+                    handleClick={() => { }}
+                    handleReservedClick={() => { }}
+                    handleTokenClick={this.onReturnToken}
+                    filterOutGold={true}
+                    filterOutPurchasedCardTokens={true}
+                    filterOutReservedCardToken={true}
+                    isGemStoneTokenClickable={this.state.isPlayerTurn}
+                  />
+                  : <GemstoneTokensPlaceholder />
+                }
+              </>
               : null
             }
             <TokensTitle>Your Tokens</TokensTitle>
@@ -307,19 +315,24 @@ class TokenModal extends React.Component {
               filterOutReservedCardToken={true}
               isGemStoneTokenClickable={this.state.isPlayerTurn}
             />
-            {this.state.isPlayerTurn ? <TokensTitle>Returned Tokens</TokensTitle> : null}
-            {this.state.returned.size > 0 && this.state.isPlayerTurn ?
-              <GemStoneTokens
-                gemStones={Object.fromEntries(this.state.returned)}
-                purchasedCards={this.props.playerPurchasedCards}
-                handleClick={() => { }}
-                handleTokenClick={this.onTakeBackToken}
-                handleReservedClick={() => { }}
-                filterOutGold={false}
-                filterOutPurchasedCardTokens={true}
-                filterOutReservedCardToken={true}
-                isGemStoneTokenClickable={this.state.isPlayerTurn}
-              />
+            {this.state.isPlayerTurn ?
+              <>
+                <TokensTitle>Returned Tokens</TokensTitle>
+                {this.state.returned.size > 0 ?
+                  <GemStoneTokens
+                    gemStones={Object.fromEntries(this.state.returned)}
+                    purchasedCards={this.props.playerPurchasedCards}
+                    handleClick={() => { }}
+                    handleTokenClick={this.onTakeBackToken}
+                    handleReservedClick={() => { }}
+                    filterOutGold={false}
+                    filterOutPurchasedCardTokens={true}
+                    filterOutReservedCardToken={true}
+                    isGemStoneTokenClickable={this.state.isPlayerTurn}
+                  />
+                  : <GemstoneTokensPlaceholder />
+                }
+              </>
               : null
             }
             {this.state.isPlayerTurn ?

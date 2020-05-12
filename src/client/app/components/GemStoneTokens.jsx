@@ -83,7 +83,8 @@ class GemStoneTokens extends React.Component {
           amount={amount}
           width={theme.token.modal.width}
           height={theme.token.modal.height}
-          isClickable={this.props.isGemStoneTokenClickable}
+          isClickable={this.props.isGemStoneTokenClickable && amount !== 0}
+          opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
         />
         {this.state.filterOutPurchasedCardTokens ? null
           : GemStone.GOLD === gemStone ?
@@ -92,8 +93,9 @@ class GemStoneTokens extends React.Component {
                 type={gemStone}
                 width={theme.card.icon.width}
                 height={theme.card.icon.height}
-                isClickable={this.props.isCardTokenClickable}
-              >
+                isClickable={this.props.isCardTokenClickable && resCardsAmount !== 0}
+                opacity={resCardsAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
+                >
                 {resCardsAmount}
                 <ReservedCardIcon
                   type={gemStone}
@@ -106,8 +108,9 @@ class GemStoneTokens extends React.Component {
               type={gemStone}
               width={theme.card.icon.width}
               height={theme.card.icon.height}
-              isClickable={this.props.isCardTokenClickable}
-            >
+              isClickable={this.props.isCardTokenClickable && cardAmount !== 0}
+              opacity={cardAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
+              >
               {cardAmount}
               <GemStoneBase
                 type={gemStone}

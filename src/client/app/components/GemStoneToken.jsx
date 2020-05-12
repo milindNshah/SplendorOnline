@@ -6,13 +6,15 @@ import { getColorFromGemStone } from '../enums/gemstones.js'
 const TokenContainer = styled.div`
   position: relative;
   cursor: ${ props => props.isClickable ? "pointer" : "default" };
+  opacity: ${ props => props.opacity ?? 1};
 `
 
 const Amount = styled.div`
   position: absolute;
   bottom: 0;
   left: 0;
-  font-size: ${ props => `${props.width*2/5}rem`};
+  font-size: ${ props => `${props.width*2.5/5}rem`};
+  line-height: ${ props => `${props.width*2.5/5}rem`};
   font-family: ${ props => props.theme.fontFamily.secondary };
   color: ${ props => props.theme.color.white };
   text-shadow: -1px 1px 0 black,

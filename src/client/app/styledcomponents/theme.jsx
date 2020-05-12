@@ -29,6 +29,9 @@ const theme = {
     primary: "Raleway",
     secondary: "Roboto Slab",
   },
+  gemStoneIsZero: {
+    opacity: 0.1,
+  },
   fontSize: "1rem",
   token: {
     width: 5,

@@ -34,11 +34,12 @@ const Row = styled.div`
   display: flex;
   justify-content: flex-start;
 `
-const Col = styled.div`
+const NobleCol = styled.div`
   margin: 0rem 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 `
 
 class Player extends React.Component {
@@ -82,9 +83,9 @@ class Player extends React.Component {
     const rows = Array.from(nobles.values())
       .map((noble) => {
         return (
-          <Col key={noble.id} onClick={() => this.onNobleClick(noble)}>
+          <NobleCol key={noble.id} onClick={() => this.onNobleClick(noble)}>
             <Noble noble={noble} width={theme.card.icon.width} height={theme.card.icon.width} />
-          </Col>
+          </NobleCol>
         )
       })
     return (<Row>{rows}</Row>)
