@@ -7,6 +7,7 @@ import { Player } from './Player';
 import { GemStone } from './GemStone';
 import { Card, CardTier } from './Card';
 import * as GameManager from '../managers/GameManager';
+import { Noble } from './Noble';
 
 const TARGET_SCORE = 15;
 const MAX_GEMS_ALLOWED_HAVE = 10;
@@ -18,14 +19,28 @@ export interface GameEndTurn {
   gameID: string,
 }
 
-/* Should be kept in sync with actionttype.js on client */
+export interface GameAction {
+  type: ActionType,
+  player?: Player,
+  card?: Card,
+  transferredGems?: Map<GemStone, number>,
+  obtainedNobles?: Noble[],
+}
+
+/* Should be kept in sync with actiontype.js on client */
 export enum ActionType {
+  START_GAME = "StartGame",
+  JOIN_GAME = "JoinGame",
   TAKE_GEMS = "TakeGems",
   PURCHASE_ACTIVE_CARD = "PurchaseActiveCard",
   PURCHASE_RESERVED_CARD = "PurchaseReservedCard",
   RESERVE_ACTIVE_CARD = "ReserveActiveCard",
   RESERVE_DECK_CARD = "ReserveDeckCard",
+  NEW_ACTIVE_CARD = "NewActiveCard",
+  OBTAIN_NOBLE = "ObtainNoble",
   SKIP_TURN = "SkipTurn",
+  LEAVE_GAME = "LeaveGame",
+  GAME_ENDED = "GameEnded",
 }
 
 export class Game {
@@ -43,9 +58,11 @@ export class Game {
   currentMinutes: number;
   currentSeconds: number;
   timerStarted: boolean;
+  actionLog: GameAction[];
 
   constructor (room: Room, board: Board, targetScore?: number) {
     this.id = this.createGameID();
+    this.actionLog = [];
     this.board = board;
     this.room = room;
     this.targetScore = targetScore ?? TARGET_SCORE;
@@ -119,7 +136,7 @@ export class Game {
 
   async transferGems(inputGemsToTransfer: Map<string, number>, player: Player): Promise<this> {
     try {
-      const gemsToTansfer = Array.from(inputGemsToTransfer.keys())
+      const gemsToTansfer: Map<GemStone, number> = Array.from(inputGemsToTransfer.keys())
         .reduce((map: Map<GemStone, number>, gemStoneName: string) => {
           let gemStoneKey: GemStone = GemStone[gemStoneName.toUpperCase() as keyof typeof GemStone] // ew
           if (inputGemsToTransfer.get(gemStoneName) === 0) {
@@ -163,6 +180,12 @@ export class Game {
       }
       await this.board.transferGems(gemsToTansfer);
       await player.hand.transferGems(gemsToTansfer);
+      const takeGemsAction: GameAction = {
+        type: ActionType.TAKE_GEMS,
+        player: player,
+        transferredGems: gemsToTansfer,
+      }
+      this.addGameActionToLog(takeGemsAction);
       return this;
     } catch (err) {
       throw err;
@@ -175,6 +198,7 @@ export class Game {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
       const goldTokensLeft: number = this.board.availableGemStones.get(GemStone.GOLD)
+      const transferredGemStones: Map<GemStone, number> = new Map();
       if (!player.hand.canTakeGoldToken() && goldTokensLeft > 0) {
         if (!returnedToken) {
           throw new InvalidGameError(`Must return a token in order to take another gold token`)
@@ -182,14 +206,32 @@ export class Game {
         const returnedGemStone: GemStone = GemStone[returnedToken.toUpperCase() as keyof typeof GemStone] // ew
         await player.hand.returnGemStone(returnedGemStone)
         await this.board.addGemStone(returnedGemStone)
+        transferredGemStones.set(returnedGemStone, -1)
       }
-      await this.board.swapActiveCard(card);
+      const newActiveCard: Card = await this.board.swapActiveCard(card);
       await player.hand.addToReserved(card);
       card.setReservedBy(player.id);
       const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
       if (goldGemStoneObtained) {
         player.hand.takeGoldGemStone();
+        if(transferredGemStones.has(GemStone.GOLD)) {
+          transferredGemStones.set(GemStone.GOLD, transferredGemStones.get(GemStone.GOLD) + 1);
+        } else {
+          transferredGemStones.set(GemStone.GOLD, 1);
+        }
       }
+      const reserveActiveCardAction: GameAction = {
+        type: ActionType.RESERVE_ACTIVE_CARD,
+        player: player,
+        transferredGems: transferredGemStones,
+        card: card,
+      }
+      this.addGameActionToLog(reserveActiveCardAction);
+      const newActiveCardAction: GameAction = {
+        type: ActionType.NEW_ACTIVE_CARD,
+        card: newActiveCard,
+      }
+      this.addGameActionToLog(newActiveCardAction);
       return this;
     } catch (err) {
       throw err;
@@ -202,6 +244,7 @@ export class Game {
         throw new InvalidGameError(`Can't reserve a card because you have already reserved 3 cards`);
       }
       const goldTokensLeft: number = this.board.availableGemStones.get(GemStone.GOLD)
+      const transferredGemStones: Map<GemStone, number> = new Map();
       if (!player.hand.canTakeGoldToken() && goldTokensLeft > 0) {
         if (!returnedToken) {
           throw new InvalidGameError(`Must return a token in order to take another gold token`)
@@ -209,6 +252,7 @@ export class Game {
         const returnedGemStone: GemStone = GemStone[returnedToken.toUpperCase() as keyof typeof GemStone] // ew
         await player.hand.returnGemStone(returnedGemStone)
         await this.board.addGemStone(returnedGemStone)
+        transferredGemStones.set(returnedGemStone, -1)
       }
       const tierKey: CardTier = CardTier[`TIER${tier}` as keyof typeof CardTier]; // ew
       const card = await this.board.reserveDeckCard(tierKey);
@@ -217,7 +261,19 @@ export class Game {
       const goldGemStoneObtained: boolean = await this.board.removeGoldGemStone();
       if (goldGemStoneObtained) {
         player.hand.takeGoldGemStone();
+        if(transferredGemStones.has(GemStone.GOLD)) {
+          transferredGemStones.set(GemStone.GOLD, transferredGemStones.get(GemStone.GOLD) + 1);
+        } else {
+          transferredGemStones.set(GemStone.GOLD, 1);
+        }
       }
+      const reserveDeckCardAction: GameAction = {
+        type: ActionType.RESERVE_DECK_CARD,
+        player: player,
+        transferredGems: transferredGemStones,
+        card: card,
+      }
+      this.addGameActionToLog(reserveDeckCardAction);
       return this;
     } catch (err) {
       throw err;
@@ -253,11 +309,34 @@ export class Game {
       if (!player.hand.canPurchaseCard(card)) {
         throw new InvalidGameError(`Can't purchase card: You Must Construct Additional Gems`);
       }
-      await this.board.swapActiveCard(card);
+      const newActiveCard = await this.board.swapActiveCard(card);
       const gemStonesToTransfer: Map<GemStone, number> = await this.getGemStonesToUseForPurchase(card, player);
       await player.hand.addToPurchased(gemStonesToTransfer, card);
       await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
+
+      const purchaseActiveCardAction: GameAction = {
+        type: ActionType.PURCHASE_ACTIVE_CARD,
+        player: player,
+        transferredGems: gemStonesToTransfer,
+        card: card,
+      }
+      this.addGameActionToLog(purchaseActiveCardAction);
+      const newActiveCardAction: GameAction = {
+        type: ActionType.NEW_ACTIVE_CARD,
+        card: newActiveCard,
+      }
+      this.addGameActionToLog(newActiveCardAction);
+
       const noblesToTake = await this.board.takeNoblesIfValid(player);
+      if(noblesToTake.length > 0) {
+        const obtainNoblesAction: GameAction = {
+          type: ActionType.OBTAIN_NOBLE,
+          player: player,
+          obtainedNobles: noblesToTake,
+        }
+        this.addGameActionToLog(obtainNoblesAction);
+      }
+
       player.hand.addToNobles(noblesToTake)
       await player.hand.updateScore();
       return this;
@@ -278,7 +357,25 @@ export class Game {
       await player.hand.purchaseReservedCard(card);
       await player.hand.addToPurchased(gemStonesToTransfer, card);
       await this.board.addGemsFromPurchasedCard(gemStonesToTransfer);
+
+      const purchaseReservedCardAction: GameAction = {
+        type: ActionType.PURCHASE_RESERVED_CARD,
+        player: player,
+        transferredGems: gemStonesToTransfer,
+        card: card,
+      }
+      this.addGameActionToLog(purchaseReservedCardAction);
+
       const noblesToTake = await this.board.takeNoblesIfValid(player);
+      if(noblesToTake.length > 0) {
+        const obtainNoblesAction: GameAction = {
+          type: ActionType.OBTAIN_NOBLE,
+          player: player,
+          obtainedNobles: noblesToTake,
+        }
+        this.addGameActionToLog(obtainNoblesAction);
+      }
+
       player.hand.addToNobles(noblesToTake)
       await player.hand.updateScore();
       return this;
@@ -396,5 +493,33 @@ export class Game {
     return players.filter(
       (player) => player.hand.purchasedCards.size === leastCards
     );
+  }
+
+  addStartGameAction(): this {
+    const startGameAction: GameAction = {
+      type: ActionType.START_GAME,
+    }
+    return this.addGameActionToLog(startGameAction);
+  }
+
+  addJoinGameAction(player: Player): this {
+    const joinGameAction: GameAction = {
+      type: ActionType.JOIN_GAME,
+      player: player,
+    }
+    return this.addGameActionToLog(joinGameAction);
+  }
+
+  addSkipTurnAction(player: Player): this {
+    const skipTurnAction: GameAction = {
+      type: ActionType.SKIP_TURN,
+      player: player,
+    }
+    return this.addGameActionToLog(skipTurnAction);
+  }
+
+  addGameActionToLog(data: GameAction): this {
+    this.actionLog.push(data);
+    return this;
   }
 }

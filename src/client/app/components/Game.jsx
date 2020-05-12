@@ -137,7 +137,7 @@ class Game extends React.Component {
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
     this.socket.on('TimerUpdate', this.onTimerUpdate)
-    this.socket.emit('RequestGameUpdate', this.state.gameID);
+    this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID });
   }
 
   componentWillUnmount() {
@@ -158,6 +158,7 @@ class Game extends React.Component {
 
   onGameUpdate(data) {
     const game = deserialize(Buffer.from(data));
+    console.log(game.actionLog);
     const players = game.room.players;
     const player = players[this.state.playerID];
     const board = game.board;

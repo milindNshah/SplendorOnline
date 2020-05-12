@@ -154,16 +154,15 @@ export class Board {
     });
   }
 
-  async swapActiveCard(card: Card): Promise<this> {
+  async swapActiveCard(card: Card): Promise<Card> {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(card.tier);
     if (activeCardTier.has(card.id)) {
       activeCardTier.delete(card.id);
-      this.addNewActiveCard(card.tier, card.boardPosition);
+      return this.addNewActiveCard(card.tier, card.boardPosition);
     } else {
       throw new InvalidGameError(`Invalid card given.`)
     }
-    return this;
   }
 
   async addGemsFromPurchasedCard(gemStonesToAdd: Map<GemStone, number>): Promise<this> {
@@ -231,7 +230,7 @@ export class Board {
     return this;
   }
 
-  private addNewActiveCard(tier: CardTier, position: number): this {
+  private addNewActiveCard(tier: CardTier, position: number): Card {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);
     const remainingCardTier: Map<string, Card> =
@@ -244,6 +243,6 @@ export class Board {
     remainingCardTier.delete(cardToMove.id);
     activeCardTier.set(cardToMove.id, cardToMove);
     cardToMove.setBoardPosition(position);
-    return this;
+    return cardToMove;
   }
 }

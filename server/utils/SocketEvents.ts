@@ -107,9 +107,11 @@ export class SocketEvents {
       }
     })
 
-    socket.on('RequestGameUpdate', async function (gameID: string) {
+    socket.on('RequestGameUpdate', async function (data: GameEndTurn) {
       try {
-        const game: Game = await GameManager.getGameByID(gameID);
+        const game: Game = await GameManager.getGameByID(data.gameID);
+        const player: Player = game.room.getPlayer(data.playerID);
+        game.addJoinGameAction(player);
         io.to(socket.id).emit("UpdateGame", serialize(game));
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
@@ -126,6 +128,9 @@ export class SocketEvents {
         const room: Room = game.room;
         const player: Player = room.getPlayer(data.playerID);
         await game.checkValidTurn(player.id);
+        if(actions.has(ActionType.SKIP_TURN)) {
+          game.addSkipTurnAction(player);
+        }
         if(actions.has(ActionType.TAKE_GEMS)) {
           await game.transferGems(new Map(Object.entries(actions.get(ActionType.TAKE_GEMS))), player)
         }

@@ -20,6 +20,7 @@ export async function createNewGame(room: Room): Promise<Game> {
     room.toggleGameStarted(true);
     room.setGameID(game.id);
     GameManager.addGame(game);
+    game.addStartGameAction();
     return game;
   } catch (err) {
     throw err;
