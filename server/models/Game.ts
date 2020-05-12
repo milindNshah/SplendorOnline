@@ -438,9 +438,11 @@ export class Game {
         this.stopTimer();
       }
     }
-    if(this.turnOrder.length <= 0) {
-      GameManager.removeGame(this);
+    const leaveGameAction: GameAction = {
+      type: ActionType.LEAVE_GAME,
+      player: player,
     }
+    this.addGameActionToLog(leaveGameAction);
     return this;
   }
 

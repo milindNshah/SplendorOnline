@@ -1,5 +1,5 @@
 "use strict"
-import { Game } from "../models/Game"
+import { Game, ActionType, GameAction } from "../models/Game"
 import { InvalidInputError } from "../models/Errors";
 
 const games: Map<string, Game> = new Map();
@@ -23,6 +23,10 @@ export async function getGameByID(gameID: string): Promise<Game> {
 }
 
 export async function removeGame(game: Game): Promise<Map<string, Game>> {
+  const gameEndedAction: GameAction = {
+    type: ActionType.GAME_ENDED,
+  }
+  game.addGameActionToLog(gameEndedAction);
   games.delete(game.id);
   return games;
 }

@@ -74,7 +74,7 @@ class ActionLog extends React.Component {
       case ActionType.LEAVE_GAME:
         return this.renderLeaveGame(index, playerName)
       case ActionType.GAME_ENDED:
-        return <ActionLineContainer key={`end${index}`}>{`Game has ended. Thanks for playing!`}</ActionLineContainer>
+        return this.renderGameEnded(index, actionLine)
     }
     return null;
   }
@@ -170,7 +170,7 @@ class ActionLog extends React.Component {
       <ActionLineContainer key={`skip${index}`}>
         {playerName}
         {'\u00A0'}
-        has skipped their turn
+        skipped their turn
       </ActionLineContainer>
     )
   }
@@ -180,9 +180,21 @@ class ActionLog extends React.Component {
       <ActionLineContainer key={`leavegame${index}`}>
       {playerName}
       {'\u00A0'}
-      has left the game
+      disconnected from the game
     </ActionLineContainer>
     )
+  }
+
+  renderGameEnded(index, actionLine) {
+    let winner = null;
+    if(actionLine.player) {
+      winner = `${actionLine.player.user.name} has won with ${actionLine.player.hand.score} points!`
+    }
+
+    return [
+      winner ? <ActionLineContainer key={`winner${index}`}>{winner}</ActionLineContainer> : null,
+      <ActionLineContainer key={`end${index}`}>{`Game has ended. Thanks for playing!`}</ActionLineContainer>,
+    ]
   }
 
   renderTakenGems(index, playerName, takenGems) {
