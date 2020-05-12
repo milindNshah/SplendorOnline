@@ -58,6 +58,10 @@ const theme = {
     },
     spaceBetween: `${spaceBetweenCards}`,
   },
+  actionLog: {
+    width: 30,
+    height: 15,
+  }
 };
 
 export default theme;

@@ -1,16 +1,17 @@
 import React from 'react';
 import styled from 'styled-components'
 import Button from '../styledcomponents/button.jsx'
-import Board from './Board.jsx';
-import Player from './Player.jsx';
-import { deserialize } from 'bson';
-import { socket } from '../socket';
-import { ActionType } from '../enums/actiontype';
+import Board from './Board.jsx'
+import Player from './Player.jsx'
+import { deserialize } from 'bson'
+import { socket } from '../socket'
+import { ActionType } from '../enums/actiontype'
 import theme from '../styledcomponents/theme.jsx'
 import Overlay from '../styledcomponents/overlay.jsx'
 import Modal from '../styledcomponents/modal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import RulesModal from './modals/RulesModal.jsx'
+import Actionlog from './ActionLog.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
@@ -92,6 +93,7 @@ class Game extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      actionLog: [],
       board: {},
       isPlayerTurn: false,
       curTurnIndex: 0,
@@ -136,7 +138,8 @@ class Game extends React.Component {
     window.onpopstate = () => {} // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
-    this.socket.on('TimerUpdate', this.onTimerUpdate)
+    // TODO: Maybe move into it's own component, so it doesn't update everything else every second.
+    // this.socket.on('TimerUpdate', this.onTimerUpdate)
     this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID });
   }
 
@@ -158,7 +161,6 @@ class Game extends React.Component {
 
   onGameUpdate(data) {
     const game = deserialize(Buffer.from(data));
-    console.log(game.actionLog);
     const players = game.room.players;
     const player = players[this.state.playerID];
     const board = game.board;
@@ -166,8 +168,9 @@ class Game extends React.Component {
     const isPlayerTurn = curPlayerTurn.id === player.id;
 
     this.setState({
-      actionType: null,
+      actionLog: game.actionLog,
       actionData: null,
+      actionType: null,
       curTurnIndex: game.curTurnIndex,
       gameTurn: game.gameTurn,
       targetScore: game.targetScore,
@@ -339,13 +342,18 @@ class Game extends React.Component {
           <Turn />
           <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
           <p>Turn: {this.state.gameTurn}</p>
-          <TimerContainer><Timer /></TimerContainer>
+          {/* <TimerContainer><Timer /></TimerContainer> */}
           {this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner />
             : null
           }
           <RulesContainer><Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules></RulesContainer>
         </Scorebox>
+        <Actionlog
+            actionLog={this.state.actionLog}
+            width={theme.actionLog.width}
+            height={theme.actionLog.height}
+          />
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>

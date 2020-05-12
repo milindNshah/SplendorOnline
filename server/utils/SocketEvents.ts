@@ -73,7 +73,6 @@ export class SocketEvents {
     });
 
     socket.on('LeftRoom', async function (data: LeaveRoomParams) {
-      console.log("leaving room");
       try {
         const room: Room = await RoomManager.getRoomByCode(data.roomCode);
         const player: Player = room.getPlayer(data.playerID);
