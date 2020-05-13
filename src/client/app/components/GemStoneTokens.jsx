@@ -5,6 +5,7 @@ import theme from '../styledcomponents/theme.jsx'
 import GemStoneToken from './GemStoneToken.jsx'
 import { GemStone, getColorFromGemStone } from '../enums/gemstones.js'
 import { GemStoneBase } from './GemStone.jsx'
+import { getPurchasedCardsByTypes } from '../utils';
 
 const Row = styled.div`
   margin: 0.5rem 0rem;
@@ -32,26 +33,8 @@ class GemStoneTokens extends React.Component {
       filterOutPurchasedCardTokens: this.props.filterOutPurchasedCardTokens ?? false,
       filterOutReservedCardToken: this.props.filterOutReservedCardToken ?? false,
     }
-    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
-  }
-
-  getPurchasedCardsByTypes() {
-    const purchasedCards = new Map(Object.entries(this.props.purchasedCards))
-    return Array.from(purchasedCards.keys())
-      .reduce((map, key) => {
-        const card = purchasedCards.get(key)
-        let cardsForType;
-        if (map.has(card.gemStoneType)) {
-          cardsForType = map.get(card.gemStoneType)
-          cardsForType.push(card)
-        } else {
-          cardsForType = []
-          cardsForType.push(card)
-        }
-        return map.set(card.gemStoneType, cardsForType)
-      }, new Map())
   }
 
   renderGemStoneTokens() {
@@ -59,14 +42,14 @@ class GemStoneTokens extends React.Component {
       return;
     }
 
-    const purchasedCards = this.getPurchasedCardsByTypes();
+    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
     const gemStones = new Map(Object.entries(this.props.gemStones));
     return (
       <Row>
         {
           Array.from(gemStones.keys())
             .filter((gemStone) => !(gemStone === GemStone.GOLD && this.state.filterOutGold))
-            .map((gemStone) => this.renderGemStoneToken(gemStone, gemStones.get(gemStone), purchasedCards.get(gemStone)))
+            .map((gemStone) => this.renderGemStoneToken(gemStone, gemStones.get(gemStone), purchasedCardsByTypes.get(gemStone)))
         }
       </Row>
     )
@@ -89,12 +72,17 @@ class GemStoneTokens extends React.Component {
         {this.state.filterOutPurchasedCardTokens ? null
           : GemStone.GOLD === gemStone ?
             this.state.filterOutReservedCardToken ? null
-              : <CardToken onClick={() => this.props.handleReservedClick()}
-                type={gemStone}
-                width={theme.card.icon.width}
-                height={theme.card.icon.height}
-                isClickable={this.props.isCardTokenClickable && resCardsAmount !== 0}
-                opacity={resCardsAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
+              : <CardToken
+                  onClick={() => {
+                    if (resCardsAmount !== 0) {
+                      this.props.handleReservedClick(gemStone)
+                    }
+                  }}
+                  type={gemStone}
+                  width={theme.card.icon.width}
+                  height={theme.card.icon.height}
+                  isClickable={this.props.isCardTokenClickable && resCardsAmount !== 0}
+                  opacity={resCardsAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
                 >
                 {resCardsAmount}
                 <ReservedCardIcon
@@ -104,12 +92,17 @@ class GemStoneTokens extends React.Component {
                   R
                 </ReservedCardIcon>
               </CardToken>
-            : <CardToken onClick={() => this.props.handleClick(gemStone)}
-              type={gemStone}
-              width={theme.card.icon.width}
-              height={theme.card.icon.height}
-              isClickable={this.props.isCardTokenClickable && cardAmount !== 0}
-              opacity={cardAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
+            : <CardToken
+                onClick={() => {
+                  if(cardAmount !== 0) {
+                    this.props.handleClick(gemStone)
+                  }
+                }}
+                type={gemStone}
+                width={theme.card.icon.width}
+                height={theme.card.icon.height}
+                isClickable={this.props.isCardTokenClickable && cardAmount !== 0}
+                opacity={cardAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
               >
               {cardAmount}
               <GemStoneBase
@@ -125,9 +118,7 @@ class GemStoneTokens extends React.Component {
   }
 
   render() {
-    return (
-      <div>{this.renderGemStoneTokens()}</div>
-    )
+    return this.renderGemStoneTokens()
   }
 }
 

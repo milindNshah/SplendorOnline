@@ -7,6 +7,7 @@ import { GemStone } from '../../enums/gemstones.js'
 import ModalContainer from '../../styledcomponents/modal-container.jsx'
 import GemStoneTokens from './../GemStoneTokens.jsx'
 import GemStoneToken from './../GemStoneToken.jsx'
+import { getPurchasedCardsByTypes } from '../../utils';
 
 const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
@@ -48,7 +49,6 @@ class CardModal extends React.Component {
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onReserveCardPhase1 = this.onReserveCardPhase1.bind(this)
     this.onReserveCardPhase2 = this.onReserveCardPhase2.bind(this)
-    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onGiveToken = this.onGiveToken.bind(this)
     this.onTakeBackToken = this.onTakeBackToken.bind(this)
   }
@@ -68,35 +68,17 @@ class CardModal extends React.Component {
     }
   }
 
-  getPurchasedCardsByTypes() {
-    const purchasedCards = new Map(Object.entries(this.state.playerPurchasedCards))
-    const byType = Array.from(purchasedCards.keys())
-      .reduce((map, key) => {
-        const card = purchasedCards.get(key)
-        let cardsForType;
-        if(map.has(card.gemStoneType)) {
-          cardsForType = map.get(card.gemStoneType)
-          cardsForType.push(card)
-        } else {
-          cardsForType = []
-          cardsForType.push(card)
-        }
-        return map.set(card.gemStoneType, cardsForType)
-      }, new Map())
-    return byType
-  }
-
   onPurchaseCard() {
     const requiredGemStones = new Map(Object.entries(this.state.card.requiredGemStones))
-    const getPurchasedCardsByTypes = this.getPurchasedCardsByTypes();
+    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
     const playerGemStones = new Map(Object.entries(this.state.playerGemStones));
     let goldLeft = playerGemStones.get(GemStone.GOLD)
     const canPurchaseCard = Array.from(requiredGemStones.keys())
       .map((gemStone) => {
         const have = playerGemStones.get(gemStone)
         const need = requiredGemStones.get(gemStone)
-        const purchased = getPurchasedCardsByTypes.get(gemStone)
-          ? getPurchasedCardsByTypes.get(gemStone).length
+        const purchased = purchasedCardsByTypes.get(gemStone)
+          ? purchasedCardsByTypes.get(gemStone).length
           : 0
         if (have + purchased >= need) {
           return true
@@ -115,7 +97,7 @@ class CardModal extends React.Component {
     this.props.handlePurchaseCard()
   }
 
-  // TODO: Refactor this and ReservedCardsModal and TokenModal and GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
+  // TODO: Refactor this, ReservedCardsModal, TokenModal, TierCardModal, GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
   onReserveCardPhase1() {
     if(Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({

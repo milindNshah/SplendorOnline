@@ -6,6 +6,7 @@ import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import GemStoneTokens from '../GemStoneTokens.jsx'
 import { GemStone } from '../../enums/gemstones.js'
+import { getPurchasedCardsByTypes } from '../../utils';
 
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
 
@@ -47,40 +48,22 @@ class ReservedCardsModal extends React.Component {
     this.state = {
       invalidInputError: null,
     }
-    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.renderCards = this.renderCards.bind(this)
   }
 
-  getPurchasedCardsByTypes() {
-    const purchasedCards = new Map(Object.entries(this.props.purchasedCards))
-    return Array.from(purchasedCards.keys())
-      .reduce((map, key) => {
-        const card = purchasedCards.get(key)
-        let cardsForType;
-        if(map.has(card.gemStoneType)) {
-          cardsForType = map.get(card.gemStoneType)
-          cardsForType.push(card)
-        } else {
-          cardsForType = []
-          cardsForType.push(card)
-        }
-        return map.set(card.gemStoneType, cardsForType)
-      }, new Map())
-  }
-
-
+  // TODO: Move to utils - same as CardModal.
   onPurchaseCard(card) {
     const requiredGemStones = new Map(Object.entries(card.requiredGemStones))
-    const getPurchasedCardsByTypes = this.getPurchasedCardsByTypes();
+    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
     const playerGemStones = new Map(Object.entries(this.props.gemStones));
     let goldLeft = playerGemStones.get(GemStone.GOLD)
     const canPurchaseCard = Array.from(requiredGemStones.keys())
       .map((gemStone) => {
         const have = playerGemStones.get(gemStone)
         const need = requiredGemStones.get(gemStone)
-        const purchased = getPurchasedCardsByTypes.get(gemStone)
-          ? getPurchasedCardsByTypes.get(gemStone).length
+        const purchased = purchasedCardsByTypes.get(gemStone)
+          ? purchasedCardsByTypes.get(gemStone).length
           : 0
         if (have + purchased >= need) {
           return true

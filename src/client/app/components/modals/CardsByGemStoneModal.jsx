@@ -4,6 +4,7 @@ import ModalContainer from '../../styledcomponents/modal-container.jsx'
 import Button from '../../styledcomponents/button.jsx'
 import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
+import { getPurchasedCardsByTypes } from '../../utils';
 
 const CardsContainer = styled.div`
   display: flex;
@@ -27,41 +28,23 @@ class CardsByGemStoneModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      purchasedCardsByType: new Map(),
+      purchasedCardsByTypes: new Map(),
     }
-    this.getPurchasedCardsByTypes = this.getPurchasedCardsByTypes.bind(this)
     this.renderCards = this.renderCards.bind(this)
   }
 
   componentDidMount() {
-    this.getPurchasedCardsByTypes();
-  }
-
-  getPurchasedCardsByTypes() {
-    const purchasedCards = new Map(Object.entries(this.props.purchasedCards))
-    const purchasedCardsByType = Array.from(purchasedCards.keys())
-      .reduce((map, key) => {
-        const card = purchasedCards.get(key)
-        let cardsForType;
-        if (map.has(card.gemStoneType)) {
-          cardsForType = map.get(card.gemStoneType)
-          cardsForType.push(card)
-        } else {
-          cardsForType = []
-          cardsForType.push(card)
-        }
-        return map.set(card.gemStoneType, cardsForType)
-      }, new Map())
+    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards)
     this.setState({
-      purchasedCardsByType: purchasedCardsByType,
+      purchasedCardsByTypes: purchasedCardsByTypes,
     })
   }
 
   renderCards() {
-    if(!this.state.purchasedCardsByType.get(this.props.gemStone)) {
+    if(!this.state.purchasedCardsByTypes.get(this.props.gemStone)) {
       return;
     };
-    const cards = this.state.purchasedCardsByType.get(this.props.gemStone)
+    const cards = this.state.purchasedCardsByTypes.get(this.props.gemStone)
       .map((card) => {
         return <Col key={card.id}><Card card={card} width={theme.card.modal.width} height={theme.card.modal.height}/></Col>
     })
@@ -78,7 +61,7 @@ class CardsByGemStoneModal extends React.Component {
     return (
       <ModalContainer width={this.props.width}>
         <CardsContainer>
-          {this.state.purchasedCardsByType.get(this.props.gemStone)
+          {this.state.purchasedCardsByTypes.get(this.props.gemStone)
             ? this.renderCards()
             : <NoCards />
           }
