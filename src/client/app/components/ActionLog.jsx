@@ -7,15 +7,16 @@ import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 
 const ActionLogContainer = styled.div`
-  font-size: 0.75rem;
+  font-family: ${ props => props.theme.fontFamily.tertiary };
+  font-size: 0.8rem;
   color: ${ props => props.theme.color.darkgrey };
-  border-right: 2px solid ${ props => props.theme.color.secondary};
+  border-left: 2px solid ${ props => props.theme.color.secondary};
   width: ${ props => `${props.width}rem`};
-  text-align: end;
+  padding-top: 0.5rem;
+  padding-left: 1rem;
 `
 const ActionsContainer = styled.div`
-  margin-top: 1rem;
-  padding: 0rem 1rem;
+  margin-top: 0.5rem;
   height: ${ props => `${props.height}rem`};
   overflow: scroll;
 `
@@ -25,7 +26,7 @@ const TurnContainer = styled.div`
 `
 const ActionLineContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
   flex-flow: row wrap;
   margin: 0.25rem 0rem;
@@ -44,8 +45,7 @@ const PlayerName = styled.span`
   color: ${ props => props.theme.color.secondary };
 `
 const Title = styled.span`
-  padding-right: 1rem;
-  color: ${ props => props.theme.color.secondary };
+  color: ${ props => props.theme.color.tertiary };
   font-size: 1rem;
   text-decoration: underline;
   font-weight: 700;

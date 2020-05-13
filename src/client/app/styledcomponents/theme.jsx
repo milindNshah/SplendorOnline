@@ -63,8 +63,8 @@ const theme = {
     spaceBetween: `${spaceBetweenCards}`,
   },
   actionLog: {
-    width: 30,
-    height: 20,
+    width: 20,
+    height: 12,
   }
 };
 

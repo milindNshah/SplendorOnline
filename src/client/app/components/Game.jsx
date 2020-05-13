@@ -21,18 +21,24 @@ const GameContainer = styled.div`
   align-items: center;
 `
 
+const ActionsContainer = styled.div`
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: row;
+`
 const PlayerTurnContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   text-align: center;
-  margin-bottom: 1rem;
   font-family: ${ props => props.theme.fontFamily.tertiary};
   font-weight: 300;
   color: ${ props => props.theme.color.darkgrey};
+  padding-right: 1rem;
+  width: ${ props => `${props.theme.actionLog.width}rem`};
 `
 const TurnDiv = styled.div`
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
 `
 const TurnName = styled.span`
@@ -48,35 +54,12 @@ const Time = styled.div`
   padding: 0.25rem 0.5rem;
   width: 5rem;
 `
-const WinnerScreen = styled.div`
-  margin-top: 0.5rem;
-  background: ${ props => props.theme.color.grey};
-  z-index: 5;
-  text-align: center;
-  color: white;
-  width: 100%;
-`
-
-const ActionsContainer = styled.div`
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: row;
-`
-const ScoreBoxContainer = styled.div`
-  text-align: left;
-  margin-left: 1rem;
-  font-family: ${ props => props.theme.fontFamily.tertiary};
-  font-weight: 300;
-  width: ${ props => props.theme.actionLog.width };
-`
-const ScoreInfo = styled.div`
-  margin-bottom: 0.5rem;
-`
 const Rules = styled.div`
   color: ${ props => props.theme.color.tertiary };
   background-color: ${ props=> props.theme.color.white };
   border: 1px solid ${ props => props.theme.color.tertiary };
   padding: 0.25rem 0.5rem;
+  margin: 0.5rem 0rem;
   width: 5rem;
   cursor: pointer;
   text-align: center;
@@ -86,29 +69,39 @@ const Rules = styled.div`
   }
 `
 
+const WinnerScreen = styled.div`
+  margin-top: 0.5rem;
+  background: ${ props => props.theme.color.grey};
+  z-index: 5;
+  text-align: center;
+  color: white;
+  width: 100%;
+`
+
 const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   background: ${ props => props.theme.color.white};
 `
+const Title = styled.div`
+  text-align: center;
+  text-decoration: underline;
+  font-weight: 300;
+  margin: 0.5rem 0rem;
+  font-size: 2rem;
+`
 const BoardContainer = styled.div`
-  padding: 1rem;
+  margin: 0rem 1rem;
 `
 const PlayersContainer = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  padding: 1rem;
+  margin: 0rem 1rem;
 `
 const ButtonContainer = styled.div`
   text-align: center;
 `
-const Title = styled.h1`
-  text-align: center;
-  text-decoration: underline;
-  font-weight: 300;
-`
-
 
 class Game extends React.Component {
   constructor (props) {
@@ -356,26 +349,22 @@ class Game extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
-        <PlayerTurnContainer>
-          <Turn />
-          <Timer />
-          {this.state.winner && !this.state.tieBreakerMoreRounds
-            ? <Winner />
-            : null
-          }
-        </PlayerTurnContainer>
         <ActionsContainer>
+          <PlayerTurnContainer>
+            <Turn />
+            <Timer />
+            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+          </PlayerTurnContainer>
           <Actionlog
             actionLog={this.state.actionLog}
             width={theme.actionLog.width}
             height={theme.actionLog.height}
           />
-          <ScoreBoxContainer>
-            <ScoreInfo>TargetScore: <b>{this.state.targetScore}</b></ScoreInfo>
-            <ScoreInfo>Turn: {this.state.gameTurn}</ScoreInfo>
-            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
-          </ScoreBoxContainer>
         </ActionsContainer>
+        {this.state.winner && !this.state.tieBreakerMoreRounds
+          ? <Winner />
+          : null
+        }
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>
@@ -392,7 +381,7 @@ class Game extends React.Component {
           <PlayersContainer><Title>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
         </BoardPlayerContainer>
-        {this.state.isPlayerTurn ? <ButtonContainer><Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button></ButtonContainer> : null}
+        {this.state.isPlayerTurn ? <Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <ButtonContainer>
             <Button
