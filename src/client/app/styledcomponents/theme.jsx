@@ -15,7 +15,7 @@ const theme = {
     lightgrey: "rgba(0, 0, 0, 0.25)",
     diamond: "#b9f2ff",
     sapphire: "#0040ff",
-    emerald: "#19db12",
+    emerald: "#50C878",
     ruby: "red",
     chocolate: "#CB6D51",
     gold: "#FFD700",

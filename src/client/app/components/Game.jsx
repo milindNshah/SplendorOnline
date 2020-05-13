@@ -119,8 +119,8 @@ class Game extends React.Component {
       actionData: null,
       rulesClicked: false,
       timeleft: {
-        minutes: 1,
-        seconds: 30,
+        minutes: 2,
+        seconds: 0,
       },
     }
     this.socket = socket;
@@ -369,6 +369,11 @@ class Game extends React.Component {
           </Button>
           : null
         }
+        <Button
+          color={theme.color.error}
+          onClick={this.onHackNobles}>
+          Hack Nobles
+          </Button>
         {this.state.rulesClicked ?
           <Modal>
             <OutsideAlerter handleClose={this.onRulesClosed}>

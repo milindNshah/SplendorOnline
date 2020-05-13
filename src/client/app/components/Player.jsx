@@ -181,7 +181,7 @@ class Player extends React.Component {
                   isMyHand={this.state.isMyHand}
                   handleClose={this.onCardModalClose}
                   purchasedCards={this.state.hand.purchasedCards}
-                  width={theme.card.modal.width * 3}
+                  width={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
                 />
               </OutsideAlerter>
             </Modal>
