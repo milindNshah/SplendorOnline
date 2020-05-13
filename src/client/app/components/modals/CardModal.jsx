@@ -7,7 +7,7 @@ import { GemStone } from '../../enums/gemstones.js'
 import ModalContainer from '../../styledcomponents/modal-container.jsx'
 import GemStoneTokens from './../GemStoneTokens.jsx'
 import GemStoneToken from './../GemStoneToken.jsx'
-import { getPurchasedCardsByTypes } from '../../utils';
+import { canPurchaseCard } from '../../utils';
 
 const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
@@ -68,36 +68,18 @@ class CardModal extends React.Component {
     }
   }
 
-  onPurchaseCard() {
-    const requiredGemStones = new Map(Object.entries(this.state.card.requiredGemStones))
-    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
-    const playerGemStones = new Map(Object.entries(this.state.playerGemStones));
-    let goldLeft = playerGemStones.get(GemStone.GOLD)
-    const canPurchaseCard = Array.from(requiredGemStones.keys())
-      .map((gemStone) => {
-        const have = playerGemStones.get(gemStone)
-        const need = requiredGemStones.get(gemStone)
-        const purchased = purchasedCardsByTypes.get(gemStone)
-          ? purchasedCardsByTypes.get(gemStone).length
-          : 0
-        if (have + purchased >= need) {
-          return true
-        } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
-          goldLeft -= (need - (have + purchased))
-          return true;
-        }
-        return false;
-      }).reduce((prev, cur) => prev && cur)
-    if (!canPurchaseCard) {
+  onPurchaseCard(card) {
+    const canPurchase = canPurchaseCard(card, this.props.purchasedCards, this.props.gemStones)
+    if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
       })
       return;
     }
-    this.props.handlePurchaseCard()
+    this.props.handlePurchaseCard(card)
   }
 
-  // TODO: Refactor this, ReservedCardsModal, TokenModal, TierCardModal, GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
+  // TODO: Refactor this, TokenModal, TierCardModal, GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
   onReserveCardPhase1() {
     if(Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({

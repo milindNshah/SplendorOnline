@@ -5,8 +5,7 @@ import Button from '../../styledcomponents/button.jsx'
 import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import GemStoneTokens from '../GemStoneTokens.jsx'
-import { GemStone } from '../../enums/gemstones.js'
-import { getPurchasedCardsByTypes } from '../../utils';
+import { canPurchaseCard } from '../../utils';
 
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
 
@@ -52,28 +51,9 @@ class ReservedCardsModal extends React.Component {
     this.renderCards = this.renderCards.bind(this)
   }
 
-  // TODO: Move to utils - same as CardModal.
   onPurchaseCard(card) {
-    const requiredGemStones = new Map(Object.entries(card.requiredGemStones))
-    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
-    const playerGemStones = new Map(Object.entries(this.props.gemStones));
-    let goldLeft = playerGemStones.get(GemStone.GOLD)
-    const canPurchaseCard = Array.from(requiredGemStones.keys())
-      .map((gemStone) => {
-        const have = playerGemStones.get(gemStone)
-        const need = requiredGemStones.get(gemStone)
-        const purchased = purchasedCardsByTypes.get(gemStone)
-          ? purchasedCardsByTypes.get(gemStone).length
-          : 0
-        if (have + purchased >= need) {
-          return true
-        } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
-          goldLeft -= (need - (have + purchased))
-          return true;
-        }
-        return false;
-      }).reduce((prev, cur) => prev && cur)
-    if (!canPurchaseCard) {
+    const canPurchase = canPurchaseCard(card, this.props.purchasedCards, this.props.gemStones)
+    if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
       })
