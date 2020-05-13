@@ -5,7 +5,7 @@ import theme from '../styledcomponents/theme.jsx'
 import Button from '../styledcomponents/button.jsx'
 
 const HomeContainer = styled.div`
-  margin-top: 10rem;
+  margin-top: 10vh;
   text-align: center;
 `
 

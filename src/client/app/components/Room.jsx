@@ -12,7 +12,7 @@ const UserNameError = 'User name must be between 1 and 25 characters and may onl
 const RoomCodeError = 'Room Code must be a 4 character alphanumeric code'
 
 const RoomContainer = styled.div`
-  margin-top: 10rem;
+  margin-top: 10vh;
   margin-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;

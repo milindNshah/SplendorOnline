@@ -16,7 +16,7 @@ const AtMostFourPlayerError = 'You may only start a game with at most 4 players'
 const AllPlayersNotReadyError = 'All players must be ready'
 
 const WaitingRoomContainer = styled.div`
-  margin-top: 10rem;
+  margin-top: 10vh;
   margin-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;
