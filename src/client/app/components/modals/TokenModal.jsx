@@ -5,6 +5,7 @@ import theme from '../../styledcomponents/theme.jsx'
 import { GemStone } from '../../enums/gemstones'
 import ModalContainer from '../../styledcomponents/modal-container.jsx'
 import GemStoneTokens from './../GemStoneTokens.jsx'
+import ReturnTokens from './ReturnTokens.jsx'
 
 const ZeroTokensError = `You must take atleast 1 token.`
 
@@ -26,54 +27,54 @@ class TokenModal extends React.Component {
     super(props)
     this.state = {
       availableGemStones: new Map(Object.entries(this.props.availableGemStones)),
-      invalidInputError: null,
-      isPlayerTurn: this.props.isPlayerTurn,
       playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
-      playerPurchasedCards: new Map(Object.entries(this.props.playerPurchasedCards)),
-      taken: new Map(),
-      returned: new Map(),
+      selectedGemStones: new Map(),
       phase1: true,
       phase2: false,
+      invalidInputError: null,
     }
-    this.onGiveToken = this.onGiveToken.bind(this)
+    this.onConfirmPhase1 = this.onConfirmPhase1.bind(this)
+    this.onConfirmPhase2 = this.onConfirmPhase2.bind(this)
+    this.onInvalidInput = this.onInvalidInput.bind(this)
     this.onReturnToken = this.onReturnToken.bind(this)
-    this.onTakeToken = this.onTakeToken.bind(this)
-    this.onTakeBackToken = this.onTakeBackToken.bind(this)
-    this.onPurchaseTokensPhase1 = this.onPurchaseTokensPhase1.bind(this)
-    this.onPurchaseTokensPhase2 = this.onPurchaseTokensPhase2.bind(this)
+    this.onSelectToken = this.onSelectToken.bind(this)
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.availableGemStones !== prevProps.availableGemStones) {
+    if (
+      this.props.availableGemStones !== prevProps.availableGemStones ||
+      this.props.playerGemStones !== prevProps.playerGemStones ||
+      this.props.isPlayerTurn !== prevProps.isPlayerTurn
+    ) {
       this.setState({
         availableGemStones: new Map(Object.entries(this.props.availableGemStones)),
-        isPlayerTurn: this.props.isPlayerTurn,
         playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
-        playerPurchasedCards: new Map(Object.entries(this.props.playerPurchasedCards)),
+        selectedGemStones: new Map(),
         phase1: true,
         phase2: false,
+        invalidInputError: null,
       })
     }
   }
 
-  onTakeToken(gemStone) {
-    if (!this.state.isPlayerTurn) {
+  onSelectToken(gemStone) {
+    if (!this.props.isPlayerTurn) {
       return;
     }
     if (gemStone === GemStone.GOLD) {
       return;
     }
-    const taken = this.state.taken;
+    const selectedGemstones = this.state.selectedGemStones;
     const availableGemStones = this.state.availableGemStones;
 
-    const totalTaken = Array.from(taken.values())
+    const totalSelected = Array.from(selectedGemstones.values())
       .reduce((acc, amount) => acc += amount, 0)
-    const takenTwoOfSame = Array.from(taken.values())
+    const takenTwoOfSame = Array.from(selectedGemstones.values())
       .reduce((acc, amount) => acc = acc || amount >= 2, false)
-    const takenDiffType = Array.from(taken.keys())
-      .reduce((acc, key) => acc = acc || (taken.get(key) >= 1 && key !== gemStone), false)
+    const takenDiffType = Array.from(selectedGemstones.keys())
+      .reduce((acc, key) => acc = acc || (selectedGemstones.get(key) >= 1 && key !== gemStone), false)
 
-    if (totalTaken >= 3) {
+    if (totalSelected >= 3) {
       return;
     }
     if (availableGemStones.get(gemStone) < 1) {
@@ -82,154 +83,86 @@ class TokenModal extends React.Component {
     if (takenTwoOfSame) {
       return;
     }
-    if (taken.has(gemStone)
-      && taken.get(gemStone) >= 1
+    if (selectedGemstones.has(gemStone)
+      && selectedGemstones.get(gemStone) >= 1
       && availableGemStones.get(gemStone) < 3
     ) {
       return;
     }
-    if (taken.has(gemStone)
-      && taken.get(gemStone) >= 1
+    if (selectedGemstones.has(gemStone)
+      && selectedGemstones.get(gemStone) >= 1
       && takenDiffType) {
       return;
     }
 
-    if (taken.has(gemStone)) {
-      taken.set(gemStone, taken.get(gemStone) + 1)
+    if (selectedGemstones.has(gemStone)) {
+      selectedGemstones.set(gemStone, selectedGemstones.get(gemStone) + 1)
     } else {
-      taken.set(gemStone, 1)
+      selectedGemstones.set(gemStone, 1)
     }
     availableGemStones.set(gemStone, availableGemStones.get(gemStone) - 1)
     this.setState({
       availableGemStones: availableGemStones,
-      taken: taken,
+      selectedGemStones: selectedGemstones,
       invalidInputError: null,
     })
   }
 
   onReturnToken(gemStone) {
-    if (!this.state.isPlayerTurn) {
+    if (!this.props.isPlayerTurn) {
       return;
     }
     if (gemStone === GemStone.GOLD) {
       return;
     }
 
-    const taken = new Map(this.state.taken);
+    const selectedGemStones = new Map(this.state.selectedGemStones);
     const availableGemStones = new Map(this.state.availableGemStones);
 
-    if (taken.get(gemStone) <= 1) {
-      taken.delete(gemStone)
+    if (selectedGemStones.get(gemStone) <= 1) {
+      selectedGemStones.delete(gemStone)
     } else {
-      taken.set(gemStone, taken.get(gemStone) - 1)
+      selectedGemStones.set(gemStone, selectedGemStones.get(gemStone) - 1)
     }
     availableGemStones.set(gemStone, availableGemStones.get(gemStone) + 1)
 
     this.setState({
       availableGemStones: availableGemStones,
-      taken: taken,
+      selectedGemStones: selectedGemStones,
       invalidInputError: null,
     })
   }
 
-  onGiveToken(gemStone) {
-    if (!this.state.isPlayerTurn) {
-      return;
-    }
-    const returned = this.state.returned;
-    const playerGemStones = this.state.playerGemStones;
-
-    const totalReturned = Array.from(returned.values())
-      .reduce((acc, amount) => acc += amount, 0)
-    const totalOwned = Array.from(playerGemStones.values())
-      .reduce((acc, amount) => acc += amount, 0)
-    const amountCanReturn = totalOwned + totalReturned >= 10
-      ? totalOwned + totalReturned - 10
-      : 0;
-
-    if (totalReturned >= 3) {
-      return;
-    }
-    if (totalReturned >= amountCanReturn) {
-      return;
-    }
-    if (playerGemStones.get(gemStone) < 1) {
-      return;
-    }
-
-    if (returned.has(gemStone)) {
-      returned.set(gemStone, returned.get(gemStone) + 1)
-    } else {
-      returned.set(gemStone, 1)
-    }
-    playerGemStones.set(gemStone, playerGemStones.get(gemStone) - 1)
-    this.setState({
-      playerGemStones: playerGemStones,
-      returned: returned,
-      invalidInputError: null,
-    })
-  }
-
-  onTakeBackToken(gemStone) {
-    if (!this.state.isPlayerTurn) {
-      return;
-    }
-    const returned = this.state.returned;
-    const playerGemStones = this.state.playerGemStones;
-
-    if (returned.get(gemStone) <= 1) {
-      returned.delete(gemStone)
-    } else {
-      returned.set(gemStone, returned.get(gemStone) - 1)
-    }
-    playerGemStones.set(gemStone, playerGemStones.get(gemStone) + 1)
-    this.setState({
-      playerGemStones: playerGemStones,
-      returned: returned,
-    })
-  }
-
-  onPurchaseTokensPhase1() {
-    const totalTaken = Array.from(this.state.taken.values())
+  onConfirmPhase1() {
+    const totalSelected = Array.from(this.state.selectedGemStones.values())
       .reduce((acc, amount) => acc += amount, 0)
     const totalOwned = Array.from(this.state.playerGemStones.values())
       .reduce((acc, amount) => acc += amount, 0)
-    if(totalTaken <= 0) {
+    if(totalSelected <= 0) {
       this.setState({
         invalidInputError: ZeroTokensError
       })
       return;
     }
-    if(totalTaken + totalOwned > 10) {
-      const newPlayerGemStones = Array.from(this.state.playerGemStones.keys())
-        .reduce((map, key) => {
-          let toAdd = this.state.playerGemStones.get(key);
-          if(this.state.taken.has(key)) {
-            toAdd += this.state.taken.get(key)
-          }
-          return map.set(key, toAdd);
-        }, new Map())
+    if(totalSelected + totalOwned > 10) {
       this.setState({
-        invalidInputError: `Cannot have more than 10 tokens. Please return ${totalTaken + totalOwned - 10} token(s).`,
-        playerGemStones: newPlayerGemStones,
+        invalidInputError: `Cannot have more than 10 tokens. Please return ${totalSelected + totalOwned - 10} token(s).`,
         phase1: false,
         phase2: true,
       })
       return;
     }
-    this.props.handlePurchaseTokens(this.state.taken, this.state.returned)
+    this.props.handlePurchaseTokens(this.state.selectedGemStones, null)
   }
 
-  onPurchaseTokensPhase2() {
-    const totalOwned = Array.from(this.state.playerGemStones.values())
-      .reduce((acc, amount) => acc += amount, 0)
-    if(totalOwned > 10) {
-      this.setState({
-        invalidInputError: `Cannot have more than 10 tokens. Please return ${totalOwned - 10} more token(s).`,
-      })
-      return;
-    }
-    this.props.handlePurchaseTokens(this.state.taken, this.state.returned)
+  onConfirmPhase2(returnedGemStones) {
+    this.props.handlePurchaseTokens(this.state.selectedGemStones, returnedGemStones)
+  }
+
+  onInvalidInput(errorMessage) {
+    this.setState({
+      invalidInputError: errorMessage,
+    })
   }
 
   render() {
@@ -245,22 +178,22 @@ class TokenModal extends React.Component {
           <div>
             <TokensTitle>Available Tokens</TokensTitle>
             <GemStoneTokens
-              gemStones={Object.fromEntries(this.state.availableGemStones)}
+              gemStones={this.state.availableGemStones}
               purchasedCards={this.props.playerPurchasedCards}
               handleClick={() => { }}
               handleReservedClick={() => { }}
-              handleTokenClick={this.onTakeToken}
+              handleTokenClick={this.onSelectToken}
               filterOutGold={true}
               filterOutPurchasedCardTokens={true}
               filterOutReservedCardToken={true}
-              isGemStoneTokenClickable={this.state.isPlayerTurn}
+              isGemStoneTokenClickable={this.props.isPlayerTurn}
             />
-            {this.state.isPlayerTurn ?
+            {this.props.isPlayerTurn ?
               <>
                 <TokensTitle>Selected Tokens</TokensTitle>
-                {this.state.taken.size > 0 ?
+                {this.state.selectedGemStones.size > 0 ?
                   <GemStoneTokens
-                    gemStones={Object.fromEntries(this.state.taken)}
+                    gemStones={this.state.selectedGemStones}
                     purchasedCards={this.props.playerPurchasedCards}
                     handleClick={() => { }}
                     handleReservedClick={() => { }}
@@ -268,7 +201,7 @@ class TokenModal extends React.Component {
                     filterOutGold={true}
                     filterOutPurchasedCardTokens={true}
                     filterOutReservedCardToken={true}
-                    isGemStoneTokenClickable={this.state.isPlayerTurn}
+                    isGemStoneTokenClickable={this.props.isPlayerTurn}
                   />
                   : <GemstoneTokensPlaceholder />
                 }
@@ -277,7 +210,7 @@ class TokenModal extends React.Component {
             }
             <TokensTitle>Your Tokens</TokensTitle>
             <GemStoneTokens
-              gemStones={Object.fromEntries(this.state.playerGemStones)}
+              gemStones={this.state.playerGemStones}
               purchasedCards={this.props.playerPurchasedCards}
               handleClick={() => { }}
               handleTokenClick={() => { }}
@@ -287,11 +220,11 @@ class TokenModal extends React.Component {
               filterOutReservedCardToken={true}
               isGemStoneTokenClickable={false}
             />
-            {this.state.isPlayerTurn ?
+            {this.props.isPlayerTurn ?
               <div>
                 <Button
                   color={theme.color.secondary}
-                  onClick={this.onPurchaseTokensPhase1}>
+                  onClick={this.onConfirmPhase1}>
                   Confirm
                 </Button>
               </div>
@@ -301,50 +234,14 @@ class TokenModal extends React.Component {
           : null
         }
         {this.state.phase2 ?
-          <div>
-            <TokensTitle>Your Tokens</TokensTitle>
-            <GemStoneTokens
-              gemStones={Object.fromEntries(this.state.playerGemStones)}
-              purchasedCards={this.props.playerPurchasedCards}
-              handleClick={() => { }}
-              handleTokenClick={this.onGiveToken}
-              handleReservedClick={() => { }}
-              filterOutGold={false}
-              filterOutPurchasedCardTokens={false}
-              filterOutReservedCardToken={true}
-              isGemStoneTokenClickable={this.state.isPlayerTurn}
-            />
-            {this.state.isPlayerTurn ?
-              <>
-                <TokensTitle>Returned Tokens</TokensTitle>
-                {this.state.returned.size > 0 ?
-                  <GemStoneTokens
-                    gemStones={Object.fromEntries(this.state.returned)}
-                    purchasedCards={this.props.playerPurchasedCards}
-                    handleClick={() => { }}
-                    handleTokenClick={this.onTakeBackToken}
-                    handleReservedClick={() => { }}
-                    filterOutGold={false}
-                    filterOutPurchasedCardTokens={true}
-                    filterOutReservedCardToken={true}
-                    isGemStoneTokenClickable={this.state.isPlayerTurn}
-                  />
-                  : <GemstoneTokensPlaceholder />
-                }
-              </>
-              : null
-            }
-            {this.state.isPlayerTurn ?
-              <div>
-                <Button
-                  color={theme.color.secondary}
-                  onClick={this.onPurchaseTokensPhase2}>
-                  Confirm
-                </Button>
-              </div>
-              : null
-            }
-          </div>
+          <ReturnTokens
+            playerGemStones={this.state.playerGemStones}
+            selectedGemStones={this.state.selectedGemStones}
+            isPlayerTurn={this.props.isPlayerTurn}
+            playerPurchasedCards={this.props.playerPurchasedCards}
+            handleConfirm={this.onConfirmPhase2}
+            handleInvalidInput={this.onInvalidInput}
+          />
           : null
         }
         <div>

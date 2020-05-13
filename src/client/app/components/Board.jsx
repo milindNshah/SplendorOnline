@@ -116,7 +116,7 @@ class Board extends React.Component {
   }
 
   onPurchaseTokens(tokensTaken, tokensReturned) {
-    this.props.onPurchaseTokens(tokensTaken, tokensReturned);
+    this.props.handlePurchaseTokens(tokensTaken, tokensReturned);
     this.setState({
       tokenClicked: false,
     })

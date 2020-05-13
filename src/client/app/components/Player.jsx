@@ -74,7 +74,6 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log("player component updating")
     if (this.props.player !== prevProps.player |
       this.props.isMyTurn !== prevProps.isMyTurn) {
       this.setState({
@@ -162,7 +161,7 @@ class Player extends React.Component {
           </PlayerHeader>
           <GemStoneTokens
             isCardTokenClickable={true}
-            gemStones={this.state.hand.gemStones}
+            gemStones={new Map((Object.entries(this.state.hand.gemStones)))}
             purchasedCards={this.state.hand.purchasedCards}
             reservedCards={this.state.hand.reservedCards}
             handleClick={this.onCardClick}

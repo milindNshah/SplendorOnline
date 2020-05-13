@@ -39,11 +39,11 @@ class GemStoneTokens extends React.Component {
 
   renderGemStoneTokens() {
     if(!this.props.gemStones || !this.props.purchasedCards) {
-      return;
+      return <div></div>;
     }
 
     const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
-    const gemStones = new Map(Object.entries(this.props.gemStones));
+    const gemStones = this.props.gemStones; // TODO: Just converted this from input Object to input Map.
     return (
       <Row>
         {

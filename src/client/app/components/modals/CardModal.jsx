@@ -36,12 +36,8 @@ class CardModal extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      card: this.props.card,
       invalidInputError: null,
-      isPlayerTurn: this.props.isPlayerTurn,
-      playerGemStones: this.props.playerGemStones,
-      playerPurchasedCards: this.props.playerPurchasedCards,
-      playerReservedCards: this.props.playerReservedCards,
+      playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
       phase1: true,
       phase2: false,
       returnedToken: null,
@@ -57,11 +53,7 @@ class CardModal extends React.Component {
     if (this.props.card !== prevProps.card ||
       this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
       this.setState({
-        card: this.props.card,
-        isPlayerTurn: this.props.isPlayerTurn,
-        playerGemStones: this.props.playerGemStones,
-        playerPurchasedCards: this.props.playerPurchasedCards,
-        playerReservedCards: this.props.playerReservedCards,
+        playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
         phase1: true,
         phaes2: false,
       })
@@ -69,7 +61,7 @@ class CardModal extends React.Component {
   }
 
   onPurchaseCard(card) {
-    const canPurchase = canPurchaseCard(card, this.props.purchasedCards, this.props.gemStones)
+    const canPurchase = canPurchaseCard(card, this.props.playerPurchasedCards, this.props.playerGemStones)
     if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
@@ -81,13 +73,13 @@ class CardModal extends React.Component {
 
   // TODO: Refactor this, TokenModal, TierCardModal, GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
   onReserveCardPhase1() {
-    if(Object.keys(this.state.playerReservedCards).length >= 3) {
+    if(Object.keys(this.props.playerReservedCards).length >= 3) {
       this.setState({
         invalidInputError: MaxThreeReservedCardsError
       })
       return;
     }
-    const totalOwned = Object.values(this.state.playerGemStones)
+    const totalOwned = Array.from(this.state.playerGemStones.values())
       .reduce((acc, amount) => acc += amount, 0)
     const availableGoldTokens = this.props.availableGemStones[GemStone.GOLD];
     if(totalOwned >= 10 && availableGoldTokens > 0) {
@@ -102,8 +94,8 @@ class CardModal extends React.Component {
   }
 
   onReserveCardPhase2() {
-    const totalOwned = Object.values(this.state.playerGemStones)
-    .reduce((acc, amount) => acc += amount, 0)
+    const totalOwned = Array.from(this.state.playerGemStones.values())
+      .reduce((acc, amount) => acc += amount, 0)
     if(this.state.returnedToken === null || totalOwned >= 10) {
       this.setState({
         invalidInputError: `You will have more than 10 tokens after reserving. Please return 1 token.`,
@@ -114,7 +106,7 @@ class CardModal extends React.Component {
   }
 
   onGiveToken(gemStone) {
-    if(!this.state.isPlayerTurn) {
+    if(!this.props.isPlayerTurn) {
       return;
     }
     if(this.state.returnedToken !== null){
@@ -122,11 +114,11 @@ class CardModal extends React.Component {
     }
 
     const playerGemStones = this.state.playerGemStones;
-    if (playerGemStones[gemStone] < 1) {
+    if (playerGemStones.get(gemStone) < 1) {
       return;
     }
 
-    playerGemStones[gemStone] = playerGemStones[gemStone]-1
+    playerGemStones.set(gemStone, playerGemStones.get(gemStone)-1)
     this.setState({
       playerGemStones: playerGemStones,
       returnedToken: gemStone,
@@ -135,14 +127,14 @@ class CardModal extends React.Component {
   }
 
   onTakeBackToken() {
-    if(!this.state.isPlayerTurn) {
+    if(!this.props.isPlayerTurn) {
       return;
     }
     if(this.state.returnedToken === null) {
       return;
     }
     const playerGemStones = this.state.playerGemStones;
-    playerGemStones[this.state.returnedToken] = playerGemStones[this.state.returnedToken]+1
+    playerGemStones.set(this.state.returnedToken, playerGemStones.get(this.state.returnedToken) + 1)
 
     this.setState({
       playerGemStones: playerGemStones,
@@ -151,7 +143,7 @@ class CardModal extends React.Component {
   }
 
   render() {
-    if (!this.state.card) {
+    if (!this.props.card) {
       return <div></div>;
     }
     const InvalidInputError = () => (
@@ -163,7 +155,7 @@ class CardModal extends React.Component {
     return (
       <ModalContainer width={this.props.width}>
         <CardContainer>
-          <Card card={this.state.card} width={theme.card.modal.width} height={theme.card.modal.height} />
+          <Card card={this.props.card} width={theme.card.modal.width} height={theme.card.modal.height} />
         </CardContainer>
         {this.state.phase1 ?
           <div>
@@ -172,8 +164,8 @@ class CardModal extends React.Component {
                 <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
                 <GemStoneTokens
                   gemStones={this.state.playerGemStones}
-                  purchasedCards={this.state.playerPurchasedCards}
-                  reservedCards={this.state.playerReservedCards}
+                  purchasedCards={this.props.playerPurchasedCards}
+                  reservedCards={this.props.playerReservedCards}
                   handleClick={() => { }}
                   handleReservedClick={() => { }}
                   handleTokenClick={() => { }}
@@ -182,7 +174,7 @@ class CardModal extends React.Component {
               </TokensOwned>
               : null
             }
-            {this.state.isPlayerTurn && this.props.handlePurchaseCard ?
+            {this.props.isPlayerTurn && this.props.handlePurchaseCard ?
               <div>
                 <Button
                   color={theme.color.primary}
@@ -192,7 +184,7 @@ class CardModal extends React.Component {
               </div>
               : null
             }
-            {this.state.isPlayerTurn && this.props.handleReserveCard ?
+            {this.props.isPlayerTurn && this.props.handleReserveCard ?
               <div>
                 <Button
                   color={theme.color.secondary}
@@ -205,7 +197,7 @@ class CardModal extends React.Component {
           </div>
           : null
         }
-        {this.state.phase2 ?
+        {/* {this.state.phase2 ?
           <div>
             <TokensOwned>
               <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
@@ -249,7 +241,7 @@ class CardModal extends React.Component {
             }
           </div>
           : null
-        }
+        } */}
         <div>
           <Button
             color={theme.color.tertiary}

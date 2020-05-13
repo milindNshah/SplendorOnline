@@ -101,7 +101,7 @@ class Game extends React.Component {
     super(props)
     this.state = {
       actionLog: [],
-      board: {},
+      board: null,
       isMyTurn: false,
       curTurnIndex: 0,
       invalidInputError: null,
@@ -229,13 +229,15 @@ class Game extends React.Component {
     tokensTaken.forEach((amount, gemStone) => {
       tokens.set(gemStone, amount);
     })
-    tokensReturned.forEach((amount, gemStone) => {
-      if (tokens.has(gemStone)) {
-        tokens.set(gemStone, tokens.get(gemStone) - amount)
-      } else {
-        tokens.set(gemStone, -1 * amount)
-      }
-    })
+    if(tokensReturned) {
+      tokensReturned.forEach((amount, gemStone) => {
+        if (tokens.has(gemStone)) {
+          tokens.set(gemStone, tokens.get(gemStone) - amount)
+        } else {
+          tokens.set(gemStone, -1 * amount)
+        }
+      })
+    }
     const tokenObject = Array.from(tokens.keys())
       .reduce((acc, gemStone) => {
         acc[gemStone] = tokens.get(gemStone)
@@ -276,7 +278,6 @@ class Game extends React.Component {
   }
 
   onSkipTurn() {
-    console.log("Skipping turn")
     if (this.state.isMyTurn) {
       this.setState({
         actionData: null,
@@ -347,15 +348,18 @@ class Game extends React.Component {
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>
-            <Board
-              board={this.state.board}
-              hand={this.state.player?.hand}
-              isPlayerTurn={this.state.isMyTurn}
-              onPurchaseCard={this.onPurchaseActiveCard}
-              onPurchaseTokens={this.onPurchaseTokens}
-              onReserveCard={this.onReserveActiveCard}
-              onReserveTierCard={this.onReserveTierCard}
-            />
+            {this.state.board ?
+              <Board
+                board={this.state.board}
+                hand={this.state.player?.hand}
+                isPlayerTurn={this.state.isMyTurn}
+                onPurchaseCard={this.onPurchaseActiveCard}
+                handlePurchaseTokens={this.onPurchaseTokens}
+                onReserveCard={this.onReserveActiveCard}
+                onReserveTierCard={this.onReserveTierCard}
+              />
+              : <div></div>
+            }
           </BoardContainer>
           <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
