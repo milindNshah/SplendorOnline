@@ -13,9 +13,10 @@ import ReservedCardsModal from './modals/ReservedCardsModal.jsx'
 const PlayerWidthContainer = styled.div`
   border-bottom: 1px solid ${props => props.theme.color.black};
   width: ${ props => `${props.width}rem`};
-  padding: 1rem;
+  padding: 0rem, 1rem;
 `
 const PlayerHeader = styled.div`
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
 `
@@ -48,7 +49,7 @@ class Player extends React.Component {
     this.state = {
       hand: this.props.player?.hand,
       isMyHand: this.props.isMyHand,
-      isPlayerTurn: this.props.isPlayerTurn,
+      isMyTurn: this.props.isMyTurn,
       playerID: this.props.player?.id,
       playerName: this.props.player?.user?.name,
       cardClicked: null,
@@ -67,10 +68,10 @@ class Player extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.player !== prevProps.player |
-      this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
+      this.props.isMyTurn !== prevProps.isMyTurn) {
       this.setState({
         isMyHand: this.props.isMyHand,
-        isPlayerTurn: this.props.isPlayerTurn,
+        isMyTurn: this.props.isMyTurn,
         hand: this.props.player.hand,
         playerID: this.props.player.id,
         playerName: this.props.player.user.name,
@@ -182,7 +183,7 @@ class Player extends React.Component {
               <OutsideAlerter handleClose={this.onReservedCardModalClose}>
                 <ReservedCardsModal
                   isMyHand={this.state.isMyHand}
-                  isPlayerTurn={this.state.isPlayerTurn}
+                  isMyTurn={this.state.isMyTurn}
                   handleClose={this.onReservedCardModalClose}
                   handlePurchaseCard={this.onPurchaseCard}
                   gemStones={this.state.hand.gemStones}

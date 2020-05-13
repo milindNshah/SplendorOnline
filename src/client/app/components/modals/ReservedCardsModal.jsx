@@ -111,7 +111,7 @@ class ReservedCardsModal extends React.Component {
             <CardContainer>
               <Card card={card} width={theme.card.modal.width} height={theme.card.modal.height} />
             </CardContainer>
-            {this.props.isPlayerTurn && this.props.isMyHand ?
+            {this.props.isMyTurn && this.props.isMyHand ?
               <div>
                 <Button
                   color={theme.color.secondary}

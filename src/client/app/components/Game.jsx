@@ -99,6 +99,9 @@ const PlayersContainer = styled.div`
   flex-flow: column nowrap;
   margin: 0rem 1rem;
 `
+const PlayerContainer = styled.div`
+  order: ${ props => props.order ?? 0};
+`
 const ButtonContainer = styled.div`
   text-align: center;
 `
@@ -109,7 +112,7 @@ class Game extends React.Component {
     this.state = {
       actionLog: [],
       board: {},
-      isPlayerTurn: false,
+      isMyTurn: false,
       curTurnIndex: 0,
       invalidInputError: null,
       serverError: null,
@@ -168,7 +171,7 @@ class Game extends React.Component {
     this.setState({
       timeleft: data,
     })
-    if (data.seconds === 0 && data.minutes === 0 && this.state.isPlayerTurn) {
+    if (data.seconds === 0 && data.minutes === 0 && this.state.isMyTurn) {
       this.onSkipTurn();
     }
   }
@@ -179,7 +182,7 @@ class Game extends React.Component {
     const player = players[this.state.playerID];
     const board = game.board;
     const curPlayerTurn = players[game.turnOrder[game.curTurnIndex]];
-    const isPlayerTurn = curPlayerTurn.id === player.id;
+    const isMyTurn = curPlayerTurn.id === player.id;
 
     this.setState({
       actionLog: game.actionLog,
@@ -192,7 +195,7 @@ class Game extends React.Component {
       winner: game.winner,
       tieBreakerMoreRounds: game.tieBreakerMoreRounds,
       board: board,
-      isPlayerTurn: isPlayerTurn,
+      isMyTurn: isMyTurn,
       player: player,
       players: players,
       serverError: null,
@@ -222,14 +225,17 @@ class Game extends React.Component {
       return;
     }
     const hands = Object.values(this.state.players)
-      .map((player) => <Player
-        isMyHand={player.id === this.state.playerID}
-        key={player.id}
-        player={player}
-        width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
-        handlePurchaseCard={this.onPurchaseReservedCard}
-        isPlayerTurn={this.state.isPlayerTurn}
-      />)
+      .map((player) => (
+        <PlayerContainer key={player.id} order={this.state.turnOrder.indexOf(player.id)}>
+          <Player
+            isMyHand={player.id === this.state.playerID}
+            player={player}
+            width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
+            handlePurchaseCard={this.onPurchaseReservedCard}
+            isMyTurn={this.state.isMyTurn}
+          />
+        </PlayerContainer>
+      ))
     return (hands)
   }
 
@@ -292,7 +298,7 @@ class Game extends React.Component {
   }
 
   onSkipTurn() {
-    if (this.state.isPlayerTurn) {
+    if (this.state.isMyTurn) {
       this.setState({
         actionData: null,
         actionType: ActionType.SKIP_TURN,
@@ -328,7 +334,7 @@ class Game extends React.Component {
         ? <p>Server Error: {this.state.serverError.message}</p>
         : null
     );
-    const Turn = () => (this.state.isPlayerTurn
+    const Turn = () => (this.state.isMyTurn
       ? <TurnDiv>It is <TurnName>your</TurnName> turn!</TurnDiv>
       : <TurnDiv>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</TurnDiv>
     );
@@ -371,17 +377,17 @@ class Game extends React.Component {
             <Board
               board={this.state.board}
               hand={this.state.player?.hand}
-              isPlayerTurn={this.state.isPlayerTurn}
+              isPlayerTurn={this.state.isMyTurn}
               onPurchaseCard={this.onPurchaseActiveCard}
               onPurchaseTokens={this.onPurchaseTokens}
               onReserveCard={this.onReserveActiveCard}
               onReserveTierCard={this.onReserveTierCard}
             />
           </BoardContainer>
-          <PlayersContainer><Title>Players</Title>{this.renderHands()}</PlayersContainer>
+          <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
         </BoardPlayerContainer>
-        {this.state.isPlayerTurn ? <Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button> : null}
+        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <ButtonContainer>
             <Button
