@@ -48,7 +48,6 @@ const Title = styled.span`
   color: ${ props => props.theme.color.tertiary };
   font-size: 1rem;
   text-decoration: underline;
-  font-weight: 700;
 `
 const InlineCard = styled.div`
   background-color: ${props => props.theme.color.black};

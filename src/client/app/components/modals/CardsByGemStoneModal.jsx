@@ -84,7 +84,7 @@ class CardsByGemStoneModal extends React.Component {
           }
           <div>
             <Button
-              color={theme.color.error}
+              color={theme.color.tertiary}
               onClick={this.props.handleClose}>
               Close
           </Button>

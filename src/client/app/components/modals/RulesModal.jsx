@@ -10,6 +10,7 @@ const ModalContainer = styled.div`
   background-color: ${ props => props.theme.color.white};
   padding: ${ props => `${props.theme.modal.padding}rem`};
   overflow: scroll;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
 `
 
 const Title = styled.div`
@@ -51,7 +52,7 @@ const Indent = styled.span`
 
 const objectiveText = (
   <div>
-    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of a full game round.</p>
+    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of a full game round with a minimum of 15 points.</p>
   </div>
 )
 
@@ -71,7 +72,7 @@ const howToPlayText = (
     <p><Indent/>3. Reserve 1 development card and Obtain 1 Joker Token (if available).</p>
     <p><Indent/>4. Purchase 1 development card.</p>
     <p><HighlightText>Taking 3 tokens of different types:</HighlightText> A player may take 3 tokens (or less) of different types on their turn. There must be atleast 1 token available for each selected type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
-    <p><HighlightText>Taking 2 tokens of same type:</HighlightText> A player may take 2 tokens of the same type. However, they cannot have taken any other tokens of any type on this turn. There must be atleast 4 tokens available of that type in order for the player to take 2 tokens of that type.A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
+    <p><HighlightText>Taking 2 tokens of same type:</HighlightText> A player may take 2 tokens of the same type. However, they cannot have taken any other tokens of any type on this turn. There must be atleast 4 tokens available of that type in order for the player to take 2 tokens of that type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
     <p><HighlightText>Reserving a development card:</HighlightText> A player can reserve a development card by taking any card on the board, or the first card from any development card deck, and placing it in their hand. The reserved card cannot be bought by any player but the player who reserved it. A player may only have up to 3 reserved cards at a given time and cannot reserve if they already have 3 reserved cards. A reserved card cannot be discarded, only purchased. When reserving a card, the player will receive a gold token if there are any gold tokens available.</p>
     <p><HighlightText>Purchasing a development card:</HighlightText> A player can purchase a previously reserved card or purchase any development card from the board as long as the player has the required tokens. The required tokens must be spent and returned to the board when purchasing a card. A gold token can be used in place of any 1 other token. If the purchased card was purchased from the board, replace the card with another card from the deck of the same tier (if any cards of that tier are available).</p>
     <p>Once a card is purchased, it provides a permament bonus to the player who purchased it. Each development card has an associated gemstone type. Each development card reduces the number of required tokens by 1 for it's associated gemstone type when purchasing future development cards.</p>
@@ -88,8 +89,8 @@ const tieBreakerText = (
 const terminologyText = (
   <div>
     <p><HighlightText>Point:</HighlightText> A minimum of 15 points are required to win. Points can be obtained from development cards or from nobles.</p>
-    <p><HighlightText>Turn:</HighlightText> Each player has 1 turn in a game round. A player can perform only 1 action per turn.</p>
-    <p><HighlightText>Game Round:</HighlightText> A game round is completed when each player has taken their turn.</p>
+    <p><HighlightText>Turn:</HighlightText> Each player has 1 turn in a game round. A player can perform only 1 action per turn. A player must complete their action in 1 minute and 30 seconds. If time runs out, that player will automatically skip their turn.</p>
+    <p><HighlightText>Game Round:</HighlightText> A game round is completed when each player has taken their turn once.</p>
     <p><HighlightText>Token:</HighlightText>A token is the most basic resource in the game. A token can be of 6 possible gemstone types: Diamond, Sapphire, Emerald, Ruby, Onyx, or Gold. You can use tokens to purchase development cards. The Gold token is a special token and can be used as any of the other 5 types.</p>
     <p><HighlightText>Development Card:</HighlightText> Each development card has a point value represented by a number in the top left. Each development card has an associated gemstone type. The gemstone type can be one of 5 possible gemstone types: Diamond, Sapphire, Emerald, Ruby, or Onyx and is found under the point value. Each development card has an associated cost which is displayed in the bottom right. The cost represents the number and types of tokens that are required in order to purchase that card. A development card can be purchased by using tokens. Once a development card is purchased, it provides a permanent bonus when purchasing future cards for the player who purchased it. The development cards are split into 3 decks, ordered by tier (1, 2, 3). The higher the tier of the card, the more valuable the development card is, but the more difficult it is to obtain. </p>
     <p><HighlightText>Bonus:</HighlightText> Each development card purchased provides a bonus. A development card has a gemstone type. A development card reduces the cost of the required tokens by 1 for it's gemstone type. This is a permanent effect and applied to all development cards.</p>
@@ -144,7 +145,7 @@ class RulesModal extends React.Component {
           {this.renderSection(SectionName.TERMINOLOGY, terminologyText)}
           <div>
             <Button
-              color={theme.color.error}
+              color={theme.color.tertiary}
               onClick={this.props.handleClose}>
               Close
             </Button>
