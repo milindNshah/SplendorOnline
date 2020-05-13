@@ -46,8 +46,24 @@ const TurnName = styled.span`
   font-weight: bold;
 `
 const Time = styled.div`
-  color: ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.darkgrey};
-  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.darkgrey};
+  color: ${ props => props.minutes === 0 && props.seconds <= 15
+    ? props.seconds % 2 === 0
+      ? props.theme.color.white
+      : props.theme.color.error
+    : props.theme.color.darkgrey
+  };
+  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15
+    ? props.seconds % 2 === 0
+      ? props.theme.color.error
+      : props.theme.color.error
+    : props.theme.color.darkgrey
+  };
+  background-color: ${ props => props.minutes === 0 && props.seconds <= 15
+    ? props.seconds % 2 === 0
+      ? props.theme.color.error
+      : props.theme.color.white
+    : props.theme.color.white
+  };
   font-size: 1.5rem;
   font-family: ${ props => props.theme.fontFamily.tertiary};
   font-weight: 300;
@@ -55,22 +71,23 @@ const Time = styled.div`
   width: 5rem;
 `
 const Rules = styled.div`
-  color: ${ props => props.theme.color.tertiary };
-  background-color: ${ props=> props.theme.color.white };
-  border: 1px solid ${ props => props.theme.color.tertiary };
+  color: ${ props => props.theme.color.tertiary};
+  background-color: ${ props => props.theme.color.white};
+  border: 1px solid ${ props => props.theme.color.tertiary};
   padding: 0.25rem 0.5rem;
   margin: 0.5rem 0rem;
   width: 5rem;
   cursor: pointer;
   text-align: center;
   &:hover {
-    color: ${ props=> props.theme.color.white };
-    background-color: ${ props => props.theme.color.tertiary };
+    color: ${ props => props.theme.color.white};
+    background-color: ${ props => props.theme.color.tertiary};
   }
 `
 
 const WinnerScreen = styled.div`
   margin-top: 0.5rem;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
   background: ${ props => props.theme.color.grey};
   z-index: 5;
   text-align: center;
@@ -152,11 +169,11 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
-    window.onpopstate = () => {} // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
+    window.onpopstate = () => { } // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate);
     this.socket.on('ClientRequestError', this.onClientRequestError);
     // TODO: Move timer into it's own component, so it doesn't update everything else every second.
-    // this.socket.on('TimerUpdate', this.onTimerUpdate)
+    this.socket.on('TimerUpdate', this.onTimerUpdate)
     this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID });
   }
 
@@ -229,6 +246,7 @@ class Game extends React.Component {
         <PlayerContainer key={player.id} order={this.state.turnOrder.indexOf(player.id)}>
           <Player
             isMyHand={player.id === this.state.playerID}
+            isThisPlayerTurn={player.id === this.state.turnOrder[this.state.curTurnIndex]}
             player={player}
             width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
             handlePurchaseCard={this.onPurchaseReservedCard}
@@ -387,18 +405,16 @@ class Game extends React.Component {
           <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
           <InvalidInputError />
         </BoardPlayerContainer>
-        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.error}>Skip Turn</Button> : null}
+        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
-          <ButtonContainer>
-            <Button
-              color={theme.color.error}
-              onClick={this.onLeaveGame}>
-              Leave Game
+          <Button
+            color={theme.color.error}
+            onClick={this.onLeaveGame}>
+            Leave Game
           </Button>
-          </ButtonContainer>
           : null
         }
-        <ButtonContainer><Button onClick={this.onHackNobles}>Hack Nobles</Button></ButtonContainer>
+        <Button onClick={this.onHackNobles}>Hack Nobles</Button>
         {this.state.rulesClicked ?
           <Modal>
             <OutsideAlerter handleClose={this.onRulesClosed}>

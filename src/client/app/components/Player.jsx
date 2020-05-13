@@ -19,6 +19,7 @@ const PlayerHeader = styled.div`
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
 `
 const NameCol = styled.div`
   width: ${ props => `${props.width * 4 / 6}rem`};
@@ -26,7 +27,12 @@ const NameCol = styled.div`
   align-self: flex-start;
   font-size: 1.5rem;
 `
+const Name = styled.span`
+  margin-left: 0.5rem;
+`
 const ScoreCol = styled.div`
+  font-size: 1.5rem;
+  color: ${ props => props.theme.color.tertiary};
   width: ${ props => `${props.width * 2 / 6}rem`};
   text-align: end;
 `
@@ -50,6 +56,7 @@ class Player extends React.Component {
       hand: this.props.player?.hand,
       isMyHand: this.props.isMyHand,
       isMyTurn: this.props.isMyTurn,
+      isThisPlayerTurn: this.props.isThisPlayerTurn,
       playerID: this.props.player?.id,
       playerName: this.props.player?.user?.name,
       cardClicked: null,
@@ -67,11 +74,13 @@ class Player extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    console.log("player component updating")
     if (this.props.player !== prevProps.player |
       this.props.isMyTurn !== prevProps.isMyTurn) {
       this.setState({
         isMyHand: this.props.isMyHand,
         isMyTurn: this.props.isMyTurn,
+        isThisPlayerTurn: this.props.isThisPlayerTurn,
         hand: this.props.player.hand,
         playerID: this.props.player.id,
         playerName: this.props.player.user.name,
@@ -145,7 +154,10 @@ class Player extends React.Component {
         }
         <PlayerWidthContainer width={this.props.width}>
           <PlayerHeader>
-            <NameCol width={this.props.width}>{this.state.playerName}</NameCol>
+            <NameCol width={this.props.width} isTurn={this.props.isThisPlayerTurn}>
+              {this.props.isThisPlayerTurn ? <i className="fa fa-arrow-right" /> : null}
+              <Name>{this.state.playerName}</Name>
+            </NameCol>
             <ScoreCol width={this.props.width}>Score: {this.state.hand.score}</ScoreCol>
           </PlayerHeader>
           <GemStoneTokens

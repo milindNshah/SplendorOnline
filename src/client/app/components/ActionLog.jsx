@@ -99,9 +99,10 @@ class ActionLog extends React.Component {
   // componentDidMount () {
   //   this.scrollToBottom()
   // }
-  // componentDidUpdate () {
-  //   this.scrollToBottom()
-  // }
+  componentDidUpdate () {
+    console.log("updating actionlog");
+    // this.scrollToBottom()
+  }
 
   // scrollToBottom() {
   //   this.actionsEndRef.current.scrollIntoView({ behavior: "smooth" });
