@@ -5,17 +5,13 @@ import theme from '../../styledcomponents/theme.jsx'
 import {SectionName, getDisplayNameFromSection} from '../../enums/sectionname'
 
 const ModalContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  max-height: 90vh;
-`
-const RulesContainer = styled.div`
-  padding: ${ props => `${props.theme.modal.padding}rem`};
-  background-color: ${ props => props.theme.color.white};
+  max-height: 80vh;
   width: 80vw;
+  background-color: ${ props => props.theme.color.white};
+  padding: ${ props => `${props.theme.modal.padding}rem`};
   overflow: scroll;
-  text-align: center;
 `
+
 const Title = styled.div`
   color: ${ props => props.theme.color.darkgrey};
   font-size: 2rem;
@@ -136,11 +132,9 @@ class RulesModal extends React.Component {
     )
   }
 
-  // TODO: Rename Chocolate to Onyx in code.
   render() {
     return (
       <ModalContainer>
-        <RulesContainer>
           <Title>Game Rules</Title>
           <p>2-4 Players</p>
           {this.renderSection(SectionName.OBJECTIVE, objectiveText)}
@@ -155,7 +149,6 @@ class RulesModal extends React.Component {
               Close
             </Button>
           </div>
-        </RulesContainer>
       </ModalContainer>
     )
   }

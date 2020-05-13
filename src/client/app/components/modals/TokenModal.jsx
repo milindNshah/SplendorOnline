@@ -57,7 +57,6 @@ class TokenModal extends React.Component {
   }
 
   onTakeToken(gemStone) {
-    // TODO: Show disabled tokens somehow.
     if (!this.state.isPlayerTurn) {
       return;
     }

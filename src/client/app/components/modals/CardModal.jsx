@@ -12,6 +12,8 @@ const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reser
 const InsufficientGemsError = `Not sufficient gems to purchase card.`
 
 const CardContainer = styled.div`
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
 `
 const TokensOwned = styled.div`
@@ -286,7 +288,7 @@ class CardModal extends React.Component {
         }
         <div>
           <Button
-            color={theme.color.error}
+            color={theme.color.tertiary}
             onClick={this.props.handleClose}>
             Close
           </Button>

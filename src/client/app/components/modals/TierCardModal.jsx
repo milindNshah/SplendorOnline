@@ -14,7 +14,15 @@ const ErrorMessage = styled.p`
   margin: 0.5rem 0;
 `
 const TierCardContainer = styled.div`
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
+`
+const Phase2Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `
 const TokensOwned = styled.div`
   margin-bottom: 1rem;
@@ -26,6 +34,7 @@ const TokensOwnedTitle = styled.p`
 const ReturnedTokenContainer = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
 `
 
 class TierCardModal extends React.Component {
@@ -158,7 +167,7 @@ class TierCardModal extends React.Component {
           : null
         }
         {this.state.isPlayerTurn && this.state.phase2 ?
-          <div>
+          <Phase2Container>
             <TokensOwned>
               <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
               <GemStoneTokens
@@ -173,32 +182,34 @@ class TierCardModal extends React.Component {
                 isGemStoneTokenClickable={this.state.isPlayerTurn}
               />
             </TokensOwned>
-            <TokensOwnedTitle>Returned Token</TokensOwnedTitle>
-            {this.state.returnedToken ?
-              <ReturnedTokenContainer>
-                <div onClick={this.onTakeBackToken}>
-                  <GemStoneToken
-                    type={this.state.returnedToken}
-                    amount={1}
-                    width={theme.token.modal.width}
-                    height={theme.token.modal.height}
-                    isClickable={this.state.isPlayerTurn}
-                  />
-                </div>
-              </ReturnedTokenContainer>
-              : null
-            }
+            <TokensOwned>
+              <TokensOwnedTitle>Returned Token</TokensOwnedTitle>
+              {this.state.returnedToken ?
+                <ReturnedTokenContainer>
+                  <div onClick={this.onTakeBackToken}>
+                    <GemStoneToken
+                      type={this.state.returnedToken}
+                      amount={1}
+                      width={theme.token.modal.width}
+                      height={theme.token.modal.height}
+                      isClickable={this.state.isPlayerTurn}
+                    />
+                  </div>
+                </ReturnedTokenContainer>
+                : null
+              }
+            </TokensOwned>
             <Button
               color={theme.color.secondary}
               onClick={this.onReserveCardPhase2}>
               Reserve Card
             </Button>
-          </div>
+          </Phase2Container>
           : null
         }
         <div>
           <Button
-            color={theme.color.error}
+            color={theme.color.tertiary}
             onClick={this.props.handleClose}>
             Close
           </Button>

@@ -5,6 +5,11 @@ import Button from '../../styledcomponents/button.jsx'
 import Card from '../Card.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 
+const CardsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
 const Row = styled.div`
   margin: 1rem 0rem;
   display: flex;
@@ -72,17 +77,19 @@ class CardsByGemStoneModal extends React.Component {
 
     return (
       <ModalContainer width={this.props.width}>
-        { this.state.purchasedCardsByType.get(this.props.gemStone)
-          ? this.renderCards()
-          : <NoCards />
-        }
-        <div>
-          <Button
-            color={theme.color.error}
-            onClick={this.props.handleClose}>
-            Close
+        <CardsContainer>
+          {this.state.purchasedCardsByType.get(this.props.gemStone)
+            ? this.renderCards()
+            : <NoCards />
+          }
+          <div>
+            <Button
+              color={theme.color.error}
+              onClick={this.props.handleClose}>
+              Close
           </Button>
-        </div>
+          </div>
+        </CardsContainer>
       </ModalContainer>
     )
   }
