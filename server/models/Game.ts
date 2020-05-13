@@ -71,10 +71,10 @@ export class Game {
     this.gameTurn = 1;
     this.winner = null;
     this.tieBreakerMoreRounds = false;
-    this.initialMinutes = 1;
-    this.initialSeconds = 30;
-    this.currentMinutes = 1;
-    this.currentSeconds = 30;
+    this.initialMinutes = 2;
+    this.initialSeconds = 0;
+    this.currentMinutes = 2;
+    this.currentSeconds = 0;
     this.timerStarted = false;
   }
 

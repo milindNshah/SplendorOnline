@@ -33,8 +33,8 @@ class Timer extends React.Component {
     super(props)
     this.state = {
       timeleft: {
-        minutes: 1,
-        seconds: 30,
+        minutes: 2,
+        seconds: 0,
       },
     }
     this.socket = socket;
