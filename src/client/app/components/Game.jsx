@@ -12,6 +12,7 @@ import Modal from '../styledcomponents/modal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import RulesModal from './modals/RulesModal.jsx'
 import Actionlog from './ActionLog.jsx'
+import Timer from './Timer.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
@@ -44,31 +45,6 @@ const TurnDiv = styled.div`
 const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
   font-weight: bold;
-`
-const Time = styled.div`
-  color: ${ props => props.minutes === 0 && props.seconds <= 15
-    ? props.seconds % 2 === 0
-      ? props.theme.color.white
-      : props.theme.color.error
-    : props.theme.color.darkgrey
-  };
-  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15
-    ? props.seconds % 2 === 0
-      ? props.theme.color.error
-      : props.theme.color.error
-    : props.theme.color.darkgrey
-  };
-  background-color: ${ props => props.minutes === 0 && props.seconds <= 15
-    ? props.seconds % 2 === 0
-      ? props.theme.color.error
-      : props.theme.color.white
-    : props.theme.color.white
-  };
-  font-size: 1.5rem;
-  font-family: ${ props => props.theme.fontFamily.tertiary};
-  font-weight: 300;
-  padding: 0.25rem 0.5rem;
-  width: 5rem;
 `
 const Rules = styled.div`
   color: ${ props => props.theme.color.tertiary};
@@ -119,9 +95,6 @@ const PlayersContainer = styled.div`
 const PlayerContainer = styled.div`
   order: ${ props => props.order ?? 0};
 `
-const ButtonContainer = styled.div`
-  text-align: center;
-`
 
 class Game extends React.Component {
   constructor (props) {
@@ -160,7 +133,6 @@ class Game extends React.Component {
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
     this.onSkipTurn = this.onSkipTurn.bind(this)
-    this.onTimerUpdate = this.onTimerUpdate.bind(this)
     this.renderHands = this.renderHands.bind(this)
     this.onHackNobles = this.onHackNobles.bind(this)
     this.onRulesClick = this.onRulesClick.bind(this)
@@ -170,27 +142,15 @@ class Game extends React.Component {
 
   componentDidMount() {
     window.onpopstate = () => { } // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
-    this.socket.on('UpdateGame', this.onGameUpdate);
-    this.socket.on('ClientRequestError', this.onClientRequestError);
-    // TODO: Move timer into it's own component, so it doesn't update everything else every second.
-    this.socket.on('TimerUpdate', this.onTimerUpdate)
-    this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID });
+    this.socket.on('UpdateGame', this.onGameUpdate)
+    this.socket.on('ClientRequestError', this.onClientRequestError)
+    this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID })
   }
 
   componentWillUnmount() {
     this.onLeaveGame();
-    this.socket.off('UpdateGame', this.onGameUpdate);
-    this.socket.off('ClientRequestError', this.onClientRequestError);
-    this.socket.off('TimerUpdate', this.onTimerUpdate);
-  }
-
-  onTimerUpdate(data) {
-    this.setState({
-      timeleft: data,
-    })
-    if (data.seconds === 0 && data.minutes === 0 && this.state.isMyTurn) {
-      this.onSkipTurn();
-    }
+    this.socket.off('UpdateGame', this.onGameUpdate)
+    this.socket.off('ClientRequestError', this.onClientRequestError)
   }
 
   onGameUpdate(data) {
@@ -316,6 +276,7 @@ class Game extends React.Component {
   }
 
   onSkipTurn() {
+    console.log("Skipping turn")
     if (this.state.isMyTurn) {
       this.setState({
         actionData: null,
@@ -356,12 +317,6 @@ class Game extends React.Component {
       ? <TurnDiv>It is <TurnName>your</TurnName> turn!</TurnDiv>
       : <TurnDiv>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</TurnDiv>
     );
-    const Timer = () => (this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
-      ? <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>0:00</Time>
-      : <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>
-        {this.state.timeleft.minutes}:{this.state.timeleft.seconds < 10 ? `0${this.state.timeleft.seconds}` : this.state.timeleft.seconds}
-      </Time>
-    )
     const Winner = () => (this.state.winner.id === this.state.playerID
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
       : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with {this.state.winner.hand.score} points</h1></WinnerScreen>
@@ -376,7 +331,7 @@ class Game extends React.Component {
         <ActionsContainer>
           <PlayerTurnContainer>
             <Turn />
-            <Timer />
+            <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn}/>
             <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
           </PlayerTurnContainer>
           <Actionlog
