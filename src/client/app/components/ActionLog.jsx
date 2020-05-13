@@ -7,7 +7,6 @@ import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 
 const ActionLogContainer = styled.div`
-  font-family: ${ props => props.theme.fontFamily.secondary};
   font-size: 0.75rem;
   color: ${ props => props.theme.color.darkgrey };
   border-right: 2px solid ${ props => props.theme.color.secondary};

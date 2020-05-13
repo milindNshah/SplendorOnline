@@ -8,7 +8,6 @@ const Input = styled.input.attrs(props => ({
   border-radius: 0.25rem;
   color: ${props => props.color ?? props.theme.color.black};
   display: inline-block;
-  font-family: ${ props => props.fontFamily ?? props.theme.fontFamily.primary };
   font-size: ${ props => props.fontSize ?? props.theme.fontSize };
   font-weight: 400;
   height: auto;

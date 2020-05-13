@@ -8,7 +8,7 @@ import Room from './components/Room.jsx'
 
 WebFont.load({
   google: {
-    families: ['Raleway:300,400', 'Roboto Slab:400,700', 'sans-serif']
+    families: ['Raleway:300,400', 'Roboto Slab:400,700', 'Source Sans Pro:300,400', 'sans-serif']
   }
 })
 
@@ -16,7 +16,7 @@ import 'font-awesome/css/font-awesome.min.css'
 
 const GlobalStyle = createGlobalStyle`
   body {
-    font-family: 'Raleway', helvetica, sans-serif;
+    font-family: 'Raleway', 'Source Sans Pro', helvetica, sans-serif;
   }
 `
 

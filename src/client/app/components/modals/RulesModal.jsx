@@ -17,7 +17,7 @@ const RulesContainer = styled.div`
   text-align: center;
 `
 const Title = styled.div`
-  color: ${ props => props.theme.color.primary};
+  color: ${ props => props.theme.color.darkgrey};
   font-size: 2rem;
   margin: 0.5rem 0rem;
 `
@@ -25,7 +25,7 @@ const Section = styled.div`
   margin: 2rem;
 `
 const SectionHeader = styled.div`
-  color: ${ props => props.theme.color.darkgrey};
+  color: ${ props => props.theme.color.secondary};
   font-size: 1.5rem;
   font-weight: 300;
   margin: 0.5rem 0rem;
@@ -37,7 +37,7 @@ const SectionHeader = styled.div`
 const HeaderIcon = styled.span`
   cursor: pointer;
   &:hover {
-    color: ${ props => props.theme.color.secondary };
+    color: ${ props => props.theme.color.tertiary};
   }
 `
 const SectionContent = styled.div`
@@ -47,7 +47,7 @@ const SectionContent = styled.div`
   text-align: left;
 `
 const HighlightText = styled.span`
-  color: ${ props => props.theme.color.secondary};
+  color: ${ props => props.theme.color.tertiary};
 `
 const Indent = styled.span`
   margin-right: 1rem;

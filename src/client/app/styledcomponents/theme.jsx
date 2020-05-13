@@ -6,7 +6,7 @@ const theme = {
   color: {
     primary: "#28a745",
     secondary: '#17a2b8',
-    orangeSelect: "rgba(255, 127, 80, 1)",
+    tertiary: "#ff6726",
     error: "red",
     white: "white",
     black: "black",
@@ -28,6 +28,7 @@ const theme = {
   fontFamily: {
     primary: "Raleway",
     secondary: "Roboto Slab",
+    tertiary: "Source Sans Pro",
   },
   gemStoneIsZero: {
     opacity: 0.1,
@@ -63,7 +64,7 @@ const theme = {
   },
   actionLog: {
     width: 30,
-    height: 15,
+    height: 20,
   }
 };
 

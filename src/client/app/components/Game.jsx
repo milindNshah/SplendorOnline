@@ -16,7 +16,76 @@ import Actionlog from './ActionLog.jsx'
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
   min-width: ${ props => `${props.theme.card.width * 5 + props.theme.card.spaceBetween * 10}rem`};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
+
+const PlayerTurnContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
+  font-weight: 300;
+  color: ${ props => props.theme.color.darkgrey};
+`
+const TurnDiv = styled.div`
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+`
+const TurnName = styled.span`
+  color: ${ props => props.theme.color.secondary};
+  font-weight: bold;
+`
+const Time = styled.div`
+  color: ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.darkgrey};
+  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.darkgrey};
+  font-size: 1.5rem;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
+  font-weight: 300;
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+`
+const WinnerScreen = styled.div`
+  margin-top: 0.5rem;
+  background: ${ props => props.theme.color.grey};
+  z-index: 5;
+  text-align: center;
+  color: white;
+  width: 100%;
+`
+
+const ActionsContainer = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+`
+const ScoreBoxContainer = styled.div`
+  text-align: left;
+  margin-left: 1rem;
+  font-family: ${ props => props.theme.fontFamily.tertiary};
+  font-weight: 300;
+  width: ${ props => props.theme.actionLog.width };
+`
+const ScoreInfo = styled.div`
+  margin-bottom: 0.5rem;
+`
+const Rules = styled.div`
+  color: ${ props => props.theme.color.tertiary };
+  background-color: ${ props=> props.theme.color.white };
+  border: 1px solid ${ props => props.theme.color.tertiary };
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+  cursor: pointer;
+  text-align: center;
+  &:hover {
+    color: ${ props=> props.theme.color.white };
+    background-color: ${ props => props.theme.color.tertiary };
+  }
+`
+
 const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -39,55 +108,7 @@ const Title = styled.h1`
   text-decoration: underline;
   font-weight: 300;
 `
-const Scorebox = styled.div`
-  margin-bottom: 1rem;
-  text-align: center;
-`
-const TargetScore = styled.p`
-  color: ${ props => props.theme.color.error};
-`
-const TurnName = styled.span`
-  color: ${ props => props.theme.color.secondary};
-  font-weight: bold;
-`
-const TimerContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`
-const Time = styled.span`
-  color: ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.black};
-  border: 1px solid ${ props => props.minutes === 0 && props.seconds <= 15 ? props.theme.color.error : props.theme.color.black};
-  font-size: 1.5rem;
-  font-family: ${ props => props.theme.fontFamily.secondary};
-  padding: 0.25rem 0rem;
-  width: 5rem;
-`
-const Rules = styled.div`
-  color: ${ props => props.theme.color.primary };
-  background-color: ${ props=> props.theme.color.white };
-  border: 1px solid ${ props => props.theme.color.primary };
-  padding: 0.25rem 0.5rem;
-  width: 5rem;
-  cursor: pointer;
-  &:hover {
-    color: ${ props=> props.theme.color.white };
-    background-color: ${ props => props.theme.color.primary };
-  }
-`
-const RulesContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0rem;
-`
-const WinnerScreen = styled.div`
-  margin-top: 1rem;
-  background: ${ props => props.theme.color.grey};
-  z-index: 5;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  color: white;
-`
+
 
 class Game extends React.Component {
   constructor (props) {
@@ -315,8 +336,8 @@ class Game extends React.Component {
         : null
     );
     const Turn = () => (this.state.isPlayerTurn
-      ? <h2>It is <TurnName>your</TurnName> turn!</h2>
-      : <h2>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</h2>
+      ? <TurnDiv>It is <TurnName>your</TurnName> turn!</TurnDiv>
+      : <TurnDiv>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</TurnDiv>
     );
     const Timer = () => (this.state.timeleft.minutes === 0 && this.state.timeleft.seconds === 0
       ? <Time seconds={this.state.timeleft.seconds} minutes={this.state.timeleft.minutes}>0:00</Time>
@@ -335,22 +356,26 @@ class Game extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
-        <Scorebox>
+        <PlayerTurnContainer>
           <Turn />
-          <TargetScore>TargetScore: <b>{this.state.targetScore}</b></TargetScore>
-          <p>Turn: {this.state.gameTurn}</p>
-          {/* <TimerContainer><Timer /></TimerContainer> */}
+          <Timer />
           {this.state.winner && !this.state.tieBreakerMoreRounds
             ? <Winner />
             : null
           }
-          <RulesContainer><Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules></RulesContainer>
-        </Scorebox>
-        <Actionlog
+        </PlayerTurnContainer>
+        <ActionsContainer>
+          <Actionlog
             actionLog={this.state.actionLog}
             width={theme.actionLog.width}
             height={theme.actionLog.height}
           />
+          <ScoreBoxContainer>
+            <ScoreInfo>TargetScore: <b>{this.state.targetScore}</b></ScoreInfo>
+            <ScoreInfo>Turn: {this.state.gameTurn}</ScoreInfo>
+            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+          </ScoreBoxContainer>
+        </ActionsContainer>
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>

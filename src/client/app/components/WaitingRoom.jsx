@@ -20,6 +20,9 @@ const WaitingRoomContainer = styled.div`
   margin-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 `
 const PlayerTableContainer = styled.div`
@@ -27,27 +30,26 @@ const PlayerTableContainer = styled.div`
   justify-content: center;
   margin-bottom: 2rem;
 `
+const RoomCode = styled.p`
+  margin: 0rem;
+`
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
 const CopiedCode = styled.p`
   color: ${ props => props.theme.color.secondary };
 `
-const RulesContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0rem;
-`
 const Rules = styled.div`
-  color: ${ props => props.theme.color.primary };
+  color: ${ props => props.theme.color.tertiary };
   background-color: ${ props=> props.theme.color.white };
-  border: 1px solid ${ props => props.theme.color.primary };
+  border: 1px solid ${ props => props.theme.color.tertiary };
   padding: 0.25rem 0.5rem;
+  margin: 0.5rem 0rem;
   width: 5rem;
   cursor: pointer;
   &:hover {
     color: ${ props=> props.theme.color.white };
-    background-color: ${ props => props.theme.color.primary };
+    background-color: ${ props => props.theme.color.tertiary };
   }
 `
 const Ready = styled.span`
@@ -302,25 +304,21 @@ class WaitingRoom extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
-        <div>
-          <p>Room Code</p>
-          <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
-            <Button
-              color={theme.color.secondary}
-              fontFamily={theme.fontFamily.secondary}>
-              {this.state.roomCode}
-              <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
-            </Button>
-          </CopyToClipboard>
-          {
-            this.state.copiedCode
-              ? <CopiedCodeDialog />
-              : null
-          }
-          <RulesContainer>
-            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
-          </RulesContainer>
-        </div>
+        <RoomCode>Room Code</RoomCode>
+        <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
+          <Button
+            color={theme.color.secondary}
+            fontFamily={theme.fontFamily.secondary}>
+            {this.state.roomCode}
+            <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
+          </Button>
+        </CopyToClipboard>
+        <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+        {
+          this.state.copiedCode
+            ? <CopiedCodeDialog />
+            : null
+        }
         <h2>Players in Room</h2>
         <PlayerTableContainer>{this.renderPlayerTable()}</PlayerTableContainer>
         <div>
