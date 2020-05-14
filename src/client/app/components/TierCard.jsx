@@ -67,7 +67,7 @@ class TierCard extends React.Component {
       <Card {...this.props}>
         <Remaining {...this.props}>{this.props.remaining}</Remaining>
         <CardDots {...this.props}></CardDots>
-        <CardTitle width={this.props.width}>Splendor</CardTitle>
+        <CardTitle width={this.props.width}>Grandeur</CardTitle>
       </Card>
     )
   }

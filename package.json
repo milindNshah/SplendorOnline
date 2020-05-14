@@ -9,7 +9,7 @@
     "clean": "find server/ -name '*.js' -exec rm {} \\; & find server/ -name '*.js.map' -exec rm {} \\; & find . -maxdepth 1 -name 'server.js' -exec rm {} \\; & find . -maxdepth 1 -name 'server.js.map' -exec rm {} \\;",
     "start": "webpack -d --watch & ts-node-dev --respawn server.ts",
     "dev": "webpack -d --watch & ts-node-dev --respawn server.ts",
-    "prod": "tsc && node server.js"
+    "prod": "webpack -p && tsc && node server.js"
   },
   "author": "",
   "license": "ISC",

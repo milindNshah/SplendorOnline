@@ -28,7 +28,7 @@ class Home extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <HomeContainer>
-          <h1>Welcome to Splendor Online</h1>
+          <h1>Welcome to Grandeur Online</h1>
           <h2>A resource-based card-building game</h2>
           <div>
             <Button onClick={this.onCreateRoom}>

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
-const inFile = "splendorNobleInput.csv";
-const outFile = "splendorNobleOutput.txt"
+const inFile = "grandeurNobleInput.csv";
+const outFile = "grandeurNobleOutput.txt"
 const gemNames = ["DIAMOND", "SAPPHIRE", "EMERALD", "RUBY", "CHOCOLATE"];
 const REQUIRED_CARD_STONE_OFFSET = 1;
 
