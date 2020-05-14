@@ -29,8 +29,7 @@ class TokenModal extends React.Component {
       availableGemStones: new Map(Object.entries(this.props.availableGemStones)),
       playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
       selectedGemStones: new Map(),
-      phase1: true,
-      phase2: false,
+      returningTokens: false,
       invalidInputError: null,
     }
     this.onConfirmPhase1 = this.onConfirmPhase1.bind(this)
@@ -50,8 +49,7 @@ class TokenModal extends React.Component {
         availableGemStones: new Map(Object.entries(this.props.availableGemStones)),
         playerGemStones: new Map(Object.entries(this.props.playerGemStones)),
         selectedGemStones: new Map(),
-        phase1: true,
-        phase2: false,
+        returningTokens: false,
         invalidInputError: null,
       })
     }
@@ -147,8 +145,7 @@ class TokenModal extends React.Component {
     if(totalSelected + totalOwned > 10) {
       this.setState({
         invalidInputError: `Cannot have more than 10 tokens. Please return ${totalSelected + totalOwned - 10} token(s).`,
-        phase1: false,
-        phase2: true,
+        returningTokens: true,
       })
       return;
     }
@@ -174,7 +171,7 @@ class TokenModal extends React.Component {
 
     return (
       <ModalContainer width={this.props.width}>
-        {this.state.phase1 ?
+        {!this.state.returningTokens ?
           <div>
             <TokensTitle>Available Tokens</TokensTitle>
             <GemStoneTokens
@@ -233,7 +230,7 @@ class TokenModal extends React.Component {
           </div>
           : null
         }
-        {this.state.phase2 ?
+        {this.state.returningTokens ?
           <ReturnTokens
             playerGemStones={this.state.playerGemStones}
             selectedGemStones={this.state.selectedGemStones}

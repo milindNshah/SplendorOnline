@@ -70,6 +70,7 @@ class TierCardModal extends React.Component {
     }
   }
 
+  // TODO: Merge with CardModal into util function.
   onReserveCardPhase1() {
     if (Object.keys(this.state.playerReservedCards).length >= 3) {
       this.setState({

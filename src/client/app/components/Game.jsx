@@ -355,7 +355,7 @@ class Game extends React.Component {
                 isPlayerTurn={this.state.isMyTurn}
                 onPurchaseCard={this.onPurchaseActiveCard}
                 handlePurchaseTokens={this.onPurchaseTokens}
-                onReserveCard={this.onReserveActiveCard}
+                handleReserveCard={this.onReserveActiveCard}
                 onReserveTierCard={this.onReserveTierCard}
               />
               : <div></div>

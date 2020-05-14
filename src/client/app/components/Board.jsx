@@ -193,7 +193,7 @@ class Board extends React.Component {
   }
 
   onReserveCard(returnedToken) {
-    this.props.onReserveCard(this.state.cardClicked, returnedToken);
+    this.props.handleReserveCard(this.state.cardClicked, returnedToken);
     this.setState({
       cardClicked: null,
     })
