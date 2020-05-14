@@ -96,9 +96,6 @@ class ReservedCardsModal extends React.Component {
             gemStones={new Map(Object.entries(this.props.gemStones))}
             purchasedCards={this.props.purchasedCards}
             reservedCards={this.props.reservedCards}
-            handleClick={() => { }}
-            handleReservedClick={() => { }}
-            handleTokenClick={() => { }}
             filterOutReservedCardToken={true}
           />
         </TokensOwned>

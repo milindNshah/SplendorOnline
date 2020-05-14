@@ -160,13 +160,12 @@ class Player extends React.Component {
             <ScoreCol width={this.props.width}>Score: {this.state.hand.score}</ScoreCol>
           </PlayerHeader>
           <GemStoneTokens
-            isCardTokenClickable={true}
             gemStones={new Map((Object.entries(this.state.hand.gemStones)))}
             purchasedCards={this.state.hand.purchasedCards}
             reservedCards={this.state.hand.reservedCards}
             handleClick={this.onCardClick}
             handleReservedClick={this.onReservedCardClick}
-            handleTokenClick={() => { }}
+            isCardTokenClickable={true}
           />
           {this.renderNobles()}
         </PlayerWidthContainer>

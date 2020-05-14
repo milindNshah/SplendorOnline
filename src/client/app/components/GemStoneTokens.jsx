@@ -28,11 +28,6 @@ const ReservedCardIcon = styled.div`
 class GemStoneTokens extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      filterOutGold: this.props.filterOutGold ?? false,
-      filterOutPurchasedCardTokens: this.props.filterOutPurchasedCardTokens ?? false,
-      filterOutReservedCardToken: this.props.filterOutReservedCardToken ?? false,
-    }
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
     this.renderGemStoneToken = this.renderGemStoneToken.bind(this)
   }
@@ -41,15 +36,13 @@ class GemStoneTokens extends React.Component {
     if(!this.props.gemStones || !this.props.purchasedCards) {
       return <div></div>;
     }
-
     const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
-    const gemStones = this.props.gemStones; // TODO: Just converted this from input Object to input Map.
     return (
       <Row>
         {
-          Array.from(gemStones.keys())
-            .filter((gemStone) => !(gemStone === GemStone.GOLD && this.state.filterOutGold))
-            .map((gemStone) => this.renderGemStoneToken(gemStone, gemStones.get(gemStone), purchasedCardsByTypes.get(gemStone)))
+          Array.from(this.props.gemStones.keys())
+            .filter((gemStone) => !(gemStone === GemStone.GOLD && this.props.filterOutGold))
+            .map((gemStone) => this.renderGemStoneToken(gemStone, this.props.gemStones.get(gemStone), purchasedCardsByTypes.get(gemStone)))
         }
       </Row>
     )
@@ -60,28 +53,34 @@ class GemStoneTokens extends React.Component {
     const resCardsAmount = this.props.reservedCards ? Object.keys(this.props.reservedCards).length : 0
 
     return (
-      <Col key={gemStone} onClick={() => this.props.handleTokenClick(gemStone)}>
+      <Col
+        key={gemStone}
+        onClick={() => {
+          if(this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick) {
+            this.props.handleTokenClick(gemStone)
+          }
+        }}>
         <GemStoneToken
           type={gemStone}
           amount={amount}
           width={theme.token.modal.width}
           height={theme.token.modal.height}
-          isClickable={this.props.isGemStoneTokenClickable && amount !== 0}
+          isClickable={this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick}
           opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
         />
-        {this.state.filterOutPurchasedCardTokens ? null
+        {this.props.filterOutPurchasedCardTokens ? null
           : GemStone.GOLD === gemStone ?
-            this.state.filterOutReservedCardToken ? null
+            this.props.filterOutReservedCardToken ? null
               : <CardToken
                   onClick={() => {
-                    if (resCardsAmount !== 0) {
+                    if (this.props.isCardTokenClickable && resCardsAmount !== 0 && this.props.handleReservedClick) {
                       this.props.handleReservedClick(gemStone)
                     }
                   }}
                   type={gemStone}
                   width={theme.card.icon.width}
                   height={theme.card.icon.height}
-                  isClickable={this.props.isCardTokenClickable && resCardsAmount !== 0}
+                  isClickable={this.props.isCardTokenClickable && resCardsAmount !== 0 && this.props.handleReservedClick}
                   opacity={resCardsAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
                 >
                 {resCardsAmount}
@@ -94,14 +93,14 @@ class GemStoneTokens extends React.Component {
               </CardToken>
             : <CardToken
                 onClick={() => {
-                  if(cardAmount !== 0) {
+                  if(this.props.isCardTokenClickable && cardAmount !== 0 && this.props.handleClick) {
                     this.props.handleClick(gemStone)
                   }
                 }}
                 type={gemStone}
                 width={theme.card.icon.width}
                 height={theme.card.icon.height}
-                isClickable={this.props.isCardTokenClickable && cardAmount !== 0}
+                isClickable={this.props.isCardTokenClickable && cardAmount !== 0 && this.props.handleClick}
                 opacity={cardAmount === 0 ? theme.gemStoneIsZero.opacity : 1}
               >
               {cardAmount}

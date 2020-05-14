@@ -177,8 +177,6 @@ class TokenModal extends React.Component {
             <GemStoneTokens
               gemStones={this.state.availableGemStones}
               purchasedCards={this.props.playerPurchasedCards}
-              handleClick={() => { }}
-              handleReservedClick={() => { }}
               handleTokenClick={this.onSelectToken}
               filterOutGold={true}
               filterOutPurchasedCardTokens={true}
@@ -192,8 +190,6 @@ class TokenModal extends React.Component {
                   <GemStoneTokens
                     gemStones={this.state.selectedGemStones}
                     purchasedCards={this.props.playerPurchasedCards}
-                    handleClick={() => { }}
-                    handleReservedClick={() => { }}
                     handleTokenClick={this.onReturnToken}
                     filterOutGold={true}
                     filterOutPurchasedCardTokens={true}
@@ -209,13 +205,7 @@ class TokenModal extends React.Component {
             <GemStoneTokens
               gemStones={this.state.playerGemStones}
               purchasedCards={this.props.playerPurchasedCards}
-              handleClick={() => { }}
-              handleTokenClick={() => { }}
-              handleReservedClick={() => { }}
-              filterOutGold={false}
-              filterOutPurchasedCardTokens={false}
               filterOutReservedCardToken={true}
-              isGemStoneTokenClickable={false}
             />
             {this.props.isPlayerTurn ?
               <div>

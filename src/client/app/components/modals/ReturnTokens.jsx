@@ -103,11 +103,7 @@ class ReturnToken extends React.Component {
         <GemStoneTokens
           gemStones={this.state.playerGemStones}
           purchasedCards={this.props.playerPurchasedCards}
-          handleClick={() => { }}
           handleTokenClick={this.onReturnToken}
-          handleReservedClick={() => { }}
-          filterOutGold={false}
-          filterOutPurchasedCardTokens={false}
           filterOutReservedCardToken={true}
           isGemStoneTokenClickable={this.props.isPlayerTurn}
         />
@@ -118,10 +114,7 @@ class ReturnToken extends React.Component {
               <GemStoneTokens
                 gemStones={this.state.returnedGemStones}
                 purchasedCards={this.props.playerPurchasedCards}
-                handleClick={() => { }}
                 handleTokenClick={this.onTakeBackToken}
-                handleReservedClick={() => { }}
-                filterOutGold={false}
                 filterOutPurchasedCardTokens={true}
                 filterOutReservedCardToken={true}
                 isGemStoneTokenClickable={this.props.isPlayerTurn}

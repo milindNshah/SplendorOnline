@@ -66,7 +66,6 @@ class CardModal extends React.Component {
     this.props.handlePurchaseCard(card)
   }
 
-  // TODO: Refactor this, TierCardModal, GemStoneTokens. Possibly seperate out Phase2 in all components to its own modal.
   onReserveCardPhase1() {
     if(Object.keys(this.props.playerReservedCards).length >= 3) {
       this.setState({
@@ -128,9 +127,6 @@ class CardModal extends React.Component {
                 gemStones={new Map(Object.entries(this.props.playerGemStones))}
                 purchasedCards={this.props.playerPurchasedCards}
                 reservedCards={this.props.playerReservedCards}
-                handleClick={() => { }}
-                handleReservedClick={() => { }}
-                handleTokenClick={() => { }}
                 filterOutReservedCardToken={true}
               />
             </TokensOwned>
