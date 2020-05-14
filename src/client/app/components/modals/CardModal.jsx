@@ -43,8 +43,10 @@ class CardModal extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.card !== prevProps.card ||
-      this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
+    if (
+      this.props.card !== prevProps.card ||
+      this.props.isPlayerTurn !== prevProps.isPlayerTurn
+    ) {
       this.setState({
         returningTokens: false,
         invalidInputError: null,
@@ -155,7 +157,7 @@ class CardModal extends React.Component {
           </div>
           : null
         }
-        {this.state.returningTokens ?
+        {this.props.isPlayerTurn && this.state.returningTokens ?
           <ReturnTokens
             playerGemStones={Object.entries(this.props.playerGemStones)}
             selectedGemStones={this.state.selectedGemStones}
