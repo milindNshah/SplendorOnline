@@ -93,7 +93,7 @@ class ReservedCardsModal extends React.Component {
         <TokensOwned>
           <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
           <GemStoneTokens
-            gemStones={this.props.gemStones}
+            gemStones={new Map(Object.entries(this.props.gemStones))}
             purchasedCards={this.props.purchasedCards}
             reservedCards={this.props.reservedCards}
             handleClick={() => { }}

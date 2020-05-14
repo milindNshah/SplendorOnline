@@ -1,4 +1,4 @@
-
+import {GemStone} from './enums/gemstones'
 /*
 * @Input: purchasedCardsObject: Object<cardID, card>
 * @Return: Map<gemStone, card[]>

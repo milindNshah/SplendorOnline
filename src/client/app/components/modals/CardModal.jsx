@@ -54,7 +54,7 @@ class CardModal extends React.Component {
   }
 
   onPurchaseCard(card) {
-    const canPurchase = canPurchaseCard(card, this.props.playerPurchasedCards, this.props.playerGemStones)
+    const canPurchase = canPurchaseCard(this.props.card, this.props.playerPurchasedCards, this.props.playerGemStones)
     if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
