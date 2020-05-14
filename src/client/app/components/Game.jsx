@@ -373,11 +373,6 @@ class Game extends React.Component {
           </Button>
           : null
         }
-        <Button
-          color={theme.color.error}
-          onClick={this.onHackNobles}>
-          Hack Nobles
-          </Button>
         {this.state.rulesClicked ?
           <Modal>
             <OutsideAlerter handleClose={this.onRulesClosed}>
