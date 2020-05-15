@@ -394,7 +394,9 @@ export class Game {
       const purchased: number = purchasedCards.get(gemStone)
         ? purchasedCards.get(gemStone).length
         : 0;
-      if(have + purchased >= need) {
+      if(purchased >= need) {
+        map.set(gemStone, 0)
+      } else if(have + purchased >= need) {
         map.set(gemStone, need-purchased)
       } else if (goldLeft > 0 && have + purchased + goldLeft >= need) {
         goldLeft -= need - (have + purchased)
