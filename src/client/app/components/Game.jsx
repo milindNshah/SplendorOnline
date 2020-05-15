@@ -13,6 +13,7 @@ import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import RulesModal from './modals/RulesModal.jsx'
 import Actionlog from './ActionLog.jsx'
 import Timer from './Timer.jsx'
+import GemStoneTokens from './GemStoneTokens.jsx'
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
@@ -96,6 +97,16 @@ const PlayerContainer = styled.div`
   order: ${ props => props.order ?? 0};
 `
 
+const TokensTitle = styled.div`
+  margin: 1rem 0rem;
+  color: ${ props => props.theme.color.black };
+  text-decoration: underline;
+  text-align: center;
+`
+const GemstoneTokensPlaceholder = styled.div`
+  height: ${ props => `${props.theme.token.modal.height}rem`};
+`
+
 class Game extends React.Component {
   constructor (props) {
     super(props)
@@ -108,6 +119,7 @@ class Game extends React.Component {
       serverError: null,
       gameID: this.props.gameID,
       gameTurn: 0,
+      curPlayer: null,
       player: {},
       playerID: this.props.playerID,
       players: [],
@@ -122,6 +134,9 @@ class Game extends React.Component {
         minutes: 2,
         seconds: 0,
       },
+      selectedGemStones: {},
+      returnedGemStones: {},
+      returningTokensPhase: false,
     }
     this.socket = socket;
     this.onClientRequestError = this.onClientRequestError.bind(this)
@@ -129,7 +144,6 @@ class Game extends React.Component {
     this.onGameUpdate = this.onGameUpdate.bind(this)
     this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this)
     this.onPurchaseReservedCard = this.onPurchaseReservedCard.bind(this)
-    this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
     this.onSkipTurn = this.onSkipTurn.bind(this)
@@ -138,6 +152,9 @@ class Game extends React.Component {
     this.onRulesClick = this.onRulesClick.bind(this)
     this.onRulesClosed = this.onRulesClosed.bind(this)
     this.onLeaveGame = this.onLeaveGame.bind(this);
+    this.onTokenClick = this.onTokenClick.bind(this)
+    this.onPlayerTokenClick = this.onPlayerTokenClick.bind(this)
+    this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
   }
 
   componentDidMount() {
@@ -173,9 +190,13 @@ class Game extends React.Component {
       tieBreakerMoreRounds: game.tieBreakerMoreRounds,
       board: board,
       isMyTurn: isMyTurn,
+      curPlayer: curPlayerTurn,
       player: player,
       players: players,
       serverError: null,
+      selectedGemStones: {},
+      returnedGemStones: {},
+      returningTokensPhase: false,
     });
   }
 
@@ -197,6 +218,106 @@ class Game extends React.Component {
     })
   }
 
+  onTokenClick(gemStone) {
+    // Can't take any more tokens after entering returningTokensPhase
+    if(this.state.returningTokensPhase) {
+      return;
+    }
+
+    const selectedGemstones = this.state.selectedGemStones;
+    const availableGemStones = this.state.board.availableGemStones;
+    const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
+
+    const totalSelected = Object.values(selectedGemstones)
+      .reduce((acc, amount) => acc += amount, 0)
+    const takenTwoOfSame = Object.values(selectedGemstones)
+      .reduce((acc, amount) => acc = acc || amount >= 2, false)
+    const takenDiffType = Object.keys(selectedGemstones)
+      .reduce((acc, key) => acc = acc || (selectedGemstones[key] >= 1 && key !== gemStone), false)
+
+    if (totalSelected >= 3) {
+      return;
+    }
+    if (availableGemStones[gemStone] < 1) {
+      return;
+    }
+    if (takenTwoOfSame) {
+      return;
+    }
+    if (selectedGemstones.hasOwnProperty(gemStone)
+      && selectedGemstones[gemStone] >= 1
+      && availableGemStones[gemStone] < 3
+    ) {
+      return;
+    }
+    if (selectedGemstones.hasOwnProperty(gemStone)
+      && selectedGemstones[gemStone] >= 1
+      && takenDiffType) {
+      return;
+    }
+
+    if (selectedGemstones.hasOwnProperty(gemStone)) {
+      selectedGemstones[gemStone] = selectedGemstones[gemStone] + 1
+    } else {
+      selectedGemstones[gemStone] = 1
+    }
+    availableGemStones[gemStone] = availableGemStones[gemStone] - 1
+    if(playerGemStones.hasOwnProperty(gemStone)) {
+      playerGemStones[gemStone] = playerGemStones[gemStone] + 1;
+    } else {
+      playerGemStones[gemStone] = 1;
+    }
+
+    this.setState({
+      selectedGemStones: selectedGemstones,
+      invalidInputError: null,
+    })
+  }
+
+  onPlayerTokenClick(gemStone) {
+    const availableGemStones = this.state.board.availableGemStones;
+    const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
+    const selectedGemStones = this.state.selectedGemStones;
+
+    // Can only return that which was selected.
+    if(selectedGemStones.hasOwnProperty(gemStone) && selectedGemStones[gemStone] > 0) {
+      selectedGemStones[gemStone] = selectedGemStones[gemStone] - 1
+      if(selectedGemStones[gemStone] === 0) {
+        delete selectedGemStones[gemStone]
+      }
+      playerGemStones[gemStone] = playerGemStones[gemStone] - 1
+      availableGemStones[gemStone] = availableGemStones[gemStone] + 1;
+      this.setState({
+        selectedGemStones: selectedGemStones,
+        invalidInputError: null,
+      })
+    }
+
+    // Can return anything until 10, no less, no more.
+    if(this.state.returningTokensPhase) {
+      const totalOwned = Object.values(playerGemStones)
+      .reduce((acc, amount) => acc += amount, 0)
+      if(totalOwned <= 10) {
+        return;
+      }
+      if(playerGemStones[gemStone] < 1) {
+        return;
+      }
+
+      if (selectedGemStones.hasOwnProperty(gemStone)) {
+        selectedGemStones[gemStone] = selectedGemStones[gemStone] - 1
+      } else {
+        selectedGemStones[gemStone] = -1
+      }
+      playerGemStones[gemStone] = playerGemStones[gemStone] - 1
+      availableGemStones[gemStone] = availableGemStones[gemStone] + 1;
+      this.setState({
+        selectedGemStones: selectedGemStones,
+        invalidInputError: null,
+      })
+    }
+  }
+
   renderHands() {
     if (!this.state.players) {
       return;
@@ -210,6 +331,7 @@ class Game extends React.Component {
             player={player}
             width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
             handlePurchaseCard={this.onPurchaseReservedCard}
+            handleTokenClick={this.onPlayerTokenClick}
             isMyTurn={this.state.isMyTurn}
           />
         </PlayerContainer>
@@ -217,34 +339,19 @@ class Game extends React.Component {
     return (hands)
   }
 
-  onPurchaseReservedCard(card) {
-    this.setState({
-      actionData: card.id,
-      actionType: ActionType.PURCHASE_RESERVED_CARD,
-    }, this.onEndTurn)
-  }
-
-  onPurchaseTokens(tokensTaken, tokensReturned) {
-    const tokens = new Map()
-    tokensTaken.forEach((amount, gemStone) => {
-      tokens.set(gemStone, amount);
-    })
-    if(tokensReturned) {
-      tokensReturned.forEach((amount, gemStone) => {
-        if (tokens.has(gemStone)) {
-          tokens.set(gemStone, tokens.get(gemStone) - amount)
-        } else {
-          tokens.set(gemStone, -1 * amount)
-        }
+  onPurchaseTokens() {
+    const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
+    const totalOwned = Object.values(playerGemStones)
+      .reduce((acc, amount) => acc += amount, 0)
+    if (totalOwned > 10) {
+      this.setState({
+        invalidInputError: `Cannot have more than 10 tokens. Please return ${totalOwned - 10} token(s).`,
+        returningTokensPhase: true,
       })
+      return;
     }
-    const tokenObject = Array.from(tokens.keys())
-      .reduce((acc, gemStone) => {
-        acc[gemStone] = tokens.get(gemStone)
-        return acc;
-      }, {})
     this.setState({
-      actionData: tokenObject,
+      actionData: this.state.selectedGemStones,
       actionType: ActionType.TAKE_GEMS,
     }, this.onEndTurn)
   }
@@ -253,6 +360,13 @@ class Game extends React.Component {
     this.setState({
       actionData: card.id,
       actionType: ActionType.PURCHASE_ACTIVE_CARD,
+    }, this.onEndTurn)
+  }
+
+  onPurchaseReservedCard(card) {
+    this.setState({
+      actionData: card.id,
+      actionType: ActionType.PURCHASE_RESERVED_CARD,
     }, this.onEndTurn)
   }
 
@@ -354,16 +468,33 @@ class Game extends React.Component {
                 hand={this.state.player?.hand}
                 isPlayerTurn={this.state.isMyTurn}
                 onPurchaseCard={this.onPurchaseActiveCard}
-                handlePurchaseTokens={this.onPurchaseTokens}
                 handleReserveCard={this.onReserveActiveCard}
                 onReserveTierCard={this.onReserveTierCard}
+                handleTokenClick={this.onTokenClick}
               />
               : <div></div>
             }
           </BoardContainer>
           <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
-          <InvalidInputError />
         </BoardPlayerContainer>
+        {this.state.isMyTurn && Object.keys(this.state.selectedGemStones).length > 0 ?
+          <div>
+            <TokensTitle>Selected Tokens</TokensTitle>
+            <GemStoneTokens
+              gemStones={new Map(Object.entries(this.state.selectedGemStones))}
+              filterOutGold={true}
+              filterOutPurchasedCardTokens={true}
+              filterOutReservedCardToken={true}
+            />
+            <Button
+              color={theme.color.secondary}
+              onClick={this.onPurchaseTokens}>
+              Confirm Tokens
+            </Button>
+            {/* TODO: Add Cancel button for return phase. */}
+          </div>
+          : <GemstoneTokensPlaceholder />
+        }
         {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
@@ -373,6 +504,7 @@ class Game extends React.Component {
           </Button>
           : null
         }
+        <InvalidInputError />
         {this.state.rulesClicked ?
           <Modal>
             <OutsideAlerter handleClose={this.onRulesClosed}>

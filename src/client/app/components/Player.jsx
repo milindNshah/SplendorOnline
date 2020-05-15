@@ -71,6 +71,7 @@ class Player extends React.Component {
     this.onReservedCardClick = this.onReservedCardClick.bind(this)
     this.onReservedCardModalClose = this.onReservedCardModalClose.bind(this)
     this.renderNobles = this.renderNobles.bind(this)
+    this.onTokenClick = this.onTokenClick.bind(this)
   }
 
   componentDidUpdate(prevProps) {
@@ -85,6 +86,13 @@ class Player extends React.Component {
         playerName: this.props.player.user.name,
       });
     }
+  }
+
+  onTokenClick(gemStone) {
+    if(!this.props.isThisPlayerTurn) {
+      return;
+    }
+    this.props.handleTokenClick(gemStone)
   }
 
   renderNobles() {
@@ -159,12 +167,15 @@ class Player extends React.Component {
             </NameCol>
             <ScoreCol width={this.props.width}>Score: {this.state.hand.score}</ScoreCol>
           </PlayerHeader>
+          {/* // TODO: Add logic so not clickable when not allowed to take anymore of that token. */}
           <GemStoneTokens
-            gemStones={new Map((Object.entries(this.state.hand.gemStones)))}
+            gemStones={new Map(Object.entries(this.state.hand.gemStones))}
             purchasedCards={this.state.hand.purchasedCards}
             reservedCards={this.state.hand.reservedCards}
             handleClick={this.onCardClick}
             handleReservedClick={this.onReservedCardClick}
+            handleTokenClick={this.onTokenClick}
+            isGemStoneTokenClickable={this.props.isThisPlayerTurn && this.props.isMyTurn}
             isCardTokenClickable={true}
           />
           {this.renderNobles()}

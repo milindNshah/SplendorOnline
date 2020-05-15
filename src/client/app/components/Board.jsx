@@ -5,13 +5,13 @@ import Card from './Card.jsx'
 import Noble from './Noble.jsx'
 import TierCard from './TierCard.jsx'
 import CardModal from './modals/CardModal.jsx'
-import TokenModal from './modals/TokenModal.jsx'
 import NobleModal from './modals/NobleModal.jsx'
 import TierCardModal from './modals/TierCardModal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
 import Overlay from '../styledcomponents/overlay.jsx'
 import Modal from '../styledcomponents/modal.jsx'
+import { GemStone } from '../enums/gemstones'
 
 const Table = styled.div`
   display: flex;
@@ -38,7 +38,6 @@ class Board extends React.Component {
       board: this.props.board,
       cardClicked: null,
       tierCardClicked: null,
-      tokenClicked: false,
       isPlayerTurn: this.props.isPlayerTurn,
       nobleClicked: null,
       playerGemStones: this.props.hand?.gemStones,
@@ -50,11 +49,9 @@ class Board extends React.Component {
     this.onNobleClick = this.onNobleClick.bind(this)
     this.onNobleModalClose = this.onNobleModalClose.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
-    this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onReserveCard = this.onReserveCard.bind(this)
     this.onReserveTierCard = this.onReserveTierCard.bind(this)
     this.onTokenClick = this.onTokenClick.bind(this)
-    this.onTokenModalClose = this.onTokenModalClose.bind(this)
     this.onTierCardClick = this.onTierCardClick.bind(this)
     this.onTierCardModalClose = this.onTierCardModalClose.bind(this)
     this.renderCard = this.renderCard.bind(this)
@@ -91,35 +88,28 @@ class Board extends React.Component {
   }
 
   renderGemStoneToken(gemStone, amount) {
-    return (<Col key={gemStone} onClick={this.onTokenClick}>
+    // TODO: Add logic so not clickable when not allowed to take anymore of that token.
+    return (<Col key={gemStone} onClick={() => {
+      if(this.state.isPlayerTurn && gemStone !== GemStone.GOLD) {
+        this.onTokenClick(gemStone)
+      }
+    }}>
       <GemStoneToken
         type={gemStone}
         amount={amount}
         width={theme.token.width}
         height={theme.token.height}
-        isClickable={true}
+        isClickable={this.state.isPlayerTurn && gemStone !== GemStone.GOLD}
         opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
         />
       </Col>)
   }
 
-  onTokenClick() {
-    this.setState({
-      tokenClicked: true,
-    })
-  }
-
-  onTokenModalClose() {
-    this.setState({
-      tokenClicked: false,
-    })
-  }
-
-  onPurchaseTokens(tokensTaken, tokensReturned) {
-    this.props.handlePurchaseTokens(tokensTaken, tokensReturned);
-    this.setState({
-      tokenClicked: false,
-    })
+  onTokenClick(gemStone) {
+    if (!this.state.isPlayerTurn || gemStone === GemStone.GOLD) {
+      return;
+    }
+    this.props.handleTokenClick(gemStone)
   }
 
   renderNobles() {
@@ -249,25 +239,6 @@ class Board extends React.Component {
                   playerGemStones={this.state.playerGemStones}
                   playerPurchasedCards={this.state.playerPurchasedCards}
                   playerReservedCards={this.state.playerReservedCards}
-                  width={theme.card.icon.width*6+theme.card.spaceBetween*12}
-                />
-              </OutsideAlerter>
-            </Modal>
-          )
-          : null
-        }
-        {this.state.tokenClicked
-          ?
-          (
-            <Modal>
-              <OutsideAlerter handleClose={this.onTokenModalClose}>
-                <TokenModal
-                  availableGemStones={this.state.board.availableGemStones}
-                  isPlayerTurn={this.state.isPlayerTurn}
-                  handleClose={this.onTokenModalClose}
-                  handlePurchaseTokens={this.onPurchaseTokens}
-                  playerGemStones={this.state.playerGemStones}
-                  playerPurchasedCards={this.state.playerPurchasedCards}
                   width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>

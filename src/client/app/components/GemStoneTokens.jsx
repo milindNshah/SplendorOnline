@@ -33,10 +33,13 @@ class GemStoneTokens extends React.Component {
   }
 
   renderGemStoneTokens() {
-    if(!this.props.gemStones || !this.props.purchasedCards) {
+    if(!this.props.gemStones) {
       return <div></div>;
     }
-    const purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
+    let purchasedCardsByTypes = new Map();
+    if(this.props.purchasedCards) {
+      purchasedCardsByTypes = getPurchasedCardsByTypes(this.props.purchasedCards);
+    }
     return (
       <Row>
         {
@@ -53,21 +56,23 @@ class GemStoneTokens extends React.Component {
     const resCardsAmount = this.props.reservedCards ? Object.keys(this.props.reservedCards).length : 0
 
     return (
-      <Col
-        key={gemStone}
-        onClick={() => {
-          if(this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick) {
-            this.props.handleTokenClick(gemStone)
-          }
-        }}>
-        <GemStoneToken
-          type={gemStone}
-          amount={amount}
-          width={theme.token.modal.width}
-          height={theme.token.modal.height}
-          isClickable={this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick}
-          opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
-        />
+      <Col key={gemStone}>
+        <div
+          onClick={() => {
+            if (this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick) {
+              this.props.handleTokenClick(gemStone)
+            }
+          }}
+        >
+          <GemStoneToken
+            type={gemStone}
+            amount={amount}
+            width={theme.token.modal.width}
+            height={theme.token.modal.height}
+            isClickable={this.props.isGemStoneTokenClickable && amount !== 0 && this.props.handleTokenClick}
+            opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
+          />
+        </div>
         {this.props.filterOutPurchasedCardTokens ? null
           : GemStone.GOLD === gemStone ?
             this.props.filterOutReservedCardToken ? null
