@@ -130,7 +130,7 @@ class ReservedCardsModal extends React.Component {
     );
 
     return (
-      <ModalContainer width={this.props.width}>
+      <ModalContainer maxWidth={this.props.maxWidth}>
         {Object.keys(this.props.reservedCards).length > 0 ? this.renderCards() : <NoCards />}
         <div>
           <Button

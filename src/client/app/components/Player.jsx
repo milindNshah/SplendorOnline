@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
 import Noble from './Noble.jsx'
+import Card from './Card.jsx'
 import NobleModal from './modals/NobleModal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
@@ -41,7 +42,7 @@ const Row = styled.div`
   display: flex;
   justify-content: flex-start;
 `
-const NobleCol = styled.div`
+const Col = styled.div`
   margin: 0rem 0.5rem;
   display: flex;
   flex-direction: column;
@@ -54,17 +55,21 @@ class Player extends React.Component {
     super(props)
     this.state = {
       cardClicked: null,
+      colReservedCardClicked: null,
       reservedCardClicked: null,
       nobleClicked: null,
     }
     this.onCardClick = this.onCardClick.bind(this)
     this.onCardModalClose = this.onCardModalClose.bind(this)
+    this.onColReservedCardClick = this.onColReservedCardClick.bind(this)
+    this.onColReservedCardModalClose = this.onColReservedCardModalClose.bind(this)
     this.onNobleClick = this.onNobleClick.bind(this)
     this.onNobleModalClose = this.onNobleModalClose.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.onReservedCardClick = this.onReservedCardClick.bind(this)
     this.onReservedCardModalClose = this.onReservedCardModalClose.bind(this)
     this.renderNobles = this.renderNobles.bind(this)
+    this.renderReservedCards = this.renderReservedCards.bind(this)
     this.onTokenClick = this.onTokenClick.bind(this)
   }
 
@@ -75,14 +80,27 @@ class Player extends React.Component {
     this.props.handleTokenClick(gemStone)
   }
 
+  renderReservedCards() {
+    const reservedCards = new Map(Object.entries(this.props.player.hand.reservedCards))
+    const rows = Array.from(reservedCards.values())
+      .map((card) => {
+        return (
+          <Col key={card.id} onClick={() => this.onColReservedCardClick(card)}>
+            <Card card={card} width={theme.card.reservedCol.width} height={theme.card.reservedCol.height} />
+          </Col>
+        )
+      })
+    return (<Row>{rows}</Row>)
+  }
+
   renderNobles() {
     const nobles = new Map(Object.entries(this.props.player.hand.nobles))
     const rows = Array.from(nobles.values())
       .map((noble) => {
         return (
-          <NobleCol key={noble.id} onClick={() => this.onNobleClick(noble)}>
+          <Col key={noble.id} onClick={() => this.onNobleClick(noble)}>
             <Noble noble={noble} width={theme.card.icon.width} height={theme.card.icon.width} />
-          </NobleCol>
+          </Col>
         )
       })
     return (<Row>{rows}</Row>)
@@ -112,6 +130,18 @@ class Player extends React.Component {
     })
   }
 
+  onColReservedCardClick(card) {
+    this.setState({
+      colReservedCardClicked: card,
+    })
+  }
+
+  onColReservedCardModalClose() {
+    this.setState({
+      colReservedCardClicked: null,
+    })
+  }
+
   onNobleClick(noble) {
     this.setState({
       nobleClicked: noble,
@@ -127,15 +157,15 @@ class Player extends React.Component {
   onPurchaseCard(card) {
     this.props.handlePurchaseCard(card)
     this.setState({
+      colReservedCardClicked: null,
       reservedCardClicked: null,
     })
   }
 
-
   render() {
     return (
       <div>
-        {(this.state.cardClicked || this.state.reservedCardClicked || this.state.nobleClicked)
+        {(this.state.cardClicked || this.state.colReservedCardClicked || this.state.reservedCardClicked || this.state.nobleClicked)
           ? <Overlay></Overlay>
           : null
         }
@@ -158,6 +188,7 @@ class Player extends React.Component {
             isGemStoneTokenClickable={this.props.isThisPlayerTurn && this.props.isMyTurn}
             isCardTokenClickable={true}
           />
+          {this.props.isMyHand ? this.renderReservedCards() : null}
           {this.renderNobles()}
         </PlayerWidthContainer>
         {this.state.cardClicked
@@ -191,7 +222,28 @@ class Player extends React.Component {
                   selectedGemStones={this.props.selectedGemStones}
                   purchasedCards={this.props.player.hand.purchasedCards}
                   reservedCards={this.props.player.hand.reservedCards}
-                  width={theme.card.modal.width * 3}
+                  maxWidth={theme.card.modal.width * 3}
+                />
+              </OutsideAlerter>
+            </Modal>
+          )
+          : null
+        }
+        {this.state.colReservedCardClicked
+          ?
+          (
+            <Modal>
+              <OutsideAlerter handleClose={this.onColReservedCardModalClose}>
+                <ReservedCardsModal
+                  isMyHand={this.props.isMyHand}
+                  isMyTurn={this.props.isMyTurn}
+                  handleClose={this.onColReservedCardModalClose}
+                  handlePurchaseCard={this.onPurchaseCard}
+                  gemStones={this.props.player.hand.gemStones}
+                  selectedGemStones={this.props.selectedGemStones}
+                  purchasedCards={this.props.player.hand.purchasedCards}
+                  reservedCards={{ [this.state.colReservedCardClicked.id]: this.state.colReservedCardClicked }}
+                  maxWidth={theme.card.modal.width * 3}
                 />
               </OutsideAlerter>
             </Modal>

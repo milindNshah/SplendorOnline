@@ -64,6 +64,10 @@ const theme = {
         height: `${cardWidth*1/5}`,
       },
     },
+    reservedCol: {
+      width: `${cardWidth*3/4}`,
+      height: `${cardHeight*3/4}`,
+    },
     spaceBetween: `${spaceBetweenCards}`,
   },
   actionLog: {

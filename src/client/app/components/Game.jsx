@@ -75,9 +75,10 @@ const WinnerScreen = styled.div`
 const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: space-around;
   background: ${ props => props.theme.color.white};
   margin: 0.5rem 0rem;
+  width: 100%;
 `
 const Title = styled.div`
   text-align: center;
@@ -334,7 +335,7 @@ class Game extends React.Component {
             isThisPlayerTurn={player.id === this.state.turnOrder[this.state.curTurnIndex]}
             player={player}
             selectedGemStones={this.state.selectedGemStones}
-            width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
+            width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12}
             handlePurchaseCard={this.onPurchaseReservedCard}
             handleTokenClick={this.onPlayerTokenClick}
           />
