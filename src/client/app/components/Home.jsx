@@ -9,6 +9,13 @@ const HomeContainer = styled.div`
   text-align: center;
 `
 
+const CreatedBy = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  text-align: center;
+  width: 100%;
+`
+
 class Home extends React.Component {
   constructor (props) {
     super(props)
@@ -40,6 +47,7 @@ class Home extends React.Component {
               Join Game
             </Button>
           </div>
+          <CreatedBy>Created By Milind Shah</CreatedBy>
         </HomeContainer>
       </ThemeProvider>
     );
