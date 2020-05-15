@@ -5,6 +5,8 @@ import { ActionType } from '../enums/actiontype'
 import { GemStoneBase } from './GemStone.jsx'
 import Card from './Card.jsx'
 import Noble from './Noble.jsx'
+// import { Link, DirectLink, Element, Events, animateScroll as scroll, scrollSpy, scroller } from 'react-scroll'
+import Scroll from 'react-scroll'
 
 const ActionLogContainer = styled.div`
   font-family: ${ props => props.theme.fontFamily.tertiary };
@@ -77,8 +79,6 @@ class ActionLog extends React.Component {
       lineIndex: null,
       nobleHover: null,
     }
-    // TODO: Why does this scroll entire page. Figure out how to only scroll the actionLog box.
-    // this.actionsEndRef = React.createRef()
     this.renderActionLines = this.renderActionLines.bind(this)
     this.renderActionLine = this.renderActionLine.bind(this)
     this.renderTakeGems = this.renderTakeGems.bind(this)
@@ -92,25 +92,29 @@ class ActionLog extends React.Component {
     this.renderTakenGems = this.renderTakenGems.bind(this)
     this.renderReturnedGems = this.renderReturnedGems.bind(this)
     this.renderGemsFromMap = this.renderGemsFromMap.bind(this)
-    // this.scrollToBottom = this.scrollToBottom.bind(this)
+    this.scrollToBottom = this.scrollToBottom.bind(this)
   }
 
-  // componentDidMount () {
-  //   this.scrollToBottom()
-  // }
+  componentDidMount () {
+    this.scrollToBottom()
+  }
   componentDidUpdate () {
-    // this.scrollToBottom()
+    this.scrollToBottom()
   }
-
-  // scrollToBottom() {
-  //   this.actionsEndRef.current.scrollIntoView({ behavior: "smooth" });
-  // }
+  scrollToBottom() {
+    Scroll.scroller.scrollTo('actions-scroll-to-end', {
+      duration: 800,
+      delay: 0,
+      smooth: 'easeInOutQuart',
+      containerId: 'actions-container'
+    });
+  }
 
   renderActionLines() {
     const actions = this.props.actionLog.map((actionLine, index) => this.renderActionLine(actionLine, index));
     return <div>
       {actions}
-      {/* <div ref={this.actionsEndRef} /> */}
+      <Scroll.Element name="actions-scroll-to-end"></Scroll.Element>
     </div>;
   }
 
@@ -361,7 +365,7 @@ class ActionLog extends React.Component {
     return (
       <ActionLogContainer width={this.props.width} height={this.props.height}>
         <Title>Action Log</Title>
-        <ActionsContainer width={this.props.width} height={this.props.height}>
+        <ActionsContainer width={this.props.width} height={this.props.height} id="actions-container">
           {this.renderActionLines()}
         </ActionsContainer>
       </ActionLogContainer>
