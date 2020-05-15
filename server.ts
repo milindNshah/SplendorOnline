@@ -7,8 +7,6 @@ import { SocketEvents } from './server/utils/SocketEvents';
 import * as ErrorHandler from './server/utils/ErrorHandler';
 import * as CardManager from './server/managers/CardManager';
 import * as NobleManager from './server/managers/NobleManager';
-import { CardTier, Card } from './server/models/Card';
-import { GlobalUtils } from './server/utils/GlobalUtils';
 
 const app = express();
 
@@ -57,8 +55,8 @@ io.on('connection', function (socket) {
   SocketEvents.initRoomEvents(socket);
 });
 
-const cards = CardManager.generateAllCards();
-const nobles = NobleManager.generateAllNobles();
+CardManager.generateAllCards();
+NobleManager.generateAllNobles();
 
 process.on('uncaughtException', async (err) => {
   await ErrorHandler.handleError(err);

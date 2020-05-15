@@ -57,7 +57,21 @@ class Room extends React.Component {
   }
 
   componentDidMount() {
-    if(!this.props.location.state) {
+    let codeValue = null;
+    if(this.props.location.search.length !== 0) {
+      const splitIndex = this.props.location?.search.indexOf("?code=")+6;
+      if(splitIndex > -1) {
+        codeValue = this.props.location?.search.slice(splitIndex);
+        if (codeValue && codeValue.length !== 0) {
+          this.setState({
+            isJoinRoom: true,
+            roomCodeInput: codeValue,
+          })
+        }
+      }
+    }
+
+    if(!codeValue && !this.props.location.state) {
       this.props.history.push('/');
     }
     this.socket.on('ClientRequestError', this.onClientRequestError);

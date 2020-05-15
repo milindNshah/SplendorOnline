@@ -313,6 +313,15 @@ class WaitingRoom extends React.Component {
             <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
           </Button>
         </CopyToClipboard>
+        <RoomCode>Room Link</RoomCode>
+        <CopyToClipboard text={`http://www.playgrandeur.com/room?code=${this.state.roomCode}`} onCopy={this.onCopyCode}>
+          <Button
+            color={theme.color.secondary}
+            fontFamily={theme.fontFamily.secondary}>
+            Copy Link
+            <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
+          </Button>
+        </CopyToClipboard>
         <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         {
           this.state.copiedCode
