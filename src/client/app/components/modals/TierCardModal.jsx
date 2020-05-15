@@ -21,10 +21,23 @@ const TierCardContainer = styled.div`
 class TierCardModal extends React.Component {
   constructor (props) {
     super(props)
+    const playerGemStones = this.props.playerGemStones;
+    const playerSelectedGemStones = this.props.playerSelectedGemStones;
+    const updatedPlayerGemStones = {};
+    Object.keys(playerGemStones)
+      .forEach((gemStone) => {
+        if (playerSelectedGemStones[gemStone]) {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone] - playerSelectedGemStones[gemStone]
+        } else {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone]
+        }
+      })
+
     this.state = {
       returningTokens: false,
       invalidInputError: null,
       selectedGemStones: new Map(),
+      playerGemStones: updatedPlayerGemStones,
     }
     this.onInvalidInput = this.onInvalidInput.bind(this)
     this.onReserveCardPhase1 = this.onReserveCardPhase1.bind(this)
@@ -34,10 +47,23 @@ class TierCardModal extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.playerReservedCards !== prevProps.playerReservedCards ||
       this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
+      const playerGemStones = this.state.playerGemStones;
+      const playerSelectedGemStones = this.props.playerSelectedGemStones;
+      const updatedPlayerGemStones = {};
+      Object.keys(playerGemStones)
+        .forEach((gemStone) => {
+          if (playerSelectedGemStones[gemStone]) {
+            updatedPlayerGemStones[gemStone] = playerGemStones[gemStone] - playerSelectedGemStones[gemStone]
+          } else {
+            updatedPlayerGemStones[gemStone] = playerGemStones[gemStone]
+          }
+        })
+
       this.setState({
         returningTokens: false,
         invalidInputError: null,
         selectedGemStones: new Map(),
+        playerGemStones: updatedPlayerGemStones,
       })
     }
   }
@@ -50,7 +76,7 @@ class TierCardModal extends React.Component {
       })
       return;
     }
-    const totalOwned = Object.values(this.props.playerGemStones)
+    const totalOwned = Object.values(this.state.playerGemStones)
       .reduce((acc, amount) => acc += amount, 0)
     const availableGoldTokens = this.props.availableGemStones[GemStone.GOLD];
     if(totalOwned >= 10 && availableGoldTokens > 0) {
@@ -109,7 +135,7 @@ class TierCardModal extends React.Component {
         }
         {this.props.isPlayerTurn && this.state.returningTokens ?
           <ReturnTokens
-            playerGemStones={Object.entries(this.props.playerGemStones)}
+            playerGemStones={Object.entries(this.state.playerGemStones)}
             selectedGemStones={this.state.selectedGemStones}
             isPlayerTurn={this.props.isPlayerTurn}
             playerPurchasedCards={this.props.playerPurchasedCards}

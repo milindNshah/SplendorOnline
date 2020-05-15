@@ -44,15 +44,28 @@ const ErrorMessage = styled.p`
 class ReservedCardsModal extends React.Component {
   constructor (props) {
     super(props)
+    const playerGemStones = this.props.gemStones;
+    const playerSelectedGemStones = this.props.selectedGemStones;
+    const updatedPlayerGemStones = {};
+    Object.keys(playerGemStones)
+      .forEach((gemStone) => {
+        if (playerSelectedGemStones[gemStone]) {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone] - playerSelectedGemStones[gemStone]
+        } else {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone]
+        }
+      })
+
     this.state = {
       invalidInputError: null,
+      gemStones: updatedPlayerGemStones,
     }
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
     this.renderCards = this.renderCards.bind(this)
   }
 
   onPurchaseCard(card) {
-    const canPurchase = canPurchaseCard(card, this.props.purchasedCards, this.props.gemStones)
+    const canPurchase = canPurchaseCard(card, this.props.purchasedCards, this.state.gemStones)
     if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
@@ -93,7 +106,7 @@ class ReservedCardsModal extends React.Component {
         <TokensOwned>
           <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
           <GemStoneTokens
-            gemStones={new Map(Object.entries(this.props.gemStones))}
+            gemStones={new Map(Object.entries(this.state.gemStones))}
             purchasedCards={this.props.purchasedCards}
             reservedCards={this.props.reservedCards}
             filterOutReservedCardToken={true}

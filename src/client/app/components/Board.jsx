@@ -35,14 +35,9 @@ class Board extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      board: this.props.board,
       cardClicked: null,
       tierCardClicked: null,
-      isPlayerTurn: this.props.isPlayerTurn,
       nobleClicked: null,
-      playerGemStones: this.props.hand?.gemStones,
-      playerPurchasedCards: this.props.hand?.purchasedCards,
-      playerReservedCards: this.props.hand?.reservedCards,
     }
     this.onCardClick = this.onCardClick.bind(this)
     this.onCardModalClose = this.onCardModalClose.bind(this)
@@ -64,33 +59,19 @@ class Board extends React.Component {
     this.renderTieredCards = this.renderTieredCards.bind(this)
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.board !== prevProps.board ||
-      this.props.hand !== prevProps.hand ||
-      this.props.isPlayerTurn !== prevProps.isPlayerTurn) {
-      this.setState({
-        board: this.props.board,
-        isPlayerTurn: this.props.isPlayerTurn,
-        playerGemStones: this.props.hand?.gemStones,
-        playerPurchasedCards: this.props.hand?.purchasedCards,
-        playerReservedCards: this.props.hand?.reservedCards,
-      });
-    }
-  }
-
   renderGemStoneTokens() {
-    if (!this.state.board.availableGemStones) {
+    if (!this.props.board.availableGemStones) {
       return;
     }
-    const tokens = Object.keys(this.state.board.availableGemStones)
-      .map((gemstone) => this.renderGemStoneToken(gemstone, this.state.board.availableGemStones[gemstone]))
+    const tokens = Object.keys(this.props.board.availableGemStones)
+      .map((gemstone) => this.renderGemStoneToken(gemstone, this.props.board.availableGemStones[gemstone]))
     return (<GemRow>{tokens}</GemRow>)
   }
 
   renderGemStoneToken(gemStone, amount) {
     // TODO: Add logic so not clickable when not allowed to take anymore of that token.
     return (<Col key={gemStone} onClick={() => {
-      if(this.state.isPlayerTurn && gemStone !== GemStone.GOLD) {
+      if(this.props.isMyTurn && gemStone !== GemStone.GOLD) {
         this.onTokenClick(gemStone)
       }
     }}>
@@ -99,24 +80,24 @@ class Board extends React.Component {
         amount={amount}
         width={theme.token.width}
         height={theme.token.height}
-        isClickable={this.state.isPlayerTurn && gemStone !== GemStone.GOLD}
+        isClickable={this.props.isMyTurn && gemStone !== GemStone.GOLD}
         opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
         />
       </Col>)
   }
 
   onTokenClick(gemStone) {
-    if (!this.state.isPlayerTurn || gemStone === GemStone.GOLD) {
+    if (!this.props.isMyTurn || gemStone === GemStone.GOLD) {
       return;
     }
     this.props.handleTokenClick(gemStone)
   }
 
   renderNobles() {
-    if (!this.state.board.activeNobles) {
+    if (!this.props.board.activeNobles) {
       return;
     }
-    const nobles = Object.values(this.state.board.activeNobles)
+    const nobles = Object.values(this.props.board.activeNobles)
       .map((noble) => this.renderNoble(noble))
     return (<Row>{nobles}</Row>)
   }
@@ -138,13 +119,13 @@ class Board extends React.Component {
   }
 
   renderTieredCards() {
-    if (!this.state.board.activeTieredCards || !this.state.board.remainingTieredCards) {
+    if (!this.props.board.activeTieredCards || !this.props.board.remainingTieredCards) {
       return;
     }
-    return Object.keys(this.state.board.activeTieredCards)
+    return Object.keys(this.props.board.activeTieredCards)
       .map((tier) => {
-        let remaining = Object.keys(this.state.board.remainingTieredCards[tier]).length;
-        return this.renderCards(tier, remaining, this.state.board.activeTieredCards[tier])
+        let remaining = Object.keys(this.props.board.remainingTieredCards[tier]).length;
+        return this.renderCards(tier, remaining, this.props.board.activeTieredCards[tier])
       })
       .reverse()
   }
@@ -176,7 +157,7 @@ class Board extends React.Component {
   }
 
   onPurchaseCard() {
-    this.props.onPurchaseCard(this.state.cardClicked);
+    this.props.handlePurchaseCard(this.state.cardClicked);
     this.setState({
       cardClicked: null,
     })
@@ -206,7 +187,7 @@ class Board extends React.Component {
   }
 
   onReserveTierCard(returnedToken) {
-    this.props.onReserveTierCard(this.state.tierCardClicked.tier, returnedToken)
+    this.props.handleReserveTierCard(this.state.tierCardClicked.tier, returnedToken)
     this.setState({
       tierCardClicked: null,
     })
@@ -230,15 +211,16 @@ class Board extends React.Component {
             <Modal>
               <OutsideAlerter handleClose={this.onCardModalClose}>
                 <CardModal
-                  availableGemStones={this.state.board.availableGemStones}
+                  availableGemStones={this.props.board.availableGemStones}
                   card={this.state.cardClicked}
-                  isPlayerTurn={this.state.isPlayerTurn}
+                  isPlayerTurn={this.props.isMyTurn}
                   handleClose={this.onCardModalClose}
                   handlePurchaseCard={this.onPurchaseCard}
                   handleReserveCard={this.onReserveCard}
-                  playerGemStones={this.state.playerGemStones}
-                  playerPurchasedCards={this.state.playerPurchasedCards}
-                  playerReservedCards={this.state.playerReservedCards}
+                  playerGemStones={this.props.hand.gemStones}
+                  playerSelectedGemStones={this.props.selectedGemStones}
+                  playerPurchasedCards={this.props.hand.purchasedCards}
+                  playerReservedCards={this.props.hand.reservedCards}
                   width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>
@@ -267,15 +249,16 @@ class Board extends React.Component {
             <Modal>
               <OutsideAlerter handleClose={this.onTierCardModalClose}>
                 <TierCardModal
-                  availableGemStones={this.state.board.availableGemStones}
-                  isPlayerTurn={this.state.isPlayerTurn}
+                  availableGemStones={this.props.board.availableGemStones}
+                  isPlayerTurn={this.props.isMyTurn}
                   tier={this.state.tierCardClicked.tier}
                   remaining={this.state.tierCardClicked.remaining}
                   handleClose={this.onTierCardModalClose}
                   handleReserveCard={this.onReserveTierCard}
-                  playerGemStones={this.state.playerGemStones}
-                  playerPurchasedCards={this.state.playerPurchasedCards}
-                  playerReservedCards={this.state.playerReservedCards}
+                  playerGemStones={this.props.hand.gemStones}
+                  playerSelectedGemStones={this.props.selectedGemStones}
+                  playerPurchasedCards={this.props.hand.purchasedCards}
+                  playerReservedCards={this.props.hand.reservedCards}
                   width={theme.card.icon.width*6+theme.card.spaceBetween*12}
                 />
               </OutsideAlerter>

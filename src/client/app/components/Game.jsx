@@ -123,7 +123,6 @@ class Game extends React.Component {
       gameID: this.props.gameID,
       gameTurn: 0,
       curPlayer: null,
-      player: {},
       playerID: this.props.playerID,
       players: [],
       targetScore: null,
@@ -138,7 +137,6 @@ class Game extends React.Component {
         seconds: 0,
       },
       selectedGemStones: {},
-      returnedGemStones: {},
       returningTokensPhase: false,
     }
     this.socket = socket;
@@ -177,10 +175,9 @@ class Game extends React.Component {
   onGameUpdate(data) {
     const game = deserialize(Buffer.from(data));
     const players = game.room.players;
-    const player = players[this.state.playerID];
     const board = game.board;
-    const curPlayerTurn = players[game.turnOrder[game.curTurnIndex]];
-    const isMyTurn = curPlayerTurn.id === player.id;
+    const curPlayer = players[game.turnOrder[game.curTurnIndex]];
+    const isMyTurn = curPlayer.id === this.state.playerID;
 
     this.setState({
       actionLog: game.actionLog,
@@ -194,12 +191,10 @@ class Game extends React.Component {
       tieBreakerMoreRounds: game.tieBreakerMoreRounds,
       board: board,
       isMyTurn: isMyTurn,
-      curPlayer: curPlayerTurn,
-      player: player,
+      curPlayer: curPlayer,
       players: players,
       serverError: null,
       selectedGemStones: {},
-      returnedGemStones: {},
       returningTokensPhase: false,
     });
   }
@@ -331,12 +326,13 @@ class Game extends React.Component {
         <PlayerContainer key={player.id} order={this.state.turnOrder.indexOf(player.id)}>
           <Player
             isMyHand={player.id === this.state.playerID}
+            isMyTurn={this.state.isMyTurn}
             isThisPlayerTurn={player.id === this.state.turnOrder[this.state.curTurnIndex]}
             player={player}
+            selectedGemStones={this.state.selectedGemStones}
             width={theme.card.icon.width * 6 + theme.card.spaceBetween * 12 + 2}
             handlePurchaseCard={this.onPurchaseReservedCard}
             handleTokenClick={this.onPlayerTokenClick}
-            isMyTurn={this.state.isMyTurn}
           />
         </PlayerContainer>
       ))
@@ -452,7 +448,7 @@ class Game extends React.Component {
     );
     const Turn = () => (this.state.isMyTurn
       ? <TurnDiv>It is <TurnName>your</TurnName> turn!</TurnDiv>
-      : <TurnDiv>It is <TurnName>{this.state.players[this.state.turnOrder[this.state.curTurnIndex]]?.user?.name}'s</TurnName> turn</TurnDiv>
+      : <TurnDiv>It is <TurnName>{this.state.curPlayer?.user?.name}'s</TurnName> turn</TurnDiv>
     );
     const Winner = () => (this.state.winner.id === this.state.playerID
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
@@ -487,11 +483,12 @@ class Game extends React.Component {
             {this.state.board ?
               <Board
                 board={this.state.board}
-                hand={this.state.player?.hand}
-                isPlayerTurn={this.state.isMyTurn}
-                onPurchaseCard={this.onPurchaseActiveCard}
+                hand={this.state.players[this.state.playerID].hand}
+                selectedGemStones={this.state.selectedGemStones}
+                isMyTurn={this.state.isMyTurn}
+                handlePurchaseCard={this.onPurchaseActiveCard}
                 handleReserveCard={this.onReserveActiveCard}
-                onReserveTierCard={this.onReserveTierCard}
+                handleReserveTierCard={this.onReserveTierCard}
                 handleTokenClick={this.onTokenClick}
               />
               : <div></div>

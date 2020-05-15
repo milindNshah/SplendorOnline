@@ -31,10 +31,23 @@ const ErrorMessage = styled.p`
 class CardModal extends React.Component {
   constructor (props) {
     super(props)
+    const playerGemStones = this.props.playerGemStones;
+    const playerSelectedGemStones = this.props.playerSelectedGemStones;
+    const updatedPlayerGemStones = {};
+    Object.keys(playerGemStones)
+      .forEach((gemStone) => {
+        if (playerSelectedGemStones[gemStone]) {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone] - playerSelectedGemStones[gemStone]
+        } else {
+          updatedPlayerGemStones[gemStone] = playerGemStones[gemStone]
+        }
+      })
+
     this.state = {
       returningTokens: false,
       invalidInputError: null,
       selectedGemStones: new Map(),
+      playerGemStones: updatedPlayerGemStones,
     }
     this.onInvalidInput = this.onInvalidInput.bind(this)
     this.onPurchaseCard = this.onPurchaseCard.bind(this)
@@ -47,16 +60,29 @@ class CardModal extends React.Component {
       this.props.card !== prevProps.card ||
       this.props.isPlayerTurn !== prevProps.isPlayerTurn
     ) {
+      const playerGemStones = this.props.playerGemStones;
+      const playerSelectedGemStones = this.props.playerSelectedGemStones;
+      const updatedPlayerGemStones = {};
+      Object.keys(playerGemStones)
+        .forEach((gemStone) => {
+          if (playerSelectedGemStones[gemStone]) {
+            updatedPlayerGemStones[gemStone] = playerGemStones[gemStone] - playerSelectedGemStones[gemStone]
+          } else {
+            updatedPlayerGemStones[gemStone] = playerGemStones[gemStone]
+          }
+        })
+
       this.setState({
         returningTokens: false,
         invalidInputError: null,
         selectedGemStones: new Map(),
+        playerGemStones: updatedPlayerGemStones,
       })
     }
   }
 
   onPurchaseCard(card) {
-    const canPurchase = canPurchaseCard(this.props.card, this.props.playerPurchasedCards, this.props.playerGemStones)
+    const canPurchase = canPurchaseCard(this.props.card, this.props.playerPurchasedCards, this.state.playerGemStones)
     if (!canPurchase) {
       this.setState({
         invalidInputError: InsufficientGemsError
@@ -73,7 +99,7 @@ class CardModal extends React.Component {
       })
       return;
     }
-    const totalOwned = Object.values(this.props.playerGemStones)
+    const totalOwned = Object.values(this.state.playerGemStones)
       .reduce((acc, amount) => acc += amount, 0)
     const availableGoldTokens = this.props.availableGemStones[GemStone.GOLD];
     if(totalOwned >= 10 && availableGoldTokens > 0) {
@@ -124,7 +150,7 @@ class CardModal extends React.Component {
             <TokensOwned>
               <TokensOwnedTitle>Your Tokens</TokensOwnedTitle>
               <GemStoneTokens
-                gemStones={new Map(Object.entries(this.props.playerGemStones))}
+                gemStones={new Map(Object.entries(this.state.playerGemStones))}
                 purchasedCards={this.props.playerPurchasedCards}
                 reservedCards={this.props.playerReservedCards}
                 filterOutReservedCardToken={true}
@@ -155,7 +181,7 @@ class CardModal extends React.Component {
         }
         {this.props.isPlayerTurn && this.state.returningTokens ?
           <ReturnTokens
-            playerGemStones={Object.entries(this.props.playerGemStones)}
+            playerGemStones={Object.entries(this.state.playerGemStones)}
             selectedGemStones={this.state.selectedGemStones}
             isPlayerTurn={this.props.isPlayerTurn}
             playerPurchasedCards={this.props.playerPurchasedCards}

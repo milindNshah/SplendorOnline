@@ -53,12 +53,6 @@ class Player extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      hand: this.props.player?.hand,
-      isMyHand: this.props.isMyHand,
-      isMyTurn: this.props.isMyTurn,
-      isThisPlayerTurn: this.props.isThisPlayerTurn,
-      playerID: this.props.player?.id,
-      playerName: this.props.player?.user?.name,
       cardClicked: null,
       reservedCardClicked: null,
       nobleClicked: null,
@@ -74,20 +68,6 @@ class Player extends React.Component {
     this.onTokenClick = this.onTokenClick.bind(this)
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.player !== prevProps.player |
-      this.props.isMyTurn !== prevProps.isMyTurn) {
-      this.setState({
-        isMyHand: this.props.isMyHand,
-        isMyTurn: this.props.isMyTurn,
-        isThisPlayerTurn: this.props.isThisPlayerTurn,
-        hand: this.props.player.hand,
-        playerID: this.props.player.id,
-        playerName: this.props.player.user.name,
-      });
-    }
-  }
-
   onTokenClick(gemStone) {
     if(!this.props.isThisPlayerTurn) {
       return;
@@ -96,7 +76,7 @@ class Player extends React.Component {
   }
 
   renderNobles() {
-    const nobles = new Map(Object.entries(this.state.hand.nobles))
+    const nobles = new Map(Object.entries(this.props.player.hand.nobles))
     const rows = Array.from(nobles.values())
       .map((noble) => {
         return (
@@ -163,15 +143,15 @@ class Player extends React.Component {
           <PlayerHeader>
             <NameCol width={this.props.width} isTurn={this.props.isThisPlayerTurn}>
               {this.props.isThisPlayerTurn ? <i className="fa fa-arrow-right" /> : null}
-              <Name>{this.state.playerName}</Name>
+              <Name>{this.props.player.user.name}</Name>
             </NameCol>
-            <ScoreCol width={this.props.width}>Score: {this.state.hand.score}</ScoreCol>
+            <ScoreCol width={this.props.width}>Score: {this.props.player.hand.score}</ScoreCol>
           </PlayerHeader>
           {/* // TODO: Add logic so not clickable when not allowed to take anymore of that token. */}
           <GemStoneTokens
-            gemStones={new Map(Object.entries(this.state.hand.gemStones))}
-            purchasedCards={this.state.hand.purchasedCards}
-            reservedCards={this.state.hand.reservedCards}
+            gemStones={new Map(Object.entries(this.props.player.hand.gemStones))}
+            purchasedCards={this.props.player.hand.purchasedCards}
+            reservedCards={this.props.player.hand.reservedCards}
             handleClick={this.onCardClick}
             handleReservedClick={this.onReservedCardClick}
             handleTokenClick={this.onTokenClick}
@@ -187,9 +167,9 @@ class Player extends React.Component {
               <OutsideAlerter handleClose={this.onCardModalClose}>
                 <CardsByGemStoneModal
                   gemStone={this.state.cardClicked}
-                  isMyHand={this.state.isMyHand}
+                  isMyHand={this.props.isMyHand}
                   handleClose={this.onCardModalClose}
-                  purchasedCards={this.state.hand.purchasedCards}
+                  purchasedCards={this.props.player.hand.purchasedCards}
                   width={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
                 />
               </OutsideAlerter>
@@ -203,13 +183,14 @@ class Player extends React.Component {
             <Modal>
               <OutsideAlerter handleClose={this.onReservedCardModalClose}>
                 <ReservedCardsModal
-                  isMyHand={this.state.isMyHand}
-                  isMyTurn={this.state.isMyTurn}
+                  isMyHand={this.props.isMyHand}
+                  isMyTurn={this.props.isMyTurn}
                   handleClose={this.onReservedCardModalClose}
                   handlePurchaseCard={this.onPurchaseCard}
-                  gemStones={this.state.hand.gemStones}
-                  purchasedCards={this.state.hand.purchasedCards}
-                  reservedCards={this.state.hand.reservedCards}
+                  gemStones={this.props.player.hand.gemStones}
+                  selectedGemStones={this.props.selectedGemStones}
+                  purchasedCards={this.props.player.hand.purchasedCards}
+                  reservedCards={this.props.player.hand.reservedCards}
                   width={theme.card.modal.width * 3}
                 />
               </OutsideAlerter>
