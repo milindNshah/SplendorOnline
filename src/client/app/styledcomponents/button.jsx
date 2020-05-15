@@ -8,7 +8,7 @@ const Button = styled.button`
   color: ${ props => props.color ?? props.theme.color.primary };
   cursor: pointer;
   display: inline-block;
-  height: auto;
+  height: ${props => props.height ?? `${props.theme.button.height}rem`};
   font-family: ${ props => props.fontFamily ?? props.theme.fontFamily.primary };
   font-size: ${ props => props.fontSize ?? props.theme.fontSize };
   font-weight: 400;
@@ -16,13 +16,12 @@ const Button = styled.button`
   margin: 0.5rem 0;
   opacity: 1;
   outline: none;
-  padding: 0.25rem 1rem;
   position: relative;
   text-align: center;
   user-select: none;
   vertical-align: middle;
   white-space: nowrap;
-  width: ${props => props.width ?? "9rem"};
+  width: ${props => props.width ?? `${props.theme.button.width}rem`};
 
   &:hover,
   &:focus {

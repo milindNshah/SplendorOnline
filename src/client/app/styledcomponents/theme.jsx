@@ -34,6 +34,10 @@ const theme = {
     opacity: 0.1,
   },
   fontSize: "1rem",
+  button: {
+    height: 2.25,
+    width: 9,
+  },
   token: {
     width: 5,
     height: 5,

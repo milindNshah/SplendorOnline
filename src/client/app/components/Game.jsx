@@ -77,6 +77,7 @@ const BoardPlayerContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-evenly;
   background: ${ props => props.theme.color.white};
+  margin: 0.5rem 0rem;
 `
 const Title = styled.div`
   text-align: center;
@@ -108,6 +109,9 @@ const TokensTitle = styled.div`
 `
 const GemstoneTokensPlaceholder = styled.div`
   height: ${ props => `${props.theme.token.modal.height}rem`};
+`
+const ButtonPlaceHolder = styled.div`
+  height: ${ props => `${props.theme.button.height+1}rem`};
 `
 
 class Game extends React.Component {
@@ -477,6 +481,7 @@ class Game extends React.Component {
           ? <Winner />
           : null
         }
+        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>
@@ -521,9 +526,8 @@ class Game extends React.Component {
               </Button>
             </div>
           </TokenSelectionContainer>
-          : <GemstoneTokensPlaceholder />
+          : null
         }
-        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : null}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
             color={theme.color.error}
