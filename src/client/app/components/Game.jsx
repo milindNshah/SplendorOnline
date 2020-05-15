@@ -97,6 +97,9 @@ const PlayerContainer = styled.div`
   order: ${ props => props.order ?? 0};
 `
 
+const TokenSelectionContainer = styled.div`
+  text-align: center;
+`
 const TokensTitle = styled.div`
   margin: 1rem 0rem;
   color: ${ props => props.theme.color.black };
@@ -155,6 +158,7 @@ class Game extends React.Component {
     this.onTokenClick = this.onTokenClick.bind(this)
     this.onPlayerTokenClick = this.onPlayerTokenClick.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
+    this.onCancelPurchaseTokens = this.onCancelPurchaseTokens.bind(this)
   }
 
   componentDidMount() {
@@ -291,10 +295,7 @@ class Game extends React.Component {
         selectedGemStones: selectedGemStones,
         invalidInputError: null,
       })
-    }
-
-    // Can return anything until 10, no less, no more.
-    if(this.state.returningTokensPhase) {
+    } else if(this.state.returningTokensPhase) {
       const totalOwned = Object.values(playerGemStones)
       .reduce((acc, amount) => acc += amount, 0)
       if(totalOwned <= 10) {
@@ -308,6 +309,9 @@ class Game extends React.Component {
         selectedGemStones[gemStone] = selectedGemStones[gemStone] - 1
       } else {
         selectedGemStones[gemStone] = -1
+      }
+      if(selectedGemStones[gemStone] === 0) {
+        delete selectedGemStones[gemStone]
       }
       playerGemStones[gemStone] = playerGemStones[gemStone] - 1
       availableGemStones[gemStone] = availableGemStones[gemStone] + 1;
@@ -354,6 +358,24 @@ class Game extends React.Component {
       actionData: this.state.selectedGemStones,
       actionType: ActionType.TAKE_GEMS,
     }, this.onEndTurn)
+  }
+
+  onCancelPurchaseTokens() {
+    const availableGemStones = this.state.board.availableGemStones;
+    const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
+    const selectedGemStones = this.state.selectedGemStones;
+
+    Object.keys(selectedGemStones).forEach((gemStone) => {
+      availableGemStones[gemStone] = availableGemStones[gemStone] + selectedGemStones[gemStone]
+      playerGemStones[gemStone] = playerGemStones[gemStone] - selectedGemStones[gemStone]
+      delete selectedGemStones[gemStone]
+    })
+
+    this.setState({
+      selectedGemStones: selectedGemStones,
+      invalidInputError: null,
+      returningTokensPhase: false,
+    })
   }
 
   onPurchaseActiveCard(card) {
@@ -478,21 +500,30 @@ class Game extends React.Component {
           <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
         </BoardPlayerContainer>
         {this.state.isMyTurn && Object.keys(this.state.selectedGemStones).length > 0 ?
-          <div>
+          <TokenSelectionContainer>
             <TokensTitle>Selected Tokens</TokensTitle>
             <GemStoneTokens
               gemStones={new Map(Object.entries(this.state.selectedGemStones))}
-              filterOutGold={true}
+              handleTokenClick={this.onPlayerTokenClick}
               filterOutPurchasedCardTokens={true}
               filterOutReservedCardToken={true}
+              isGemStoneTokenClickable={this.state.isMyTurn}
             />
-            <Button
-              color={theme.color.secondary}
-              onClick={this.onPurchaseTokens}>
-              Confirm Tokens
-            </Button>
-            {/* TODO: Add Cancel button for return phase. */}
-          </div>
+            <div>
+              <Button
+                color={theme.color.primary}
+                onClick={this.onPurchaseTokens}>
+                Confirm Tokens
+              </Button>
+            </div>
+            <div>
+              <Button
+                color={theme.color.error}
+                onClick={this.onCancelPurchaseTokens}>
+                Cancel Tokens
+              </Button>
+            </div>
+          </TokenSelectionContainer>
           : <GemstoneTokensPlaceholder />
         }
         {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : null}
