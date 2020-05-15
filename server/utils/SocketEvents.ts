@@ -150,6 +150,9 @@ export class SocketEvents {
           const card: Card = CardManager.getCardByID(actions.get(ActionType.PURCHASE_RESERVED_CARD));
           await game.purchaseReservedCard(card, player);
         }
+        // if(actions.has('hackForNobles')) {
+        //   game.hackForNobles(player)
+        // }
         game.finishTurn(player);
         if(!game.winner) {
           game.resetTimer(io);

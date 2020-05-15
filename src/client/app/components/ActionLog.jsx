@@ -5,7 +5,6 @@ import { ActionType } from '../enums/actiontype'
 import { GemStoneBase } from './GemStone.jsx'
 import Card from './Card.jsx'
 import Noble from './Noble.jsx'
-// import { Link, DirectLink, Element, Events, animateScroll as scroll, scrollSpy, scroller } from 'react-scroll'
 import Scroll from 'react-scroll'
 
 const ActionLogContainer = styled.div`
@@ -60,14 +59,8 @@ const InlineCard = styled.div`
 `
 const HoverCardContainer = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-`
-const HoverNobleContainer = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
+  top: ${ props => props.top };
+  left: ${ props => props.left };
   z-index: 2;
 `
 
@@ -76,8 +69,9 @@ class ActionLog extends React.Component {
     super(props)
     this.state = {
       cardHover: null,
-      lineIndex: null,
+      cardPosition: null,
       nobleHover: null,
+      noblePosition: null,
     }
     this.renderActionLines = this.renderActionLines.bind(this)
     this.renderActionLine = this.renderActionLine.bind(this)
@@ -102,6 +96,9 @@ class ActionLog extends React.Component {
     this.scrollToBottom()
   }
   scrollToBottom() {
+    if(this.state.cardHover || this.state.nobleHover) {
+      return;
+    }
     Scroll.scroller.scrollTo('actions-scroll-to-end', {
       duration: 800,
       delay: 0,
@@ -187,20 +184,20 @@ class ActionLog extends React.Component {
   renderPlayerCardAction(index, playerName, actionLine) {
     let from = null;
     let actionVerb = null;
-    switch(actionLine.type) {
-      case(ActionType.PURCHASE_ACTIVE_CARD):
-        from="from the board"
+    switch (actionLine.type) {
+      case (ActionType.PURCHASE_ACTIVE_CARD):
+        from = "from the board"
         actionVerb = "purchased a"
         break;
-      case(ActionType.PURCHASE_RESERVED_CARD):
-        from="from their reserved cards"
+      case (ActionType.PURCHASE_RESERVED_CARD):
+        from = "from their reserved cards"
         actionVerb = "purchased a"
         break;
-      case(ActionType.RESERVE_ACTIVE_CARD):
+      case (ActionType.RESERVE_ACTIVE_CARD):
         from = "from the board"
         actionVerb = "reserved a"
         break;
-      case(ActionType.RESERVE_DECK_CARD):
+      case (ActionType.RESERVE_DECK_CARD):
         from = "from the deck"
         actionVerb = "reserved a"
         break;
@@ -213,15 +210,8 @@ class ActionLog extends React.Component {
         {actionVerb}
         {'\u00A0'}
         <InlineCard
-          onMouseEnter={() => this.setState({ cardHover: actionLine.card, lineIndex: index })}
-          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
+          onMouseEnter={(el) => this.setState({ cardHover: actionLine.card, cardPosition: el.target.getBoundingClientRect() })}
         >
-          {this.state.cardHover && this.state.lineIndex === index ?
-            <HoverCardContainer>
-              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
-            </HoverCardContainer>
-            : null
-          }
           card
         </InlineCard>
         {'\u00A0'}
@@ -236,15 +226,8 @@ class ActionLog extends React.Component {
         A
         {'\u00A0'}
         <InlineCard
-          onMouseEnter={() => this.setState({ cardHover: newCard, lineIndex: index })}
-          onMouseLeave={() => this.setState({ cardHover: null, lineIndex: null })}
+          onMouseEnter={(el) => this.setState({ cardHover: newCard, cardPosition: el.target.getBoundingClientRect() })}
         >
-          {this.state.cardHover && this.state.lineIndex === index ?
-            <HoverCardContainer>
-              <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
-            </HoverCardContainer>
-            : null
-          }
           card
         </InlineCard>
         {'\u00A0'}
@@ -264,15 +247,8 @@ class ActionLog extends React.Component {
           a
           {'\u00A0'}
           <InlineCard
-            onMouseEnter={() => this.setState({ nobleHover: obtainedNobles[0], lineIndex: index })}
-            onMouseLeave={() => this.setState({ nobleHover: null, lineIndex: null })}
+            onMouseEnter={(el) => this.setState({ nobleHover: obtainedNobles[0], noblePosition: el.target.getBoundingClientRect() })}
           >
-            {this.state.nobleHover && this.state.lineIndex === index ?
-              <HoverNobleContainer>
-                <Noble noble={this.state.nobleHover} width={theme.card.width} height={theme.card.width} />
-              </HoverNobleContainer>
-              : null
-            }
           noble
         </InlineCard>
         </ActionLineContainer>
@@ -368,6 +344,26 @@ class ActionLog extends React.Component {
         <ActionsContainer width={this.props.width} height={this.props.height} id="actions-container">
           {this.renderActionLines()}
         </ActionsContainer>
+        {this.state.cardHover !== null ?
+          <HoverCardContainer
+            top={this.state.cardPosition.top}
+            left={this.state.cardPosition.left}
+            onMouseLeave={() => this.setState({ cardHover: null, cardPosition: null })}
+          >
+            <Card card={this.state.cardHover} width={theme.card.width} height={theme.card.height} />
+          </HoverCardContainer>
+          : null
+        }
+        {this.state.nobleHover !== null ?
+          <HoverCardContainer
+            top={this.state.noblePosition.top}
+            left={this.state.noblePosition.left}
+            onMouseLeave={() => this.setState({ nobleHover: null, noblePosition: null })}
+          >
+            <Noble noble={this.state.nobleHover} width={theme.card.width} height={theme.card.width} />
+          </HoverCardContainer>
+          : null
+        }
       </ActionLogContainer>
     )
   }
