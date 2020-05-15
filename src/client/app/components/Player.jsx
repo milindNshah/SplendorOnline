@@ -201,7 +201,7 @@ class Player extends React.Component {
                   isMyHand={this.props.isMyHand}
                   handleClose={this.onCardModalClose}
                   purchasedCards={this.props.player.hand.purchasedCards}
-                  width={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
+                  maxWidth={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
                 />
               </OutsideAlerter>
             </Modal>
@@ -222,7 +222,7 @@ class Player extends React.Component {
                   selectedGemStones={this.props.selectedGemStones}
                   purchasedCards={this.props.player.hand.purchasedCards}
                   reservedCards={this.props.player.hand.reservedCards}
-                  maxWidth={theme.card.modal.width * 3}
+                  maxWidth={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
                 />
               </OutsideAlerter>
             </Modal>
@@ -243,7 +243,7 @@ class Player extends React.Component {
                   selectedGemStones={this.props.selectedGemStones}
                   purchasedCards={this.props.player.hand.purchasedCards}
                   reservedCards={{ [this.state.colReservedCardClicked.id]: this.state.colReservedCardClicked }}
-                  maxWidth={theme.card.modal.width * 3}
+                  maxWidth={theme.card.modal.width * 3 + theme.card.spaceBetween * 6}
                 />
               </OutsideAlerter>
             </Modal>

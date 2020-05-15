@@ -59,7 +59,7 @@ class CardsByGemStoneModal extends React.Component {
     )
 
     return (
-      <ModalContainer width={this.props.width}>
+      <ModalContainer maxWidth={this.props.maxWidth}>
         <CardsContainer>
           {this.state.purchasedCardsByTypes.get(this.props.gemStone)
             ? this.renderCards()

@@ -75,10 +75,9 @@ const WinnerScreen = styled.div`
 const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: space-evenly;
   background: ${ props => props.theme.color.white};
   margin: 0.5rem 0rem;
-  width: 100%;
 `
 const Title = styled.div`
   text-align: center;
