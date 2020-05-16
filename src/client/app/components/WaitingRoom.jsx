@@ -30,8 +30,14 @@ const PlayerTableContainer = styled.div`
   justify-content: center;
   margin-bottom: 2rem;
 `
-const RoomCode = styled.p`
-  margin: 0rem;
+const RoomCodeTitle = styled.div`
+  text-decoration: underline;
+`
+const RoomCode = styled.div`
+  font-family: ${props => props.theme.fontFamily.secondary};
+  font-size: 1.5rem;
+  color:${props => props.theme.color.primary };
+  margin-top: 0.5rem;
 `
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
@@ -44,7 +50,8 @@ const Rules = styled.div`
   background-color: ${ props=> props.theme.color.white };
   border: 1px solid ${ props => props.theme.color.tertiary };
   padding: 0.25rem 0.5rem;
-  margin: 0.5rem 0rem;
+  margin-top: 1rem;
+  margin-bottom:0.5rem;
   width: 5rem;
   cursor: pointer;
   &:hover {
@@ -304,16 +311,8 @@ class WaitingRoom extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
-        <RoomCode>Room Code</RoomCode>
-        <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
-          <Button
-            color={theme.color.secondary}
-            fontFamily={theme.fontFamily.secondary}>
-            {this.state.roomCode}
-            <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
-          </Button>
-        </CopyToClipboard>
-        <RoomCode>Room Link</RoomCode>
+        <RoomCodeTitle>Room Code</RoomCodeTitle>
+        <RoomCode>{this.state.roomCode}</RoomCode>
         <CopyToClipboard text={`http://www.playgrandeur.com/room?code=${this.state.roomCode}`} onCopy={this.onCopyCode}>
           <Button
             color={theme.color.secondary}
