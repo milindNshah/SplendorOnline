@@ -71,6 +71,19 @@ const WinnerScreen = styled.div`
   color: white;
   width: 100%;
 `
+const FlashScreen = styled.div`
+  font-family: ${ props => props.theme.fontFamily.tertiary};
+  background: ${ props => props.theme.color.yourTurn };
+  position: absolute;
+  top: 5rem;
+  left: 0;
+  color: white;
+  width: 100%;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 
 const BoardPlayerContainer = styled.div`
   display: flex;
@@ -142,6 +155,7 @@ class Game extends React.Component {
       },
       selectedGemStones: {},
       returningTokensPhase: false,
+      flashingTurn: false,
     }
     this.socket = socket;
     this.onClientRequestError = this.onClientRequestError.bind(this)
@@ -201,6 +215,18 @@ class Game extends React.Component {
       selectedGemStones: {},
       returningTokensPhase: false,
     });
+
+    if(isMyTurn) {
+      this.setState({
+        flashingTurn:true,
+      })
+      const timer = setTimeout(() =>{
+        this.setState({
+          flashingTurn: false,
+        })
+      }, 1500)
+      return () => clearTimeout(timer);
+    }
   }
 
   onClientRequestError(err) {
@@ -458,6 +484,7 @@ class Game extends React.Component {
       ? <WinnerScreen><h1>Congratulations <TurnName>you</TurnName> win!</h1></WinnerScreen>
       : <WinnerScreen><h1><TurnName>{this.state.winner.user.name}</TurnName> has won with {this.state.winner.hand.score} points</h1></WinnerScreen>
     );
+    const FlashTurn = () => (<FlashScreen><h1>It is your turn!</h1></FlashScreen>);
 
     return (
       <GameContainer>
@@ -477,6 +504,10 @@ class Game extends React.Component {
             height={theme.actionLog.height}
           />
         </ActionsContainer>
+        {this.state.isMyTurn && this.state.flashingTurn
+          ? <FlashTurn />
+          : null
+        }
         {this.state.winner && !this.state.tieBreakerMoreRounds
           ? <Winner />
           : null
