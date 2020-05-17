@@ -34,6 +34,9 @@ const theme = {
   gemStoneIsZero: {
     opacity: 0.1,
   },
+  gemStoneIsGold: {
+    opacity: 0.3,
+  },
   fontSize: "1rem",
   button: {
     height: 2.25,

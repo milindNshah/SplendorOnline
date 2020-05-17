@@ -7,6 +7,7 @@ import TierCard from './TierCard.jsx'
 import CardModal from './modals/CardModal.jsx'
 import NobleModal from './modals/NobleModal.jsx'
 import TierCardModal from './modals/TierCardModal.jsx'
+import GoldTokenModal from './modals/GoldTokenModal.jsx'
 import OutsideAlerter from './modals/OutsideAlerter.jsx'
 import theme from '../styledcomponents/theme.jsx'
 import Overlay from '../styledcomponents/overlay.jsx'
@@ -36,6 +37,7 @@ class Board extends React.Component {
     super(props)
     this.state = {
       cardClicked: null,
+      goldClicked: null,
       tierCardClicked: null,
       nobleClicked: null,
     }
@@ -49,6 +51,7 @@ class Board extends React.Component {
     this.onTokenClick = this.onTokenClick.bind(this)
     this.onTierCardClick = this.onTierCardClick.bind(this)
     this.onTierCardModalClose = this.onTierCardModalClose.bind(this)
+    this.onGoldTokenModalClose = this.onGoldTokenModalClose.bind(this)
     this.renderCard = this.renderCard.bind(this)
     this.renderCards = this.renderCards.bind(this)
     this.renderGemStoneTokens = this.renderGemStoneTokens.bind(this)
@@ -73,6 +76,8 @@ class Board extends React.Component {
     return (<Col key={gemStone} onClick={() => {
       if(this.props.isMyTurn && gemStone !== GemStone.GOLD) {
         this.onTokenClick(gemStone)
+      } else if(this.props.isMyTurn && gemStone === GemStone.GOLD) {
+        this.onGoldTokenClick()
       }
     }}>
       <GemStoneToken
@@ -80,10 +85,22 @@ class Board extends React.Component {
         amount={amount}
         width={theme.token.width}
         height={theme.token.height}
-        isClickable={this.props.isMyTurn && gemStone !== GemStone.GOLD}
-        opacity={amount === 0 ? theme.gemStoneIsZero.opacity : 1}
+        isClickable={this.props.isMyTurn}
+        opacity={ amount === 0 ? theme.gemStoneIsZero.opacity : gemStone === GemStone.GOLD ? theme.gemStoneIsGold.opacity : 1}
         />
       </Col>)
+  }
+
+  onGoldTokenClick() {
+    this.setState({
+      goldClicked: true,
+    })
+  }
+
+  onGoldTokenModalClose() {
+    this.setState({
+      goldClicked: false,
+    })
   }
 
   onTokenClick(gemStone) {
@@ -196,7 +213,7 @@ class Board extends React.Component {
   render() {
     return (
       <div>
-        {(this.state.cardClicked || this.state.tokenClicked || this.state.nobleClicked || this.state.tierCardClicked)
+        {(this.state.cardClicked || this.state.goldClicked || this.state.nobleClicked || this.state.tierCardClicked)
           ? <Overlay></Overlay>
           : null
         }
@@ -222,6 +239,20 @@ class Board extends React.Component {
                   playerPurchasedCards={this.props.hand.purchasedCards}
                   playerReservedCards={this.props.hand.reservedCards}
                   width={theme.card.icon.width*6+theme.card.spaceBetween*12}
+                />
+              </OutsideAlerter>
+            </Modal>
+          )
+          : null
+        }
+        {this.state.goldClicked
+          ?
+          (
+            <Modal>
+              <OutsideAlerter handleClose={this.onGoldTokenModalClose}>
+                <GoldTokenModal
+                  handleClose={this.onGoldTokenModalClose}
+                  width={theme.card.modal.width}
                 />
               </OutsideAlerter>
             </Modal>
