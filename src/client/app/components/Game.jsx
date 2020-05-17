@@ -23,38 +23,45 @@ const GameContainer = styled.div`
   align-items: center;
 `
 
-const ActionsContainer = styled.div`
-  margin-bottom: 0.5rem;
-`
 const PlayerTurnContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   color: ${ props => props.theme.color.darkgrey};
+  margin-bottom: 0.5rem;
+  z-index: 2;
 `
 const TurnDiv = styled.div`
   font-family: ${ props => props.theme.fontFamily.tertiary};
   font-weight: 300;
   font-size: 2rem;
-  margin-bottom: 0.5rem;
+  margin-right: 1rem;
 `
 const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
   font-weight: bold;
 `
 const Rules = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   color: ${ props => props.theme.color.primary};
   background-color: ${ props => props.theme.color.white};
   border: 1px solid ${ props => props.theme.color.primary};
   padding: 0.25rem 0.5rem;
-  margin: 0.5rem 0rem;
   width: 5rem;
   cursor: pointer;
   text-align: center;
   &:hover {
     color: ${ props => props.theme.color.white};
     background-color: ${ props => props.theme.color.primary};
+  }
+
+  @media (max-width: 40rem) {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
   }
 `
 
@@ -601,12 +608,11 @@ class Game extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
-        <ActionsContainer>
-          <PlayerTurnContainer>
-            <Turn />
-            <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn} />
-          </PlayerTurnContainer>
-        </ActionsContainer>
+        <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
+        <PlayerTurnContainer>
+          <Turn />
+          <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn} />
+        </PlayerTurnContainer>
         {this.state.isMyTurn && this.state.flashingTurn
           ? <FlashTurn />
           : null
@@ -686,7 +692,6 @@ class Game extends React.Component {
           </ActionLogContainer>
         </BoardPlayerContainer>
         {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
-        <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
             color={theme.color.error}
