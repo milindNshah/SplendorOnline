@@ -25,13 +25,28 @@ const GameContainer = styled.div`
 
 const ActionsContainer = styled.div`
   margin-bottom: 0.5rem;
+`
+const PlayerTurnContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: ${ props => props.theme.color.darkgrey};
+`
+const TurnDiv = styled.div`
+  font-family: ${ props => props.theme.fontFamily.tertiary};
+  font-weight: 300;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+`
+const TurnName = styled.span`
+  color: ${ props => props.theme.color.secondary};
+  font-weight: bold;
 `
 const Rules = styled.div`
-  color: ${ props => props.theme.color.tertiary};
+  color: ${ props => props.theme.color.primary};
   background-color: ${ props => props.theme.color.white};
-  border: 1px solid ${ props => props.theme.color.tertiary};
+  border: 1px solid ${ props => props.theme.color.primary};
   padding: 0.25rem 0.5rem;
   margin: 0.5rem 0rem;
   width: 5rem;
@@ -39,7 +54,7 @@ const Rules = styled.div`
   text-align: center;
   &:hover {
     color: ${ props => props.theme.color.white};
-    background-color: ${ props => props.theme.color.tertiary};
+    background-color: ${ props => props.theme.color.primary};
   }
 `
 
@@ -70,9 +85,10 @@ const FlashScreen = styled.div`
 const BoardPlayerContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: space-around;
   background: ${ props => props.theme.color.white};
   margin: 0.5rem 0rem;
+  width: 100%;
 `
 const Title = styled.div`
   text-align: center;
@@ -80,21 +96,6 @@ const Title = styled.div`
   font-weight: 300;
   margin: 0.5rem 0rem;
   font-size: 2rem;
-`
-const PlayerTurnContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  color: ${ props => props.theme.color.darkgrey};
-`
-const TurnDiv = styled.div`
-  font-family: ${ props => props.theme.fontFamily.tertiary};
-  font-size: 2rem;
-`
-const TurnName = styled.span`
-  color: ${ props => props.theme.color.tertiary};
-  /* text-decoration: underline; */
 `
 const BoardContainer = styled.div`
   margin: 0rem 1rem;
@@ -106,6 +107,12 @@ const PlayersContainer = styled.div`
 `
 const PlayerContainer = styled.div`
   order: ${ props => props.order ?? 0};
+`
+const ActionLogContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0rem 1rem;
 `
 
 const TokenSelectionContainer = styled.div`
@@ -595,14 +602,10 @@ class Game extends React.Component {
           : null
         }
         <ActionsContainer>
-          {/* <PlayerTurnContainer>
-            <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
-          </PlayerTurnContainer> */}
-          <Actionlog
-            actionLog={this.state.actionLog}
-            width={theme.actionLog.width}
-            height={theme.actionLog.height}
-          />
+          <PlayerTurnContainer>
+            <Turn />
+            <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn} />
+          </PlayerTurnContainer>
         </ActionsContainer>
         {this.state.isMyTurn && this.state.flashingTurn
           ? <FlashTurn />
@@ -612,32 +615,7 @@ class Game extends React.Component {
           ? <Winner />
           : null
         }
-        <BoardPlayerContainer>
-          <BoardContainer>
-            <Title>Board</Title>
-            {this.state.board ?
-              <Board
-                board={this.state.board}
-                hand={this.state.players[this.state.playerID].hand}
-                selectedGemStones={this.state.selectedGemStones}
-                isMyTurn={this.state.isMyTurn}
-                handlePurchaseCard={this.onPurchaseActiveCard}
-                handleReserveCard={this.onReserveActiveCard}
-                handleReserveTierCard={this.onReserveTierCard}
-                handleTokenClick={this.onBoardTokenClick}
-              />
-              : <div></div>
-            }
-          </BoardContainer>
-          <PlayersContainer>
-            <Title order={-2}>Players</Title>
-            <PlayerTurnContainer order={-1}>
-              <Turn />
-              <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn} />
-            </PlayerTurnContainer>
-            {this.renderHands()}
-          </PlayersContainer>
-        </BoardPlayerContainer>
+        {/* TODO: Figure out where to place this. Top or Bottom */}
         {this.state.isMyTurn && Object.keys(this.state.selectedGemStones).length > 0 ?
           <TokenSelectionContainer>
             <TokensTitle>Selected Tokens</TokensTitle>
@@ -676,9 +654,41 @@ class Game extends React.Component {
               </div>
             }
           </TokenSelectionContainer>
-          : null
+          : <GemstoneTokensPlaceholder/>
         }
+        <BoardPlayerContainer>
+          <BoardContainer>
+            <Title>Board</Title>
+            {this.state.board ?
+              <Board
+                board={this.state.board}
+                hand={this.state.players[this.state.playerID].hand}
+                selectedGemStones={this.state.selectedGemStones}
+                isMyTurn={this.state.isMyTurn}
+                handlePurchaseCard={this.onPurchaseActiveCard}
+                handleReserveCard={this.onReserveActiveCard}
+                handleReserveTierCard={this.onReserveTierCard}
+                handleTokenClick={this.onBoardTokenClick}
+              />
+              : <div></div>
+            }
+          </BoardContainer>
+          <PlayersContainer>
+            <Title order={-2}>Players</Title>
+            {this.renderHands()}
+          </PlayersContainer>
+          <ActionLogContainer>
+          <Title>Action Log</Title>
+            <Actionlog
+              actionLog={this.state.actionLog}
+              width={theme.actionLog.width}
+              minHeight={theme.actionLog.minHeight}
+              maxHeight={theme.actionLog.maxHeight}
+            />
+          </ActionLogContainer>
+        </BoardPlayerContainer>
         {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
+        <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
             color={theme.color.error}

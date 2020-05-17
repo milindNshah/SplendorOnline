@@ -75,8 +75,9 @@ const theme = {
     spaceBetween: `${spaceBetweenCards}`,
   },
   actionLog: {
-    width: 20,
-    height: 12,
+    width: 16,
+    minHeight: 12,
+    maxHeight: 36,
   }
 };
 

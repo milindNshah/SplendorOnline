@@ -13,12 +13,11 @@ const ActionLogContainer = styled.div`
   color: ${ props => props.theme.color.darkgrey };
   border-left: 2px solid ${ props => props.theme.color.secondary};
   width: ${ props => `${props.width}rem`};
-  padding-top: 0.5rem;
   padding-left: 1rem;
 `
 const ActionsContainer = styled.div`
-  margin-top: 0.5rem;
-  height: ${ props => `${props.height}rem`};
+  min-height: ${ props => `${props.minHeight}rem`};
+  max-height: ${ props => `${props.maxHeight}rem`};
   overflow: scroll;
 `
 const TurnContainer = styled.div`
@@ -44,11 +43,6 @@ const GemStoneBaseContainer = styled.div`
 `
 const PlayerName = styled.span`
   color: ${ props => props.theme.color.secondary };
-`
-const Title = styled.span`
-  color: ${ props => props.theme.color.tertiary };
-  font-size: 1rem;
-  text-decoration: underline;
 `
 const InlineCard = styled.div`
   background-color: ${props => props.theme.color.black};
@@ -337,17 +331,17 @@ class ActionLog extends React.Component {
     </GemsContainer>
   }
 
+  // TODO: Make height not that tall depending on layout type (A, B, C, D) - A is okay at max height. C should be a bit smaller, B, D should be limited to min-height.
   render() {
     return (
       <ActionLogContainer
         width={this.props.width}
-        height={this.props.height}
-        onMouseOut={() => this.setState({ nobleHover: null, noblePosition: null })}
+        onMouseOut={() => this.setState({ cardHover: null, cardPosition: null, nobleHover: null, noblePosition: null })}
       >
-        <Title>Action Log</Title>
-        <ActionsContainer width={this.props.width} height={this.props.height} id="actions-container">
+        <ActionsContainer width={this.props.width} minHeight={this.props.minHeight} maxHeight={this.props.maxHeight} id="actions-container">
           {this.renderActionLines()}
         </ActionsContainer>
+        {/* TODO: Hover no longer works :( */}
         {this.state.cardHover !== null ?
           <HoverCardContainer
             top={this.state.cardPosition.top}
