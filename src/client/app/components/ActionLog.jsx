@@ -339,7 +339,11 @@ class ActionLog extends React.Component {
 
   render() {
     return (
-      <ActionLogContainer width={this.props.width} height={this.props.height}>
+      <ActionLogContainer
+        width={this.props.width}
+        height={this.props.height}
+        onMouseOut={() => this.setState({ nobleHover: null, noblePosition: null })}
+      >
         <Title>Action Log</Title>
         <ActionsContainer width={this.props.width} height={this.props.height} id="actions-container">
           {this.renderActionLines()}
@@ -358,7 +362,7 @@ class ActionLog extends React.Component {
           <HoverCardContainer
             top={this.state.noblePosition.top}
             left={this.state.noblePosition.left}
-            onMouseLeave={() => this.setState({ nobleHover: null, noblePosition: null })}
+            onMouseOut={() => this.setState({ nobleHover: null, noblePosition: null })}
           >
             <Noble noble={this.state.nobleHover} width={theme.card.width} height={theme.card.width} />
           </HoverCardContainer>
