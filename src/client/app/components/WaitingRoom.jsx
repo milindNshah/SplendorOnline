@@ -33,12 +33,12 @@ const PlayerTableContainer = styled.div`
 const RoomCodeTitle = styled.div`
   text-decoration: underline;
 `
-const RoomCode = styled.div`
-  font-family: ${props => props.theme.fontFamily.secondary};
-  font-size: 1.5rem;
-  color:${props => props.theme.color.primary };
-  margin-top: 0.5rem;
-`
+// const RoomCode = styled.div`
+//   font-family: ${props => props.theme.fontFamily.secondary};
+//   font-size: 1.5rem;
+//   color:${props => props.theme.color.primary };
+//   margin-top: 0.5rem;
+// `
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
@@ -312,12 +312,19 @@ class WaitingRoom extends React.Component {
           : null
         }
         <RoomCodeTitle>Room Code</RoomCodeTitle>
-        <RoomCode>{this.state.roomCode}</RoomCode>
+        <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
+          <Button
+            color={theme.color.primary}
+            fontFamily={theme.fontFamily.secondary}>
+            {this.state.roomCode}
+            <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
+          </Button>
+        </CopyToClipboard>
         <CopyToClipboard text={`http://www.playgrandeur.com/room?code=${this.state.roomCode}`} onCopy={this.onCopyCode}>
           <Button
             color={theme.color.secondary}
             fontFamily={theme.fontFamily.secondary}>
-            Copy Link
+            Room Link
             <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
           </Button>
         </CopyToClipboard>

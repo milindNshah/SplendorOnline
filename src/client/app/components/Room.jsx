@@ -182,7 +182,7 @@ class Room extends React.Component {
         </div>
         <div>
           <Button
-            type="button"
+            type="submit"
             disabled={this.state.invalidInputError}
             onClick={this.onCreateRoom}>
             Create Game
@@ -214,7 +214,7 @@ class Room extends React.Component {
           />
         </div>
         <div><Button
-          type="button"
+          type="submit"
           color={theme.color.secondary}
           disabled={this.state.invalidInputError}
           onClick={this.onJoinRoom}>
