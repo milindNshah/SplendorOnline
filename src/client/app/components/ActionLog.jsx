@@ -63,7 +63,7 @@ const InlineCard = styled.div`
   position: relative;
 `
 const HoverCardContainer = styled.div`
-  position: absolute;
+  position: fixed;
   top: ${ props => props.top };
   left: ${ props => props.left };
   z-index: 2;
@@ -344,14 +344,10 @@ class ActionLog extends React.Component {
 
   render() {
     return (
-      <ActionLogContainer
-        width={this.props.width}
-        onMouseOut={() => this.setState({ cardHover: null, cardPosition: null, nobleHover: null, noblePosition: null })}
-      >
+      <ActionLogContainer width={this.props.width}>
         <ActionsContainer width={this.props.width} id="actions-container">
           {this.renderActionLines()}
         </ActionsContainer>
-        {/* TODO: Hover no longer works :( */}
         {this.state.cardHover !== null ?
           <HoverCardContainer
             top={this.state.cardPosition.top}
