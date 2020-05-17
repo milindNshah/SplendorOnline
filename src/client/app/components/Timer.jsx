@@ -26,6 +26,7 @@ const Time = styled.div`
   font-weight: 300;
   padding: 0.25rem 0.5rem;
   width: 5rem;
+  text-align: center;
 `
 
 class Timer extends React.Component {
