@@ -682,8 +682,6 @@ class Game extends React.Component {
             <Actionlog
               actionLog={this.state.actionLog}
               width={theme.actionLog.width}
-              minHeight={theme.actionLog.minHeight}
-              maxHeight={theme.actionLog.maxHeight}
             />
           </ActionLogContainer>
         </BoardPlayerContainer>

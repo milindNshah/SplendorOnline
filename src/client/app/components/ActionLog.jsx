@@ -16,9 +16,20 @@ const ActionLogContainer = styled.div`
   padding-left: 1rem;
 `
 const ActionsContainer = styled.div`
-  min-height: ${ props => `${props.minHeight}rem`};
-  max-height: ${ props => `${props.maxHeight}rem`};
+  height: ${ props => `${props.theme.actionLog.minHeight}rem`};
   overflow: scroll;
+
+  @media (min-width: 85.125rem) {
+    height: ${ props => `${props.theme.actionLog.maxHeight}rem`}
+  }
+
+  @media (min-width: 66rem) and (max-width: 85.125rem) {
+    height: ${ props => `${props.theme.actionLog.minHeight}rem`}
+  }
+
+  @media (min-width: 47.125rem) and (max-width: 66rem) {
+    height: ${ props => `${props.theme.actionLog.midHeight}rem`}
+  }
 `
 const TurnContainer = styled.div`
   border-bottom: 1px solid ${ props => props.theme.color.lightgrey };
@@ -331,14 +342,13 @@ class ActionLog extends React.Component {
     </GemsContainer>
   }
 
-  // TODO: Make height not that tall depending on layout type (A, B, C, D) - A is okay at max height. C should be a bit smaller, B, D should be limited to min-height.
   render() {
     return (
       <ActionLogContainer
         width={this.props.width}
         onMouseOut={() => this.setState({ cardHover: null, cardPosition: null, nobleHover: null, noblePosition: null })}
       >
-        <ActionsContainer width={this.props.width} minHeight={this.props.minHeight} maxHeight={this.props.maxHeight} id="actions-container">
+        <ActionsContainer width={this.props.width} id="actions-container">
           {this.renderActionLines()}
         </ActionsContainer>
         {/* TODO: Hover no longer works :( */}

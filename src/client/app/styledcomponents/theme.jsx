@@ -77,7 +77,8 @@ const theme = {
   actionLog: {
     width: 16,
     minHeight: 12,
-    maxHeight: 36,
+    midHeight: 30,
+    maxHeight: 40,
   }
 };
 
