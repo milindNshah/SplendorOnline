@@ -65,6 +65,33 @@ const Rules = styled.div`
   }
 `
 
+const TokenSelectionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  /* background-color: ${ props => props.theme.color.grey}; */
+  /* padding: 0.5rem 0rem; */
+`
+const TokensTitle = styled.div`
+  line-height: 1.5rem;
+  font-size: 1.25rem;
+  color: ${ props => props.theme.color.tertiary };
+  text-decoration: underline;
+  text-align: center;
+`
+const InvalidInput = styled.div`
+  line-height: 1.5rem;
+  font-size: 1rem;
+  margin: 0.5rem;
+`
+const InvalidInputPlaceHolder = styled.div`
+  height: ${`${1.5+0.5*2}rem`};
+`
+const GemstoneTokensPlaceholder = styled.div`
+  height: ${ props => `${1.5+props.theme.token.modal.height+0.5*2+props.theme.button.height+0.5*2}rem`};
+`
+
 const WinnerScreen = styled.div`
   margin-top: 0.5rem;
   font-family: ${ props => props.theme.fontFamily.tertiary};
@@ -122,19 +149,6 @@ const ActionLogContainer = styled.div`
   margin: 0rem 1rem;
 `
 
-const TokenSelectionContainer = styled.div`
-  text-align: center;
-`
-const TokensTitle = styled.div`
-  line-height: 1.5rem;
-  font-size: 1rem;
-  color: ${ props => props.theme.color.black };
-  text-decoration: underline;
-  text-align: center;
-`
-const GemstoneTokensPlaceholder = styled.div`
-  height: ${ props => `${1.5+props.theme.token.modal.height+0.5*2+props.theme.button.height+0.5*2}rem`};
-`
 const ButtonPlaceHolder = styled.div`
   height: ${ props => `${props.theme.button.height+1}rem`};
 `
@@ -584,8 +598,8 @@ class Game extends React.Component {
   render() {
     const InvalidInputError = () => (
       this.state.invalidInputError
-        ? <p>{this.state.invalidInputError}</p>
-        : null
+        ? <InvalidInput>{this.state.invalidInputError}</InvalidInput>
+        : <InvalidInputPlaceHolder/>
     );
     const ServerError = () => (
       (this.state.serverError && !this.state.invalidInputError)
@@ -655,13 +669,14 @@ class Game extends React.Component {
                 <Button
                   color={theme.color.primary}
                   onClick={this.onPurchaseTokens}>
-                  Take Tokens
+                  Confirm
                 </Button>
               </div>
             }
           </TokenSelectionContainer>
           : <GemstoneTokensPlaceholder/>
         }
+        <InvalidInputError />
         <BoardPlayerContainer>
           <BoardContainer>
             <Title>Board</Title>
@@ -700,7 +715,6 @@ class Game extends React.Component {
           </Button>
           : null
         }
-        <InvalidInputError />
         {this.state.rulesClicked ?
           <Modal>
             <OutsideAlerter handleClose={this.onRulesClosed}>
