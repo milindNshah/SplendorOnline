@@ -74,8 +74,8 @@ const WinnerScreen = styled.div`
 const FlashScreen = styled.div`
   font-family: ${ props => props.theme.fontFamily.tertiary};
   background: ${ props => props.theme.color.yourTurn };
-  position: absolute;
-  top: 5rem;
+  position: fixed;
+  top: 0;
   left: 0;
   color: white;
   width: 100%;
@@ -83,6 +83,7 @@ const FlashScreen = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5;
 `
 
 const BoardPlayerContainer = styled.div`
@@ -126,9 +127,6 @@ const GemstoneTokensPlaceholder = styled.div`
 `
 const ButtonPlaceHolder = styled.div`
   height: ${ props => `${props.theme.button.height+1}rem`};
-`
-const CancelButton = styled(Button)`
-  margin-left: 1rem;
 `
 
 class Game extends React.Component {
@@ -229,7 +227,7 @@ class Game extends React.Component {
         this.setState({
           flashingTurn: false,
         })
-      }, 1500)
+      }, 2000)
       return () => clearTimeout(timer);
     }
   }

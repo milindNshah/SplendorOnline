@@ -24,16 +24,17 @@ const PlayerHeader = styled.div`
 `
 const NameCol = styled.div`
   width: ${ props => `${props.width * 4 / 6}rem`};
-  color: ${ props => props.theme.color.secondary};
+  color: ${ props => props.isTurn ? props.theme.color.tertiary : props.theme.color.secondary};
   align-self: flex-start;
   font-size: 1.5rem;
+  text-decoration: ${ props => props.isTurn ? "underline" : null};
 `
 const Name = styled.span`
   margin-left: 0.5rem;
 `
 const ScoreCol = styled.div`
   font-size: 1.5rem;
-  color: ${ props => props.theme.color.tertiary};
+  color: ${ props => props.theme.color.secondary};
   width: ${ props => `${props.width * 2 / 6}rem`};
   text-align: end;
 `
@@ -175,7 +176,7 @@ class Player extends React.Component {
               {this.props.isThisPlayerTurn ? <i className="fa fa-arrow-right" /> : null}
               <Name>{this.props.player.user.name}</Name>
             </NameCol>
-            <ScoreCol width={this.props.width}>Score: {this.props.player.hand.score}</ScoreCol>
+            <ScoreCol width={this.props.width} isTurn={this.props.isThisPlayerTurn}>Score: {this.props.player.hand.score}</ScoreCol>
           </PlayerHeader>
           {/* // TODO: Add logic so not clickable when not allowed to take anymore of that token. */}
           <GemStoneTokens
