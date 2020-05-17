@@ -177,6 +177,7 @@ class Game extends React.Component {
     this.onLeaveGame = this.onLeaveGame.bind(this);
     this.onBoardTokenClick = this.onBoardTokenClick.bind(this)
     this.onPlayerTokenClick = this.onPlayerTokenClick.bind(this)
+    this.onSelectedTokenClick = this.onSelectedTokenClick.bind(this)
     this.onPurchaseTokens = this.onPurchaseTokens.bind(this)
     this.onCancelPurchaseTokens = this.onCancelPurchaseTokens.bind(this)
   }
@@ -262,13 +263,17 @@ class Game extends React.Component {
       playerGemStones[gemStone] += 1
       availableGemStones[gemStone] -= 1
 
+      if(boardSelectedGemStones[gemStone] === 0) {
+        delete boardSelectedGemStones[gemStone]
+      }
+
       const totalOwned = Object.values(playerGemStones)
         .reduce((acc, amount) => acc += amount, 0)
       this.setState({
         selectedGemStones: boardSelectedGemStones,
         returningTokensPhase: totalOwned > 10 ? true : false,
         invalidInputError: totalOwned > 10
-          ? `Cannot have more than 10 tokens. Please return ${totalOwned - 10} token(s).`
+          ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
           : null
       })
       return;
@@ -316,7 +321,7 @@ class Game extends React.Component {
       selectedGemStones: boardSelectedGemStones,
       returningTokensPhase: totalOwned > 10 ? true : false,
       invalidInputError: totalOwned > 10
-        ? `Cannot have more than 10 tokens. Please return ${totalOwned - 10} token(s).`
+        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
         : null
     })
   }
@@ -332,13 +337,17 @@ class Game extends React.Component {
       playerGemStones[gemStone] -= 1
       availableGemStones[gemStone] += 1
 
+      if(playerSelectedGemStones[gemStone] === 0) {
+        delete playerSelectedGemStones[gemStone]
+      }
+
       const newTotalOwned = Object.values(playerGemStones)
         .reduce((acc, amount) => acc += amount, 0)
       this.setState({
         selectedGemStones: playerSelectedGemStones,
         returningTokensPhase: newTotalOwned > 10 ? true : false,
         invalidInputError: newTotalOwned > 10
-          ? `Cannot have more than 10 tokens. Please return ${newTotalOwned - 10} token(s).`
+          ? `Cannot have more than 10 tokens. Return ${newTotalOwned - 10} token(s).`
           : null
       })
       return;
@@ -371,10 +380,45 @@ class Game extends React.Component {
         selectedGemStones: playerSelectedGemStones,
         returningTokensPhase: newTotalOwned > 10 ? true : false,
         invalidInputError: newTotalOwned > 10
-          ? `Cannot have more than 10 tokens. Please return ${newTotalOwned - 10} token(s).`
+          ? `Cannot have more than 10 tokens. Return ${newTotalOwned - 10} token(s).`
           : null
       })
     }
+    return;
+  }
+
+  onSelectedTokenClick(gemStone) {
+    const availableGemStones = this.state.board.availableGemStones;
+    const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
+    const selectedSelectedGemStones = this.state.selectedGemStones;
+
+    if (selectedSelectedGemStones.hasOwnProperty(gemStone) && selectedSelectedGemStones[gemStone] > 0) {
+      selectedSelectedGemStones[gemStone] -= 1
+      playerGemStones[gemStone] -= 1
+      availableGemStones[gemStone] += 1
+
+      if (selectedSelectedGemStones[gemStone] === 0) {
+        delete selectedSelectedGemStones[gemStone]
+      }
+    }
+    if (selectedSelectedGemStones.hasOwnProperty(gemStone) && selectedSelectedGemStones[gemStone] < 0) {
+      selectedSelectedGemStones[gemStone] += 1;
+      playerGemStones[gemStone] += 1
+      availableGemStones[gemStone] -= 1
+
+      if (selectedSelectedGemStones[gemStone] === 0) {
+        delete selectedSelectedGemStones[gemStone]
+      }
+    }
+    const totalOwned = Object.values(playerGemStones)
+      .reduce((acc, amount) => acc += amount, 0)
+    this.setState({
+      selectedGemStones: selectedSelectedGemStones,
+      returningTokensPhase: totalOwned > 10 ? true : false,
+      invalidInputError: totalOwned > 10
+        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
+        : null
+    })
     return;
   }
 
@@ -440,7 +484,7 @@ class Game extends React.Component {
     }
     if (totalReturned > 0 && totalOwned < 10) {
       this.setState({
-        invalidInputError: `Cannot return tokens so that you would have less than 10. Take back ${10 - totalOwned} token(s).`,
+        invalidInputError: `Cannot return tokens so that you would have less than 10. Take or return ${10 - totalOwned} token(s).`,
       })
       return;
     }
@@ -453,16 +497,16 @@ class Game extends React.Component {
   onCancelPurchaseTokens() {
     const availableGemStones = this.state.board.availableGemStones;
     const playerGemStones = this.state.players[this.state.curPlayer.id].hand.gemStones;
-    const selectedGemStones = this.state.selectedGemStones;
+    const cancelSelectedGemStones = this.state.selectedGemStones;
 
-    Object.keys(selectedGemStones).forEach((gemStone) => {
-      availableGemStones[gemStone] += selectedGemStones[gemStone]
-      playerGemStones[gemStone] -= selectedGemStones[gemStone]
-      delete selectedGemStones[gemStone]
+    Object.keys(cancelSelectedGemStones).forEach((gemStone) => {
+      availableGemStones[gemStone] += cancelSelectedGemStones[gemStone]
+      playerGemStones[gemStone] -= cancelSelectedGemStones[gemStone]
+      delete cancelSelectedGemStones[gemStone]
     })
 
     this.setState({
-      selectedGemStones: selectedGemStones,
+      selectedGemStones: cancelSelectedGemStones,
       invalidInputError: null,
       returningTokensPhase: false,
     })
@@ -576,16 +620,35 @@ class Game extends React.Component {
           ? <Winner />
           : null
         }
-        {/* TODO: Figure out if should be at the top or bottom. If bottom could scroll when selected = 3 for the first time. */}
+        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
+        <BoardPlayerContainer>
+          <BoardContainer>
+            <Title>Board</Title>
+            {this.state.board ?
+              <Board
+                board={this.state.board}
+                hand={this.state.players[this.state.playerID].hand}
+                selectedGemStones={this.state.selectedGemStones}
+                isMyTurn={this.state.isMyTurn}
+                handlePurchaseCard={this.onPurchaseActiveCard}
+                handleReserveCard={this.onReserveActiveCard}
+                handleReserveTierCard={this.onReserveTierCard}
+                handleTokenClick={this.onBoardTokenClick}
+              />
+              : <div></div>
+            }
+          </BoardContainer>
+          <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
+        </BoardPlayerContainer>
         {this.state.isMyTurn && Object.keys(this.state.selectedGemStones).length > 0 ?
           <TokenSelectionContainer>
             <TokensTitle>Selected Tokens</TokensTitle>
             <GemStoneTokens
               gemStones={new Map(Object.entries(this.state.selectedGemStones))}
-              handleTokenClick={() => {}}
+              handleTokenClick={this.onSelectedTokenClick}
               filterOutPurchasedCardTokens={true}
               filterOutReservedCardToken={true}
-              isGemStoneTokenClickable={false}
+              isGemStoneTokenClickable={this.state.isMyTurn}
             />
             {/* {this.state.returningTokensPhase ? <TokensTitle>Your Tokens</TokensTitle>: null}
             {this.state.returningTokensPhase ?
@@ -615,28 +678,8 @@ class Game extends React.Component {
               </div>
             }
           </TokenSelectionContainer>
-          : <GemstoneTokensPlaceholder/>
+          : null
         }
-        <BoardPlayerContainer>
-          <BoardContainer>
-            <Title>Board</Title>
-            {this.state.board ?
-              <Board
-                board={this.state.board}
-                hand={this.state.players[this.state.playerID].hand}
-                selectedGemStones={this.state.selectedGemStones}
-                isMyTurn={this.state.isMyTurn}
-                handlePurchaseCard={this.onPurchaseActiveCard}
-                handleReserveCard={this.onReserveActiveCard}
-                handleReserveTierCard={this.onReserveTierCard}
-                handleTokenClick={this.onBoardTokenClick}
-              />
-              : <div></div>
-            }
-          </BoardContainer>
-          <PlayersContainer><Title order={-1}>Players</Title>{this.renderHands()}</PlayersContainer>
-        </BoardPlayerContainer>
-        {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
             color={theme.color.error}
