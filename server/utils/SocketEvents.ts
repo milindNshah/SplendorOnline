@@ -127,6 +127,7 @@ export class SocketEvents {
         const room: Room = game.room;
         const player: Player = room.getPlayer(data.playerID);
         await game.checkValidTurn(player.id);
+        game.board.clearActiveCard()
         if(actions.has(ActionType.SKIP_TURN)) {
           game.addSkipTurnAction(player);
         }

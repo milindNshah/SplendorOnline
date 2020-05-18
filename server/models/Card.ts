@@ -30,6 +30,7 @@ export class Card {
   requiredGemStones: Map<GemStone, number>;
   reservedBy: string;
   boardPosition: number;
+  justSwapped: boolean;
 
   constructor (
     pointValue: number,
@@ -42,6 +43,7 @@ export class Card {
     this.gemStoneType = gemStoneType;
     this.tier = tier;
     this.requiredGemStones = requiredGemStones;
+    this.justSwapped= false;
   }
 
   createCardID(): string {
@@ -55,6 +57,11 @@ export class Card {
 
   setBoardPosition(pos: number): this {
     this.boardPosition = pos;
+    return this;
+  }
+
+  toggleJustSwapped(justSwapped: boolean): this {
+    this.justSwapped = justSwapped;
     return this;
   }
 }

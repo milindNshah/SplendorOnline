@@ -23,6 +23,7 @@ export class Board {
   remainingTieredCards: Map<CardTier, Map<string, Card>>;
   activeTieredCards: Map<CardTier, Map<string, Card>>;
   activeNobles: Map<string, Noble>;
+  newActiveCard: Card;
 
   constructor (numPlayers: number) {
     this.id = this.createBoardID();
@@ -31,6 +32,7 @@ export class Board {
     this.remainingTieredCards = new Map();
     this.activeTieredCards = new Map();
     this.activeNobles = new Map();
+    this.newActiveCard = null;
     this.setupBoard();
   }
 
@@ -230,6 +232,14 @@ export class Board {
     return this;
   }
 
+  clearActiveCard(): this {
+    if(this.newActiveCard) {
+      this.newActiveCard.toggleJustSwapped(false);
+      this.newActiveCard = null;
+    }
+    return this;
+  }
+
   private addNewActiveCard(tier: CardTier, position: number): Card {
     const activeCardTier: Map<string, Card> =
       this.activeTieredCards.get(tier);
@@ -243,6 +253,8 @@ export class Board {
     remainingCardTier.delete(cardToMove.id);
     activeCardTier.set(cardToMove.id, cardToMove);
     cardToMove.setBoardPosition(position);
+    cardToMove.toggleJustSwapped(true);
+    this.newActiveCard = cardToMove;
     return cardToMove;
   }
 }

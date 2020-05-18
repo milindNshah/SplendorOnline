@@ -8,6 +8,7 @@ const CardContainer = styled.div`
   width: ${ props => `${props.width}rem`};
   height: ${ props => `${props.height}rem`};
   border-radius: 5px;
+  box-shadow: ${ props => props.card.justSwapped ? `inset 0px 0px 0px 2px ${props.theme.color.error}` : null};
 `;
 
 const Line = styled.line`
@@ -62,6 +63,7 @@ class Card extends React.Component {
       pointValue: this.props.card.pointValue,
       gemStoneType: this.props.card.gemStoneType,
       requiredGemStones: this.props.card.requiredGemStones,
+      justSwapped: this.props.card.justSwapped,
     }
     this.renderRequiredGemStones = this.renderRequiredGemStones.bind(this);
     this.renderRequiredGemStone = this.renderRequiredGemStone.bind(this);
