@@ -7,6 +7,8 @@ const TokenContainer = styled.div`
   position: relative;
   cursor: ${ props => props.isClickable ? "pointer" : "default" };
   opacity: ${ props => props.opacity ?? 1};
+  width: ${ props => `${props.width}rem` };
+  height: ${ props => `${props.height}rem` };
 `
 
 const Amount = styled.div`

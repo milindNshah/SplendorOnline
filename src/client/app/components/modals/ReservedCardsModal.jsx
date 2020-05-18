@@ -7,7 +7,7 @@ import theme from '../../styledcomponents/theme.jsx'
 import GemStoneTokens from '../GemStoneTokens.jsx'
 import { canPurchaseCard } from '../../utils';
 
-const InsufficientGemsError = `Not sufficient gems to purchase card.`
+const InsufficientGemsError = `Not sufficient tokens to purchase card.`
 
 const CardContainer = styled.div`
   margin-bottom: 1rem;

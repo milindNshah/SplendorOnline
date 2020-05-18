@@ -20,7 +20,7 @@ const theme = {
     chocolate: "#CB6D51",
     gold: "#FFD700",
     tier1: "green",
-    tier2: "purple",
+    tier2: "#CC00FF",
     tier3: "#eb6b34",
     placeHolder: "#AAA",
     inputBorder: "#BCBCBC",

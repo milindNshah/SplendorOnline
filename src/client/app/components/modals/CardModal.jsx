@@ -10,7 +10,7 @@ import { canPurchaseCard } from '../../utils';
 import ReturnTokens from './ReturnTokens.jsx'
 
 const MaxThreeReservedCardsError = `Unable to reserve. You may only have 3 reserved cards.`
-const InsufficientGemsError = `Not sufficient gems to purchase card.`
+const InsufficientGemsError = `Not sufficient tokens to purchase card.`
 
 const CardContainer = styled.div`
   display: flex;

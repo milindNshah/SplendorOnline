@@ -3,6 +3,13 @@ import styled from "styled-components"
 import Button from '../../styledcomponents/button.jsx'
 import theme from '../../styledcomponents/theme.jsx'
 import {SectionName, getDisplayNameFromSection} from '../../enums/sectionname'
+import GemStoneToken from '../GemStoneToken.jsx'
+import Card from '../Card.jsx'
+import TierCard from '../TierCard.jsx'
+import Noble from '../Noble.jsx'
+import { GemStone, CardGemStone } from '../../enums/gemstones.js'
+import { CardTier } from '../../enums/cardtier.js'
+
 
 const ModalContainer = styled.div`
   max-height: 80vh;
@@ -18,6 +25,31 @@ const Title = styled.div`
   font-size: 2rem;
   margin: 0.5rem 0rem;
 `
+
+const ImagesContainer = styled.div`
+  display: flex;
+  flex-direction: row wrap;
+  width: 100%;
+  justify-content: space-around;
+`
+const ImageContainer = styled.div`
+  margin: 0rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+const ImageTitle = styled.div`
+  color: ${ props => props.theme.color.darkgrey};
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+`
+const ImageSection = styled.div`
+  margin: 2rem;
+  color: ${ props => props.theme.color.darkgrey};
+  font-size: 1rem;
+  text-align: justify;
+`
+
 const Section = styled.div`
   margin: 2rem;
 `
@@ -41,10 +73,13 @@ const SectionContent = styled.div`
   color: ${ props => props.theme.color.darkgrey};
   font-size: 1rem;
   margin: 0.25rem 0rem;
-  text-align: left;
+  text-align: justify;
 `
 const HighlightText = styled.span`
   color: ${ props => props.theme.color.tertiary};
+`
+const SectionReference = styled.span`
+  color: ${ props => props.theme.color.secondary};
 `
 const Indent = styled.span`
   margin-right: 1rem;
@@ -52,7 +87,7 @@ const Indent = styled.span`
 
 const objectiveText = (
   <div>
-    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of a full game round with a minimum of 15 points.</p>
+    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of the round with a minimum of 15 points (see: <SectionReference>Tie Breaker Conditions</SectionReference> for more details).</p>
   </div>
 )
 
@@ -75,7 +110,6 @@ const howToPlayText = (
     <p><HighlightText>Taking 2 tokens of same type:</HighlightText> A player may take 2 tokens of the same type. However, they cannot have taken any other tokens of any type on this turn. There must be at least 4 tokens available of that type in order for the player to take 2 tokens of that type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
     <p><HighlightText>Reserving a development card:</HighlightText> A player can reserve a development card by taking any card on the board, or the first card from any development card deck, and placing it in their hand. The reserved card cannot be bought by any player but the player who reserved it. A player may only have up to 3 reserved cards at a given time and cannot reserve if they already have 3 reserved cards. A reserved card cannot be discarded, only purchased. When reserving a card, the player will receive a gold token if there are any gold tokens available.</p>
     <p><HighlightText>Purchasing a development card:</HighlightText> A player can purchase a previously reserved card or purchase any development card from the board as long as the player has the required tokens. The required tokens must be spent and returned to the board when purchasing a card. A gold token can be used in place of any 1 other token. If the purchased card was purchased from the board, replace the card with another card from the deck of the same tier (if any cards of that tier are available).</p>
-    <p>Once a card is purchased, it provides a permanent bonus to the player who purchased it. Each development card has an associated gemstone type. Each development card reduces the number of required tokens by 1 for its associated gemstone type when purchasing future development cards.</p>
     <p><HighlightText>Obtaining a Noble:</HighlightText> This is not an action but is executed at the end of each player's turn. If a player has enough purchased cards (bonuses) to meet the noble's requirements, they will obtain the noble. The points associated with the noble will be added to the player's point total. The noble will belong to only the first player that achieves the noble's requirements. The noble will be removed from the board and will not be replaced by another noble. A player may obtain multiple nobles on a single turn if they meet the requirements for them.</p>
   </div>
 )
@@ -97,6 +131,36 @@ const terminologyText = (
     <p><HighlightText>Noble:</HighlightText> Nobles can also give you points. A noble cannot be purchased and is automatically given to the first player who is able to achieve the requirements to obtain the noble. The noble has a point value represented in the top left. The requirements to obtain a noble are development cards; the amount and types of which are found in the bottom left.</p>
   </div>
 )
+
+const exampleGemStoneToken = {
+  type: GemStone.EMERALD,
+  amount: 5,
+}
+
+const exampleCard = {
+  pointValue: 4,
+  gemStoneType: CardGemStone.SAPPHIRE,
+  tier: CardTier.TIER3,
+  requiredGemStones: {
+    [GemStone.DIAMOND]: 3,
+    [GemStone.RUBY]: 3,
+    [GemStone.CHOCOLATE]: 6,
+  },
+}
+
+const exampleTierCard = {
+  tier: CardTier.TIER2,
+  remaining: 26,
+}
+
+const exampleNoble = {
+  pointValue: 3,
+  requiredCards: {
+    [CardGemStone.EMERALD]: 3,
+    [CardGemStone.RUBY]: 3,
+    [CardGemStone.SAPPHIRE]: 3,
+  }
+}
 
 class RulesModal extends React.Component {
   constructor (props) {
@@ -138,6 +202,33 @@ class RulesModal extends React.Component {
       <ModalContainer>
           <Title>Game Rules</Title>
           <p>2-4 Players</p>
+          <ImagesContainer>
+            <ImageContainer>
+              <ImageTitle>Token</ImageTitle>
+              <GemStoneToken width={theme.token.width} height={theme.token.height} type={exampleGemStoneToken.type} amount={exampleGemStoneToken.amount} />
+            </ImageContainer>
+            <ImageContainer>
+              <ImageTitle>Development Card</ImageTitle>
+              <Card width={theme.card.width} height={theme.card.height} card={exampleCard} />
+            </ImageContainer>
+            <ImageContainer>
+              <ImageTitle>Tier Card</ImageTitle>
+              <TierCard width={theme.card.width} height={theme.card.height} tier={exampleTierCard.tier} remaining={exampleTierCard.remaining} />
+            </ImageContainer>
+            <ImageContainer>
+              <ImageTitle>Noble</ImageTitle>
+              <Noble width={theme.card.width} height={theme.card.width} noble={exampleNoble} />
+            </ImageContainer>
+          </ImagesContainer>
+          <ImageSection>
+            <p><HighlightText>Token: </HighlightText>A token is used to purchase development cards. The token above is of type Emerald. The number in the bottom left represents how many Emerald tokens there are (5). There are six tokens types: Diamond, Sapphire, Emerald, Ruby, Onyx, and Gold. The Gold token is a special token and can be used in place of any of the other five types.</p>
+            <p><HighlightText>Development Card: </HighlightText>Development cards may be purchased by using tokens. In the top left of each card is a number (4). This number represents how many points the development card is worth. Under the number in the top left is a token type (Sapphire). The player who purchases the development card will gain a permanent bonus -- see <HighlightText>Development Card Bonus</HighlightText> below for more details. In the bottom right is the development card's purchase cost -- see <HighlightText>Development Card Cost</HighlightText> below for more details.</p>
+            <p><HighlightText>Development Card Bonus: </HighlightText> The bonus is found in the top left of a development card under the point value in the form of a token type (Sapphire in this case). The bonus from a development card provides a discount of one token of it's type (Sapphire) when purchasing all future development cards. Development card bonuses do not disappear, and can be stacked. If you have 2 development cards, each with a token type of Sapphire, you gain a 2 Sapphire token discount for any other development card. For example: if a development card costs 3 Sapphire tokens and you have 2 Sapphire development cards, you only need 1 Sapphire token to purchase that development card. There are 5 possible token types for development cards: Diamond, Sapphire, Emerald, Ruby, Onyx.</p>
+            <p><HighlightText>Development Card Cost: </HighlightText>The cost of a development card is found in the bottom right. These numbers and symbols represent the amount and types of tokens you need to purchase the development card. In this example you would need 3 Diamond tokens, 3 Ruby Tokens, and 6 Onyx tokens to purchase the development card. Remember, you can use 1 Gold token in place of any 1 other token. For example, you could instead use 3 Diamond Tokens, 3 Ruby Tokens, 5 Onyx Tokens, and 1 Gold Token to buy this card. Don't forget that discount/bonuses from previously purchased development cards also apply.</p>
+            <p><HighlightText>Tier Card: </HighlightText>This is the backside of a development card. The development cards are split into 3 decks by tier (Tier1, Tier2, Tier3). A higher tier development card will generally net you more points but will cost more tokens to purchase. The dots at the top represent the tier (Tier2). The number in the bottom left (26) represents how many more development cards of that tier are left in the deck.</p>
+            <p><HighlightText>Noble: </HighlightText>The number in the top left (3) represents the points you get from obtaining that noble. A noble is obtained by meeting it's requirements, found in the bottom right. These numbers and symbols represent the number and type of development cards you need. To obtain the noble above, you would need 3 Emerald development cards, 3 Ruby development cards, and 3 Sapphire development cards. A noble cannot be purchased; it is automatically given to the first player that meets it's requirements. The required development cards are not taken away from the player when a noble is obtained.</p>
+          </ImageSection>
+
           {this.renderSection(SectionName.OBJECTIVE, objectiveText)}
           {this.renderSection(SectionName.GAMESETUP, gameSetupText)}
           {this.renderSection(SectionName.HOWTOPLAY, howToPlayText)}
