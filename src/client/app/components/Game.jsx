@@ -74,7 +74,7 @@ const TokenSelectionContainer = styled.div`
   /* padding: 0.5rem 0rem; */
 `
 const TokensTitle = styled.div`
-  line-height: 1.5rem;
+  line-height: 1.25rem;
   font-size: 1.25rem;
   color: ${ props => props.theme.color.tertiary };
   text-decoration: underline;
@@ -89,7 +89,7 @@ const InvalidInputPlaceHolder = styled.div`
   height: ${`${1.5+0.5*2}rem`};
 `
 const GemstoneTokensPlaceholder = styled.div`
-  height: ${ props => `${1.5+props.theme.token.modal.height+0.5*2+props.theme.button.height+0.5*2}rem`};
+  height: ${ props => `${1.25+props.theme.token.modal.height+0.5*2+props.theme.button.height+0.5*2}rem`};
 `
 
 const WinnerScreen = styled.div`
@@ -121,7 +121,7 @@ const BoardPlayerContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-around;
   background: ${ props => props.theme.color.white};
-  margin: 0.5rem 0rem;
+  margin-bottom: 0.5rem;
   width: 100%;
 `
 const Title = styled.div`
@@ -295,7 +295,7 @@ class Game extends React.Component {
         selectedGemStones: boardSelectedGemStones,
         returningTokensPhase: totalOwned > 10 ? true : false,
         invalidInputError: totalOwned > 10
-          ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
+          ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s) from selected or your hand.`
           : null
       })
       return;
@@ -343,7 +343,7 @@ class Game extends React.Component {
       selectedGemStones: boardSelectedGemStones,
       returningTokensPhase: totalOwned > 10 ? true : false,
       invalidInputError: totalOwned > 10
-        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
+        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s) from selected or your hand.`
         : null
     })
   }
@@ -438,7 +438,7 @@ class Game extends React.Component {
       selectedGemStones: selectedSelectedGemStones,
       returningTokensPhase: totalOwned > 10 ? true : false,
       invalidInputError: totalOwned > 10
-        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`
+        ? `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s) from selected or your hand.`
         : null
     })
     return;
@@ -479,7 +479,7 @@ class Game extends React.Component {
       .reduce((acc, amount) => acc += amount, 0)
     if (totalOwned > 10) {
       this.setState({
-        invalidInputError: `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s).`,
+        invalidInputError: `Cannot have more than 10 tokens. Return ${totalOwned - 10} token(s) from selected or your hand.`,
         returningTokensPhase: true,
       })
       return;
@@ -513,6 +513,7 @@ class Game extends React.Component {
     this.setState({
       actionData: this.state.selectedGemStones,
       actionType: ActionType.TAKE_GEMS,
+      invalidInputError: null,
     }, this.onEndTurn)
   }
 
@@ -585,6 +586,9 @@ class Game extends React.Component {
       gameID: this.state.gameID,
       playerID: this.state.playerID,
     })
+    this.setState({
+      invalidInputError: null,
+    })
   }
 
   onLeaveGame() {
@@ -599,7 +603,7 @@ class Game extends React.Component {
     const InvalidInputError = () => (
       this.state.invalidInputError
         ? <InvalidInput>{this.state.invalidInputError}</InvalidInput>
-        : <InvalidInputPlaceHolder/>
+        : null
     );
     const ServerError = () => (
       (this.state.serverError && !this.state.invalidInputError)
@@ -635,7 +639,6 @@ class Game extends React.Component {
           ? <Winner />
           : null
         }
-        {/* TODO: Figure out where to place this. Top or Bottom */}
         {this.state.isMyTurn && Object.keys(this.state.selectedGemStones).length > 0 ?
           <TokenSelectionContainer>
             <TokensTitle>Selected Tokens</TokensTitle>
