@@ -46,16 +46,16 @@ const Rules = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
-  color: ${ props => props.theme.color.primary};
+  color: ${ props => props.theme.color.tertiary};
   background-color: ${ props => props.theme.color.white};
-  border: 1px solid ${ props => props.theme.color.primary};
+  border: 1px solid ${ props => props.theme.color.tertiary};
   padding: 0.25rem 0.5rem;
   width: 5rem;
   cursor: pointer;
   text-align: center;
   &:hover {
     color: ${ props => props.theme.color.white};
-    background-color: ${ props => props.theme.color.primary};
+    background-color: ${ props => props.theme.color.tertiary};
   }
 
   @media (max-width: 40rem) {
@@ -663,7 +663,7 @@ class Game extends React.Component {
             {this.state.returningTokensPhase ?
               <div>
                 <Button
-                  color={theme.color.error}
+                  color={theme.color.tertiary}
                   onClick={this.onCancelPurchaseTokens}>
                   Cancel
                 </Button>
@@ -712,7 +712,7 @@ class Game extends React.Component {
         {this.state.isMyTurn ? <Button onClick={this.onSkipTurn} color={theme.color.tertiary}>Skip Turn</Button> : <ButtonPlaceHolder/>}
         {this.state.winner && !this.state.tieBreakerMoreRounds ?
           <Button
-            color={theme.color.error}
+            color={theme.color.tertiary}
             onClick={this.onLeaveGame}>
             Leave Game
           </Button>

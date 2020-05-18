@@ -341,7 +341,7 @@ class WaitingRoom extends React.Component {
         </div>
         <div>
           <Button
-            color={theme.color.error}
+            color={theme.color.tertiary}
             onClick={this.onLeaveRoom}>
             Leave Room
           </Button>

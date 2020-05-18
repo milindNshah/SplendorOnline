@@ -250,7 +250,7 @@ class Room extends React.Component {
               {this.state.isJoinRoom ? this.renderJoinRoom() : null}
               {this.state.isCreateRoom ? this.renderCreateRoom() : null}
               <Button
-                color={theme.color.error}
+                color={theme.color.tertiary}
                 onClick={this.onLeaveRoom}>
                 Leave Room
               </Button>
