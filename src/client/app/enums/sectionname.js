@@ -1,4 +1,5 @@
 export const SectionName = {
+  CONTENT: 'content',
   OBJECTIVE: 'objective',
   TERMINOLOGY: 'terminology',
   GAMESETUP: 'gamesetup',
@@ -8,6 +9,8 @@ export const SectionName = {
 
 export function getDisplayNameFromSection(sectionName) {
   switch(sectionName) {
+    case SectionName.CONTENT:
+      return 'Content'
     case SectionName.OBJECTIVE:
       return 'Objective'
     case SectionName.TERMINOLOGY:

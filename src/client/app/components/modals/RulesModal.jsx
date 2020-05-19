@@ -58,12 +58,12 @@ const ImageTitle = styled.div`
   margin-bottom: 0.5rem;
   text-decoration: underline;
 `
-const ImageSection = styled.div`
-  margin: 2rem;
-  color: ${ props => props.theme.color.darkgrey};
-  font-size: 1rem;
-  text-align: justify;
-`
+// const ImageSection = styled.div`
+//   margin: 2rem;
+//   color: ${ props => props.theme.color.darkgrey};
+//   font-size: 1rem;
+//   text-align: justify;
+// `
 
 const Section = styled.div`
   margin: 2rem;
@@ -100,50 +100,49 @@ const Indent = styled.span`
   margin-right: 1rem;
 `
 
+const contentText = (
+  <div>
+    <p><HighlightText>Token: </HighlightText>A token is used to purchase development cards. The token above is of type Emerald. The number in the bottom left represents how many tokens of type Emerald there are (5). There are six tokens types: Diamond, Sapphire, Emerald, Ruby, Onyx, and Gold. The Gold token is a special token and can be used in place of any of the other five types. A player may have at most 10 tokens in their hand at any given time.</p>
+    <p><HighlightText>Development Card: </HighlightText>Development cards may be purchased by using tokens. In the top left of each card is a number (4). This number represents how many points the development card is worth. Under the number in the top left is a token type (Sapphire). The player who purchases the development card will gain a permanent bonus (see <HighlightText>Development Card Bonus</HighlightText> below). In the bottom right is the development card's purchase cost (see <HighlightText>Development Card Cost</HighlightText> below).</p>
+    <p><HighlightText>Development Card Bonus: </HighlightText>The bonus is found in the top left of a development card under the point value in the form of a token type (Sapphire in this case). The bonus from a development card provides a discount of one token of it's type (Sapphire) when purchasing all future development cards. Development card bonuses do not disappear, and can be stacked. If you have 2 development cards, each with a token type of Sapphire, you gain a 2 Sapphire token discount for every future development card. For example: if a development card costs 3 Sapphire tokens and you have 2 Sapphire development cards, you only need 1 Sapphire token to purchase that development card. There are 5 possible token types for development cards: Diamond, Sapphire, Emerald, Ruby, Onyx.</p>
+    <p><HighlightText>Development Card Cost: </HighlightText>The cost of a development card is found in the bottom right. These numbers and symbols represent the amount and types of tokens you need to purchase the development card. In this example you would need 3 Diamond tokens, 3 Ruby Tokens, and 6 Onyx tokens to purchase the development card. Remember, you can use 1 Gold token in place of any 1 other token. For example, you could instead use 3 Diamond Tokens, 3 Ruby Tokens, 5 Onyx Tokens, and 1 Gold Token to buy this card. Don't forget that discount/bonuses from previously purchased development cards also apply.</p>
+    <p><HighlightText>Tier Card: </HighlightText>This is the backside of a development card. The development cards are split into 3 decks by tier (Tier1, Tier2, Tier3). A higher tier development card will generally net you more points but will cost more tokens to purchase. The dots at the top represent the tier (Tier2). The number in the bottom left (26) represents how many more development cards of that tier are left in the deck.</p>
+    <p><HighlightText>Noble: </HighlightText>The number in the top left (3) represents the points you get from obtaining that noble. A noble is obtained by meeting it's requirements, found in the bottom right. These numbers and symbols represent the number and type of development cards you need. To obtain the noble above, you would need 3 Emerald development cards, 3 Ruby development cards, and 3 Sapphire development cards. A noble cannot be purchased; it is automatically given to the first player that meets it's requirements. The required development cards are not taken away from the player when a noble is obtained. Nobles are not replaced once obtained by a player.</p>
+  </div>
+)
+
 const objectiveText = (
   <div>
-    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of the round with a minimum of 15 points (see: <SectionReference>Tie Breaker Conditions</SectionReference> for more details).</p>
+    <p>The objective of the game is to get 15 or more points. Points are obtained from collecting development cards and nobles. A development card may be worth anywhere between 0 and 5 points. A noble is worth 3 points each. In order to win, you must be the player with the most points at the end of the round with a minimum of 15 points (see: <SectionReference>Tie Breaker Conditions</SectionReference> for more details). The winner is determined only once every player has completed their turn for that round.</p>
   </div>
 )
 
 const gameSetupText = (
   <div>
     <p><HighlightText>Development Cards:</HighlightText> The development cards will be split into 3 decks by tier. 4 cards from each tier will be placed face-up on the board. These are the active development cards.</p>
-    <p><HighlightText>Nobles:</HighlightText> Either 3, 4, or 5 nobles will be placed face up on the board. The number of nobles in play is the number of players + 1.</p>
-    <p><HighlightText>Tokens:</HighlightText> 5 gold tokens will be placed on the board. If there are 2 players, 4 tokens of each type (except Gold) will be placed on the board. If there are 3 players, 5 tokens of each type (except Gold) will be placed on the board. If there are 4 players, 7 tokens of each type (except Gold) will be placed on the board.</p>
+    <p><HighlightText>Nobles:</HighlightText> The number of nobles on the board is the number of players + 1.</p>
+    <p><HighlightText>Tokens:</HighlightText> For all tokens (except gold), do the following. If there are 2 players, 4 of each token will be placed on the board. If there are 3 players, 5 of each token will be placed on the board. If there are 4 players, 7 of each token will be placed on the board. There will always be 5 Gold tokens on the board, regardless of the number of players.</p>
   </div>
 )
 
 const howToPlayText = (
   <div>
-    <p>This is a turn-based game. Each player will have 1 turn in a round. On a given turn a player may perform 1 of the following 4 actions:</p>
-    <p><Indent/>1. Take 3 tokens of different types (if available).</p>
+    <p>This is a turn-based game. Each player will have 1 turn in a round. There is a timer and if the timer runs out, the player will automatically skip their turn. On a given turn a player may perform only 1 of the following 4 actions:</p>
+    <p><Indent/>1. Take 3 tokens of all different types (if available).</p>
     <p><Indent/>2. Take 2 tokens of the same type (if more than 4 of that type are available).</p>
-    <p><Indent/>3. Reserve 1 development card and Obtain 1 Joker Token (if available).</p>
+    <p><Indent/>3. Reserve 1 development card and Obtain 1 Gold Token (if available).</p>
     <p><Indent/>4. Purchase 1 development card.</p>
     <p><HighlightText>Taking 3 tokens of different types:</HighlightText> A player may take 3 tokens (or less) of different types on their turn. There must be at least 1 token available for each selected type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
-    <p><HighlightText>Taking 2 tokens of same type:</HighlightText> A player may take 2 tokens of the same type. However, they cannot have taken any other tokens of any type on this turn. There must be at least 4 tokens available of that type in order for the player to take 2 tokens of that type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less).</p>
-    <p><HighlightText>Reserving a development card:</HighlightText> A player can reserve a development card by taking any card on the board, or the first card from any development card deck, and placing it in their hand. The reserved card cannot be bought by any player but the player who reserved it. A player may only have up to 3 reserved cards at a given time and cannot reserve if they already have 3 reserved cards. A reserved card cannot be discarded, only purchased. When reserving a card, the player will receive a gold token if there are any gold tokens available.</p>
-    <p><HighlightText>Purchasing a development card:</HighlightText> A player can purchase a previously reserved card or purchase any development card from the board as long as the player has the required tokens. The required tokens must be spent and returned to the board when purchasing a card. A gold token can be used in place of any 1 other token. If the purchased card was purchased from the board, replace the card with another card from the deck of the same tier (if any cards of that tier are available).</p>
+    <p><HighlightText>Taking 2 tokens of same type:</HighlightText> A player may take 2 tokens of the same type. However, they cannot have taken any other tokens of any type on this turn and there must be at least 4 tokens available of that type. A player may have no more than 10 tokens at the end of their turn so if a player ends up with more than 10 tokens, they must return tokens until they have 10 tokens exactly (no less). A player may return tokens from their hand or from their selected tokens.</p>
+    <p><HighlightText>Reserving a development card:</HighlightText> A player can reserve a development card by taking any card on the board, or the first card from any tier card deck, and placing it in their hand. The reserved card cannot be bought by any player but the player who reserved it. A player may only have up to 3 reserved cards at a given time and cannot reserve if they already have 3 reserved cards. A reserved card cannot be discarded, only purchased. When reserving a card, the player will receive a gold token if there are any gold tokens available. This is the only way to obtain a gold token.</p>
+    <p><HighlightText>Purchasing a development card:</HighlightText> A player can purchase a previously reserved card or purchase any development card from the board as long as the player has the required tokens. The required tokens must be spent and are returned to the board when purchasing a card. A gold token can be used in place of any 1 other token. If the purchased card was purchased from the board, replace the card with another card from the deck of the same tier (if any cards of that tier are available).</p>
     <p><HighlightText>Obtaining a Noble:</HighlightText> This is not an action but is executed at the end of each player's turn. If a player has enough purchased cards (bonuses) to meet the noble's requirements, they will obtain the noble. The points associated with the noble will be added to the player's point total. The noble will belong to only the first player that achieves the noble's requirements. The noble will be removed from the board and will not be replaced by another noble. A player may obtain multiple nobles on a single turn if they meet the requirements for them.</p>
   </div>
 )
 
 const tieBreakerText = (
   <div>
-    <p> The winner is the player with the most points (with a minimum of 15 points) at the end of a game round. It is possible that multiple players end the game round with the same number of points. In that case the player with the least amount of development cards (amongst the players who tied) wins. If players are still tied, further game rounds are played until one player can break a tie condition.</p>
-  </div>
-)
-
-const terminologyText = (
-  <div>
-    <p><HighlightText>Point:</HighlightText> A minimum of 15 points are required to win. Points can be obtained from development cards or from nobles.</p>
-    <p><HighlightText>Turn:</HighlightText> Each player has 1 turn in a game round. A player can perform only 1 action per turn. A player must complete their action in 1 minute and 30 seconds. If time runs out, that player will automatically skip their turn.</p>
-    <p><HighlightText>Game Round:</HighlightText> A game round is completed when each player has taken their turn once.</p>
-    <p><HighlightText>Token:</HighlightText> A token is the most basic resource in the game. A token can be of 6 possible gemstone types: Diamond, Sapphire, Emerald, Ruby, Onyx, or Gold. You can use tokens to purchase development cards. The Gold token is a special token and can be used as any of the other 5 types.</p>
-    <p><HighlightText>Development Card:</HighlightText> Each development card has a point value represented by a number in the top left. Each development card has an associated gemstone type. The gemstone type can be one of 5 possible gemstone types: Diamond, Sapphire, Emerald, Ruby, or Onyx and is found under the point value. Each development card has an associated cost which is displayed in the bottom right. The cost represents the number and types of tokens that are required in order to purchase that card. A development card can be purchased by using tokens. Once a development card is purchased, it provides a permanent bonus when purchasing future cards for the player who purchased it. The development cards are split into 3 decks, ordered by tier (1, 2, 3). The higher the tier of the card, the more valuable the development card is, but the more difficult it is to obtain. </p>
-    <p><HighlightText>Bonus:</HighlightText> Each development card purchased provides a bonus. A development card has a gemstone type. A development card reduces the cost of the required tokens by 1 for its gemstone type. This is a permanent effect and applied to all development cards.</p>
-    <p><HighlightText>Noble:</HighlightText> Nobles can also give you points. A noble cannot be purchased and is automatically given to the first player who is able to achieve the requirements to obtain the noble. The noble has a point value represented in the top left. The requirements to obtain a noble are development cards; the amount and types of which are found in the bottom left.</p>
+    <p> The winner is the player with the most points (with a minimum of 15 points) at the end of a round. It is possible that multiple players end the round with the same number of points. In that case the player with the least amount of development cards (amongst the players who tied) wins. If players are still tied, further game rounds are played until one player can break a tie condition.</p>
   </div>
 )
 
@@ -181,6 +180,7 @@ class RulesModal extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      content: true,
       objective: true,
       terminology: false,
       gamesetup: false,
@@ -236,20 +236,11 @@ class RulesModal extends React.Component {
               <Noble width={theme.card.width} height={theme.card.width} noble={exampleNoble} />
             </ImageContainer>
           </ImagesContainer>
-          <ImageSection>
-            <p><HighlightText>Token: </HighlightText>A token is used to purchase development cards. The token above is of type Emerald. The number in the bottom left represents how many Emerald tokens there are (5). There are six tokens types: Diamond, Sapphire, Emerald, Ruby, Onyx, and Gold. The Gold token is a special token and can be used in place of any of the other five types.</p>
-            <p><HighlightText>Development Card: </HighlightText>Development cards may be purchased by using tokens. In the top left of each card is a number (4). This number represents how many points the development card is worth. Under the number in the top left is a token type (Sapphire). The player who purchases the development card will gain a permanent bonus -- see <HighlightText>Development Card Bonus</HighlightText> below for more details. In the bottom right is the development card's purchase cost -- see <HighlightText>Development Card Cost</HighlightText> below for more details.</p>
-            <p><HighlightText>Development Card Bonus: </HighlightText> The bonus is found in the top left of a development card under the point value in the form of a token type (Sapphire in this case). The bonus from a development card provides a discount of one token of it's type (Sapphire) when purchasing all future development cards. Development card bonuses do not disappear, and can be stacked. If you have 2 development cards, each with a token type of Sapphire, you gain a 2 Sapphire token discount for any other development card. For example: if a development card costs 3 Sapphire tokens and you have 2 Sapphire development cards, you only need 1 Sapphire token to purchase that development card. There are 5 possible token types for development cards: Diamond, Sapphire, Emerald, Ruby, Onyx.</p>
-            <p><HighlightText>Development Card Cost: </HighlightText>The cost of a development card is found in the bottom right. These numbers and symbols represent the amount and types of tokens you need to purchase the development card. In this example you would need 3 Diamond tokens, 3 Ruby Tokens, and 6 Onyx tokens to purchase the development card. Remember, you can use 1 Gold token in place of any 1 other token. For example, you could instead use 3 Diamond Tokens, 3 Ruby Tokens, 5 Onyx Tokens, and 1 Gold Token to buy this card. Don't forget that discount/bonuses from previously purchased development cards also apply.</p>
-            <p><HighlightText>Tier Card: </HighlightText>This is the backside of a development card. The development cards are split into 3 decks by tier (Tier1, Tier2, Tier3). A higher tier development card will generally net you more points but will cost more tokens to purchase. The dots at the top represent the tier (Tier2). The number in the bottom left (26) represents how many more development cards of that tier are left in the deck.</p>
-            <p><HighlightText>Noble: </HighlightText>The number in the top left (3) represents the points you get from obtaining that noble. A noble is obtained by meeting it's requirements, found in the bottom right. These numbers and symbols represent the number and type of development cards you need. To obtain the noble above, you would need 3 Emerald development cards, 3 Ruby development cards, and 3 Sapphire development cards. A noble cannot be purchased; it is automatically given to the first player that meets it's requirements. The required development cards are not taken away from the player when a noble is obtained.</p>
-          </ImageSection>
-
+          {this.renderSection(SectionName.CONTENT, contentText)}
           {this.renderSection(SectionName.OBJECTIVE, objectiveText)}
           {this.renderSection(SectionName.GAMESETUP, gameSetupText)}
           {this.renderSection(SectionName.HOWTOPLAY, howToPlayText)}
           {this.renderSection(SectionName.TIEBREAKER, tieBreakerText)}
-          {this.renderSection(SectionName.TERMINOLOGY, terminologyText)}
           <div>
             <Button
               color={theme.color.tertiary}
