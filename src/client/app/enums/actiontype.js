@@ -11,5 +11,6 @@ export const ActionType = {
   OBTAIN_NOBLE: "ObtainNoble",
   SKIP_TURN: "SkipTurn",
   LEAVE_GAME: "LeaveGame",
+  DISCONNECTED: "Disconnected",
   GAME_ENDED: "GameEnded",
 }

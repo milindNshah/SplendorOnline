@@ -8,6 +8,9 @@ import { GemStone } from './GemStone';
 import { Card, CardTier } from './Card';
 import * as GameManager from '../managers/GameManager';
 import { Noble } from './Noble';
+import * as RoomManager from '../managers/RoomManager'
+import { serialize } from 'bson';
+import * as Socket from '../utils/Socket';
 
 const TARGET_SCORE = 15;
 const MAX_GEMS_ALLOWED_HAVE = 10;
@@ -40,6 +43,7 @@ export enum ActionType {
   OBTAIN_NOBLE = "ObtainNoble",
   SKIP_TURN = "SkipTurn",
   LEAVE_GAME = "LeaveGame",
+  DISCONNECTED = "Disconnected",
   GAME_ENDED = "GameEnded",
 }
 
@@ -87,14 +91,17 @@ export class Game {
   }
 
   // This feels very hacky.
-  startTimer(io: SocketIO.Server): this {
+  startTimer(): this {
     if(this.timerStarted === false) {
       this.timerStarted = true;
       GameManager.setIntervalByID(this.id, setInterval(() => {
-        io.sockets.in(this.room.code).emit("TimerUpdate", {
-          seconds: this.currentSeconds,
-          minutes: this.currentMinutes,
-        })
+        let io: SocketIO.Server = Socket.getIO();
+        if(io && io.sockets.in(this.room.code)) {
+          io.sockets.in(this.room.code).emit("TimerUpdate", {
+            seconds: this.currentSeconds,
+            minutes: this.currentMinutes,
+          })
+        }
         if(this.currentSeconds > 0) {
           this.currentSeconds -= 1;
         }
@@ -112,12 +119,12 @@ export class Game {
     return this;
   }
 
-  resetTimer(io: SocketIO.Server): this {
+  resetTimer(): this {
     GameManager.clearIntervalByID(this.id)
     this.timerStarted = false;
     this.currentMinutes = this.initialMinutes;
     this.currentSeconds = this.initialSeconds;
-    this.startTimer(io);
+    this.startTimer();
     return this;
   }
 
@@ -411,6 +418,16 @@ export class Game {
   }
 
   finishTurn(player: Player): this {
+    const allDisconnected = Array.from(this.room.players.values())
+      .reduce((all: boolean, player: Player) => {
+        return all && !player.isConnected
+      }, true)
+    if(allDisconnected) {
+      // TODO: Add logic to end a game and then delete it somehow. Need to do for actual game ending anyways.
+      console.log("all disconnected!")
+      return;
+    }
+
     if (this.turnOrder[this.turnOrder.length - 1] === player.id) {
       this.checkScores();
       this.curTurnIndex = 0;
@@ -419,10 +436,73 @@ export class Game {
       this.curTurnIndex += 1;
     }
     player.hand.incrementTurn();
+
+    // Check if nextPlayer is there.
+    const nextPlayer: Player = this.room.getPlayer(this.turnOrder[this.curTurnIndex]);
+    if(!nextPlayer.isConnected) {
+      const skipTurnAction: GameAction = {
+        type: ActionType.SKIP_TURN,
+        player: nextPlayer,
+      }
+      this.addGameActionToLog(skipTurnAction);
+      this.finishTurn(nextPlayer);
+    }
     return this;
   }
 
-  handlePlayerLeftGame(player: Player, io: SocketIO.Server): this {
+  async handlePlayerTempDisconnected(player: Player): Promise<this> {
+    try {
+      let wasDisconnetedPlayerTurn: boolean = false;
+      if (player.id === this.turnOrder[this.curTurnIndex]) {
+        wasDisconnetedPlayerTurn = true;
+        this.finishTurn(player);
+      }
+      player.setDisconnected();
+      if (wasDisconnetedPlayerTurn) {
+        if (!this.winner) {
+          this.resetTimer();
+        } else {
+          this.stopTimer();
+        }
+      }
+      const disconnectedAction: GameAction = {
+        type: ActionType.DISCONNECTED,
+        player: player,
+      }
+      this.addGameActionToLog(disconnectedAction);
+
+      const promise = new Promise((resolve, reject) => {
+        setTimeout(async () => {
+          try {
+            await this.handlePlayerDisconnected(player)
+            resolve()
+          } catch (err) {
+            reject(err)
+          }
+        }, 5000)
+      })
+      promise
+        .catch(err => { throw err })
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async handlePlayerDisconnected(player: Player): Promise<this> {
+    try {
+      this.handlePlayerLeftGame(player);
+      await RoomManager.removePlayerFromRoom(this.room, player);
+      const io: SocketIO.Server = Socket.getIO();
+      io.sockets.in(this.room.code).emit("UpdateRoom", serialize(this.room));
+      io.sockets.in(this.room.code).emit("PlayerLeft", serialize(this));
+      return this;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  handlePlayerLeftGame(player: Player): this {
     let wasDisconnetedPlayerTurn: boolean = false;
     if(player.id === this.turnOrder[this.curTurnIndex]) {
       wasDisconnetedPlayerTurn = true;
@@ -431,11 +511,10 @@ export class Game {
     const curPlayerID = this.turnOrder[this.curTurnIndex];
     this.turnOrder = this.turnOrder.filter((playerID) => playerID !== player.id);
     this.curTurnIndex = this.turnOrder.indexOf(curPlayerID);
-    // Not sure this will make sense once a player is allowed to rejoin. Should just end the game tbh.
     this.board.takeAllGemStonesFromDisconnectedPlayer(player);
     if(wasDisconnetedPlayerTurn) {
       if (!this.winner) {
-        this.resetTimer(io);
+        this.resetTimer();
       } else {
         this.stopTimer();
       }

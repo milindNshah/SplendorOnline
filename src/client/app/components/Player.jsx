@@ -24,7 +24,11 @@ const PlayerHeader = styled.div`
 `
 const NameCol = styled.div`
   width: ${ props => `${props.width * 4 / 6}rem`};
-  color: ${ props => props.isTurn ? props.theme.color.tertiary : props.theme.color.secondary};
+  color: ${ props => props.isTurn
+    ? props.theme.color.tertiary
+    : props.isDisconnected
+      ? props.theme.color.lightgrey
+      : props.theme.color.secondary};
   align-self: flex-start;
   font-size: 1.5rem;
   text-decoration: ${ props => props.isTurn ? "underline" : null};
@@ -32,6 +36,11 @@ const NameCol = styled.div`
 const Name = styled.span`
   margin-left: 0.5rem;
 `
+const Disconnected = styled.span`
+  margin-left: 0.5rem;
+  font-size: 1rem;
+`
+
 const ScoreCol = styled.div`
   font-size: 1.5rem;
   color: ${ props => props.theme.color.secondary};
@@ -172,9 +181,10 @@ class Player extends React.Component {
         }
         <PlayerWidthContainer width={this.props.width}>
           <PlayerHeader>
-            <NameCol width={this.props.width} isTurn={this.props.isThisPlayerTurn}>
+            <NameCol width={this.props.width} isTurn={this.props.isThisPlayerTurn} isDisconnected={!this.props.player.isConnected}>
               {this.props.isThisPlayerTurn ? <i className="fa fa-arrow-right" /> : null}
               <Name>{this.props.player.user.name}</Name>
+              <Disconnected>{this.props.player.isConnected ? null : "(Disconnected)"}</Disconnected>
             </NameCol>
             <ScoreCol width={this.props.width} isTurn={this.props.isThisPlayerTurn}>Score: {this.props.player.hand.score}</ScoreCol>
           </PlayerHeader>

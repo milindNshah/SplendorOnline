@@ -10,6 +10,7 @@ export class Player {
   socketID: string;
   user: User;
   hand: Hand;
+  isConnected: boolean;
 
   constructor (socketID: string, user: User, isHost?: boolean) {
     this.id = this.createPlayerID();
@@ -18,6 +19,7 @@ export class Player {
     this.socketID = socketID;
     this.user = user;
     this.hand = null;
+    this.isConnected = true;
   }
 
   createPlayerID(): string {
@@ -41,6 +43,17 @@ export class Player {
 
   setHand(hand: Hand): this {
     this.hand = hand;
+    return this;
+  }
+
+  setDisconnected(): this {
+    this.isConnected = false;
+    return this;
+  }
+
+  reconnect(newUser: User): this {
+    this.isConnected = true;
+    this.user = newUser;
     return this;
   }
 }

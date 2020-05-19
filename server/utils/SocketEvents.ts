@@ -97,7 +97,7 @@ export class SocketEvents {
           throw new UserServiceError(`Cannot start game for room: ${room.code}`);
         }
         const game: Game = await GameService.createNewGame(room);
-        game.startTimer(io);
+        game.startTimer();
         io.sockets.in(room.code).emit("GameStarted", {
           gameID: game.id,
         });
@@ -156,7 +156,7 @@ export class SocketEvents {
         // }
         game.finishTurn(player);
         if(!game.winner) {
-          game.resetTimer(io);
+          game.resetTimer();
         } else {
           const gameEndedAction: GameAction = {
             type: ActionType.GAME_ENDED,
@@ -180,13 +180,13 @@ export class SocketEvents {
           || !player || player === null || player === undefined) {
             throw new InvalidGameError("Invalid game or player given")
         }
-        game.handlePlayerLeftGame(player, io);
+        game.handlePlayerLeftGame(player);
         await RoomManager.removePlayerFromRoom(room, player);
         if(room.players.size <= 0) {
           GameManager.removeGame(game)
         }
         socket.leave(room.code);
-        io.sockets.in(room.code).emit("UpdateGame", serialize(game));
+        io.sockets.in(room.code).emit("PlayerLeft", serialize(game));
         await PlayerManager.removePlayer(player);
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id)
@@ -203,9 +203,8 @@ export class SocketEvents {
         const room: Room = RoomManager.getRoomByPlayer(player.id);
         if(room.gameID) {
           let game: Game = await GameManager.getGameByID(room.gameID);
-          game.handlePlayerLeftGame(player, io)
+          await game.handlePlayerTempDisconnected(player)
         }
-        await RoomManager.removePlayerFromRoom(room, player);
         socket.leave(room.code);
         io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
         if(room.gameID) {
@@ -213,7 +212,7 @@ export class SocketEvents {
           if(room.players.size <= 0) {
             GameManager.removeGame(game)
           } else {
-            io.sockets.in(room.code).emit("UpdateGame", serialize(game));
+            io.sockets.in(room.code).emit("PlayerLeft", serialize(game));
           }
         }
         await PlayerManager.removePlayer(player);
