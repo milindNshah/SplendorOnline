@@ -24,7 +24,8 @@ const theme = {
     tier3: "#eb6b34",
     placeHolder: "#AAA",
     inputBorder: "#BCBCBC",
-    yourTurn: "rgba(255, 0, 0, 0.9)"
+    yourTurn: "rgba(255, 0, 0, 0.9)",
+    linkBlue: "blue",
   },
   fontFamily: {
     primary: "Raleway",

@@ -22,8 +22,23 @@ const ModalContainer = styled.div`
 
 const Title = styled.div`
   color: ${ props => props.theme.color.darkgrey};
+  font-weight: 300;
   font-size: 2rem;
   margin: 0.5rem 0rem;
+`
+const SubTitle = styled.div`
+  color: ${ props => props.theme.color.darkgrey};
+  margin-top: 0.5rem;
+`
+const RuleBook = styled.div`
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+`
+const RulebookText = styled.span`
+  color: ${ props => props.theme.color.linkBlue};
+  text-decoration: underline;
+  cursor: pointer;
 `
 
 const ImagesContainer = styled.div`
@@ -201,7 +216,8 @@ class RulesModal extends React.Component {
     return (
       <ModalContainer>
           <Title>Game Rules</Title>
-          <p>2-4 Players</p>
+          <SubTitle>2-4 Players</SubTitle>
+          <RuleBook><RulebookText onClick={()=> window.open("https://cdn.1j1ju.com/medias/7f/91/ba-splendor-rulebook.pdf", "_blank")}>See Offical Rulebook</RulebookText></RuleBook>
           <ImagesContainer>
             <ImageContainer>
               <ImageTitle>Token</ImageTitle>

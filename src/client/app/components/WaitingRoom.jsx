@@ -33,12 +33,7 @@ const PlayerTableContainer = styled.div`
 const RoomCodeTitle = styled.div`
   text-decoration: underline;
 `
-// const RoomCode = styled.div`
-//   font-family: ${props => props.theme.fontFamily.secondary};
-//   font-size: 1.5rem;
-//   color:${props => props.theme.color.primary };
-//   margin-top: 0.5rem;
-// `
+
 const ClipBoard = styled.span`
   margin-left: 0.5rem;
 `
