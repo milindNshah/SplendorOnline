@@ -22,7 +22,7 @@ export async function getGameByID(gameID: string): Promise<Game> {
   return game;
 }
 
-export async function removeGame(game: Game): Promise<Map<string, Game>> {
+export function removeGame(game: Game): Map<string, Game> {
   const gameEndedAction: GameAction = {
     type: ActionType.GAME_ENDED,
   }

@@ -212,19 +212,15 @@ export class SocketEvents {
           return;
         }
         const room: Room = RoomManager.getRoomByPlayer(player.id);
+        let game: Game = null
         if(room.gameID) {
-          let game: Game = await GameManager.getGameByID(room.gameID);
+          game = await GameManager.getGameByID(room.gameID);
           await game.handlePlayerTempDisconnected(player)
         }
         socket.leave(room.code);
         io.sockets.in(room.code).emit("UpdateRoom", serialize(room));
-        if(room.gameID) {
-          let game: Game = await GameManager.getGameByID(room.gameID);
-          if(room.players.size <= 0) {
-            GameManager.removeGame(game)
-          } else {
-            io.sockets.in(room.code).emit("PlayerLeft", serialize(game));
-          }
+        if(room.gameID && game) {
+          io.sockets.in(room.code).emit("PlayerLeft", serialize(game));
         }
         await PlayerManager.removePlayer(player);
       } catch (err) {

@@ -43,7 +43,7 @@ export async function removePlayerFromRoom(room: Room, player: Player): Promise<
       await room.makeNewHost();
     }
     if (room.players.size <= 0) {
-      await removeRoom(room);
+      removeRoom(room);
     }
     return room;
   } catch (err) {
@@ -51,8 +51,7 @@ export async function removePlayerFromRoom(room: Room, player: Player): Promise<
   }
 }
 
-/* Helper Functions */
-async function removeRoom(room: Room): Promise<Map<string, Room>> {
+export function removeRoom(room: Room):Map<string, Room> {
   rooms.delete(room.code);
   return rooms;
 }

@@ -425,8 +425,8 @@ export class Game {
         return all && !player.isConnected
       }, true)
     if(allDisconnected) {
-      // TODO: Add logic to end a game and then delete it somehow. Need to do for actual game ending anyways.
-      console.log("all disconnected!")
+      RoomManager.removeRoom(this.room)
+      GameManager.removeGame(this)
       return;
     }
 
@@ -450,13 +450,9 @@ export class Game {
 
   async handlePlayerTempDisconnected(player: Player): Promise<this> {
     try {
-      let wasDisconnetedPlayerTurn: boolean = false;
-      if (player.id === this.turnOrder[this.curTurnIndex]) {
-        wasDisconnetedPlayerTurn = true;
-        this.finishTurn(player);
-      }
       player.setDisconnected();
-      if (wasDisconnetedPlayerTurn) {
+      if (player.id === this.turnOrder[this.curTurnIndex]) {
+        this.finishTurn(player);
         if (!this.winner) {
           this.resetTimer();
         } else {
@@ -490,7 +486,6 @@ export class Game {
       }
       this.board.takeAllGemStonesFromDisconnectedPlayer(player);
       this.addPlayerDisconnectedTimeoutAction(player);
-      // await RoomManager.removePlayerFromRoom(this.room, player);
       const io: SocketIO.Server = Socket.getIO();
       io.sockets.in(this.room.code).emit("UpdateRoom", serialize(this.room));
       io.sockets.in(this.room.code).emit("PlayerLeft", serialize(this));
