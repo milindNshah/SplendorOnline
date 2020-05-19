@@ -469,7 +469,7 @@ export class Game {
           } catch (err) {
             reject(err)
           }
-        }, 120000)
+        }, 60000)
       })
       promise
         .catch(err => { throw err })

@@ -287,7 +287,7 @@ class ActionLog extends React.Component {
       <ActionLineContainer key={`disconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>
         {'\u00A0'}
-        disconnected from the game. They have 2 minutes to reconnect before their tokens will be returned to the board.
+        disconnected from the game. They have 1 minute to reconnect before their tokens will be returned to the board.
       </ActionLineContainer>
     )
   }
