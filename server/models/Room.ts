@@ -74,6 +74,17 @@ export class Room {
 
   async reconnectUser(user: User, socketID: string) {
     try {
+      const nameExists = Array.from(this.players.values())
+        .filter((player) => player.isConnected)
+        .map((existingPlayer) => {
+          return existingPlayer.user.name === user.name;
+        }).reduce((acc, cur) => {
+          return acc || cur;
+        }, false)
+      if (nameExists) {
+        throw new UserServiceError(`Can't join a room with same name: "${user.name}" as another player`);
+      }
+
       const disconnectedPlayer: Player = Array.from(this.players.values())
       .filter((player: Player) => !player.isConnected)
       .pop()

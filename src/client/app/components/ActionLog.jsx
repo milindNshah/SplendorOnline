@@ -147,6 +147,8 @@ class ActionLog extends React.Component {
         return <TurnContainer key={`turn${index}`}>{this.renderLeaveGame(index, playerName)}</TurnContainer>
       case ActionType.DISCONNECTED:
         return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnected(index, playerName)}</TurnContainer>
+      case ActionType.DISCONNECTED_TIMEOUT:
+        return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnectedTimeout(index, playerName)}</TurnContainer>
       case ActionType.RECONNECTED:
         return <TurnContainer key={`turn${index}`}>{this.renderPlayerReconnected(index, playerName)}</TurnContainer>
       case ActionType.GAME_ENDED:
@@ -276,20 +278,21 @@ class ActionLog extends React.Component {
     )
   }
 
-  renderLeaveGame(index, playerName) {
-    return (
-      <ActionLineContainer key={`leavegame${index}`}>
-        <PlayerName>{playerName}</PlayerName>{'\u00A0'}has left the game.
-      </ActionLineContainer>
-    )
-  }
-
   renderPlayerDisconnected(index, playerName) {
     return (
       <ActionLineContainer key={`disconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>
         {'\u00A0'}
-        disconnected from the game. They have 2 minutes to reconnect before they are removed from the game. Their tokens will be returned to the board after they are removed.
+        disconnected from the game. They have 2 minutes to reconnect before their tokens will be returned to the board.
+      </ActionLineContainer>
+    )
+  }
+
+  renderPlayerDisconnectedTimeout(index, playerName) {
+    return (
+      <ActionLineContainer key={`reconnected${index}`}>
+        <PlayerName>{playerName}</PlayerName>'s tokens have been returned.
+        They may still reconnect.
       </ActionLineContainer>
     )
   }
@@ -304,20 +307,28 @@ class ActionLog extends React.Component {
     )
   }
 
+  renderLeaveGame(index, playerName) {
+    return (
+      <ActionLineContainer key={`leavegame${index}`}>
+        <PlayerName>{playerName}</PlayerName>{'\u00A0'}left the game.
+      </ActionLineContainer>
+    )
+  }
+
   renderGameEnded(index, actionLine) {
     return [
       actionLine.player && actionLine.player?.user?.name ?
         <ActionLineContainer key={`winner${index}`}>
           <PlayerName>{actionLine.player.user.name}</PlayerName>
           {'\u00A0'}
-          has won with
+          won with
           {'\u00A0'}
           {actionLine.player.hand.score}
           {'\u00A0'}
           points!
         </ActionLineContainer>
         : null,
-      <ActionLineContainer key={`end${index}`}>{`Game has ended. Thanks for playing!`}</ActionLineContainer>,
+      <ActionLineContainer key={`end${index}`}>{`Game is completed. Thanks for playing!`}</ActionLineContainer>,
     ]
   }
 

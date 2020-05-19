@@ -44,6 +44,7 @@ export enum ActionType {
   SKIP_TURN = "SkipTurn",
   LEAVE_GAME = "LeaveGame",
   DISCONNECTED = "Disconnected",
+  DISCONNECTED_TIMEOUT = "DisconnectedTimeout",
   RECONNECTED = "Reconnected",
   GAME_ENDED = "GameEnded",
 }
@@ -441,11 +442,7 @@ export class Game {
     // Check if nextPlayer is there.
     const nextPlayer: Player = this.room.getPlayer(this.turnOrder[this.curTurnIndex]);
     if(!nextPlayer.isConnected) {
-      const skipTurnAction: GameAction = {
-        type: ActionType.SKIP_TURN,
-        player: nextPlayer,
-      }
-      this.addGameActionToLog(skipTurnAction);
+      this.addSkipTurnAction(nextPlayer)
       this.finishTurn(nextPlayer);
     }
     return this;
@@ -466,11 +463,7 @@ export class Game {
           this.stopTimer();
         }
       }
-      const disconnectedAction: GameAction = {
-        type: ActionType.DISCONNECTED,
-        player: player,
-      }
-      this.addGameActionToLog(disconnectedAction);
+      this.addPlayerDisconnectedAction(player);
 
       const promise = new Promise((resolve, reject) => {
         setTimeout(async () => {
@@ -495,9 +488,9 @@ export class Game {
       if(player.isConnected) {
         return;
       }
-      this.handlePlayerLeftGame(player);
-      // TODO: Maybe never removePlayer, can always reconnect?
-      await RoomManager.removePlayerFromRoom(this.room, player);
+      this.board.takeAllGemStonesFromDisconnectedPlayer(player);
+      this.addPlayerDisconnectedTimeoutAction(player);
+      // await RoomManager.removePlayerFromRoom(this.room, player);
       const io: SocketIO.Server = Socket.getIO();
       io.sockets.in(this.room.code).emit("UpdateRoom", serialize(this.room));
       io.sockets.in(this.room.code).emit("PlayerLeft", serialize(this));
@@ -604,6 +597,22 @@ export class Game {
       player: player,
     }
     return this.addGameActionToLog(skipTurnAction);
+  }
+
+  addPlayerDisconnectedAction(player: Player): this {
+    const disconnectedAction: GameAction = {
+      type: ActionType.DISCONNECTED,
+      player: player,
+    }
+    return this.addGameActionToLog(disconnectedAction);
+  }
+
+  addPlayerDisconnectedTimeoutAction(player: Player): this {
+    const disconnectedTimeoutAction: GameAction = {
+      type: ActionType.DISCONNECTED_TIMEOUT,
+      player: player,
+    }
+    return this.addGameActionToLog(disconnectedTimeoutAction)
   }
 
   addPlayerReconnectedAction(player: Player): this {

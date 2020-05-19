@@ -228,6 +228,7 @@ export class Board {
     const playerGemStones: Map<GemStone, number> = player.hand.gemStones;
     playerGemStones.forEach((amount: number, gemStone: GemStone) => {
       this.availableGemStones.set(gemStone, this.availableGemStones.get(gemStone) + amount)
+      playerGemStones.set(gemStone, 0)
     })
     return this;
   }

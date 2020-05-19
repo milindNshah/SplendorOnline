@@ -185,7 +185,7 @@ class Game extends React.Component {
     this.onClientRequestError = this.onClientRequestError.bind(this)
     this.onEndTurn = this.onEndTurn.bind(this)
     this.onGameUpdate = this.onGameUpdate.bind(this)
-    this.onPlayerLeft = this.onPlayerLeft.bind(this)
+    this.onPlayerConnection = this.onPlayerConnection.bind(this)
     this.onPurchaseActiveCard = this.onPurchaseActiveCard.bind(this)
     this.onPurchaseReservedCard = this.onPurchaseReservedCard.bind(this)
     this.onReserveActiveCard = this.onReserveActiveCard.bind(this)
@@ -206,8 +206,8 @@ class Game extends React.Component {
   componentDidMount() {
     window.onpopstate = () => { } // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate)
-    this.socket.on('PlayerLeft', this.onPlayerLeft)
-    this.socket.on('PlayerReconnected', this.onPlayerLeft)
+    this.socket.on('PlayerLeft', this.onPlayerConnection)
+    this.socket.on('PlayerReconnected', this.onPlayerConnection)
     this.socket.on('ClientRequestError', this.onClientRequestError)
     this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID })
   }
@@ -215,8 +215,8 @@ class Game extends React.Component {
   componentWillUnmount() {
     this.onLeaveGame();
     this.socket.off('UpdateGame', this.onGameUpdate)
-    this.socket.off('PlayerLeft', this.onPlayerLeft)
-    this.socket.off('PlayerReconnected', this.onPlayerLeft)
+    this.socket.off('PlayerLeft', this.onPlayerConnection)
+    this.socket.off('PlayerReconnected', this.onPlayerConnection)
     this.socket.off('ClientRequestError', this.onClientRequestError)
   }
 
@@ -257,21 +257,26 @@ class Game extends React.Component {
     }
   }
 
-  onPlayerLeft(data) {
+  onPlayerConnection(data) {
     const game = deserialize(Buffer.from(data))
+    const board = game.board;
     const players = game.room.players;
     const curPlayer = players[game.turnOrder[game.curTurnIndex]];
     const isMyTurn = curPlayer.id === this.state.playerID;
 
+    //TODO: Bug when someone disconnects or reconnects, the curPlayer's hand and board resets if they're purchasing tokens. (Will need to redo their actions)
     this.setState({
       actionLog: game.actionLog,
+      board: board,
       curTurnIndex: game.curTurnIndex,
       turnOrder: game.turnOrder,
       winner: game.winner,
       tieBreakerMoreRounds: game.tieBreakerMoreRounds,
       isMyTurn: isMyTurn,
       curPlayer: curPlayer,
-      players: players, //TODO: Bug when someone disconnects, the curPlayer's hand resets if they're purchasing tokens but selected tokens is still valid. (Still works correctly but display is wrong.)
+      players: players,
+      selectedGemStones: {},
+      returningTokensPhase: false,
     })
   }
 
