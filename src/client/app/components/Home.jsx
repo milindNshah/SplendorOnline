@@ -15,6 +15,11 @@ const CreatedBy = styled.div`
   text-align: center;
   width: 100%;
 `
+const GitHubLink = styled.span`
+  color: ${ props => props.theme.color.secondary};
+  text-decoration: underline;
+  cursor: pointer;
+`
 
 class Home extends React.Component {
   constructor (props) {
@@ -47,7 +52,11 @@ class Home extends React.Component {
               Join Game
             </Button>
           </div>
-          <CreatedBy>Created By Milind Shah</CreatedBy>
+          <CreatedBy>
+            Created By
+            {'\u00A0'}
+            <GitHubLink onClick={()=> window.open("https://github.com/milindNshah", "_blank")}>Milind Shah</GitHubLink>
+          </CreatedBy>
         </HomeContainer>
       </ThemeProvider>
     );

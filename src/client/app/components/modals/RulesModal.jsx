@@ -36,7 +36,7 @@ const RuleBook = styled.div`
   text-align: center;
 `
 const RulebookText = styled.span`
-  color: ${ props => props.theme.color.linkBlue};
+  color: ${ props => props.theme.color.secondary};
   text-decoration: underline;
   cursor: pointer;
 `
@@ -58,13 +58,6 @@ const ImageTitle = styled.div`
   margin-bottom: 0.5rem;
   text-decoration: underline;
 `
-// const ImageSection = styled.div`
-//   margin: 2rem;
-//   color: ${ props => props.theme.color.darkgrey};
-//   font-size: 1rem;
-//   text-align: justify;
-// `
-
 const Section = styled.div`
   margin: 2rem;
 `

@@ -25,7 +25,6 @@ const theme = {
     placeHolder: "#AAA",
     inputBorder: "#BCBCBC",
     yourTurn: "rgba(255, 0, 0, 0.9)",
-    linkBlue: "blue",
   },
   fontFamily: {
     primary: "Raleway",
