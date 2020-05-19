@@ -44,6 +44,7 @@ export enum ActionType {
   SKIP_TURN = "SkipTurn",
   LEAVE_GAME = "LeaveGame",
   DISCONNECTED = "Disconnected",
+  RECONNECTED = "Reconnected",
   GAME_ENDED = "GameEnded",
 }
 
@@ -479,7 +480,7 @@ export class Game {
           } catch (err) {
             reject(err)
           }
-        }, 5000)
+        }, 120000)
       })
       promise
         .catch(err => { throw err })
@@ -491,7 +492,11 @@ export class Game {
 
   async handlePlayerDisconnected(player: Player): Promise<this> {
     try {
+      if(player.isConnected) {
+        return;
+      }
       this.handlePlayerLeftGame(player);
+      // TODO: Maybe never removePlayer, can always reconnect?
       await RoomManager.removePlayerFromRoom(this.room, player);
       const io: SocketIO.Server = Socket.getIO();
       io.sockets.in(this.room.code).emit("UpdateRoom", serialize(this.room));
@@ -599,6 +604,14 @@ export class Game {
       player: player,
     }
     return this.addGameActionToLog(skipTurnAction);
+  }
+
+  addPlayerReconnectedAction(player: Player): this {
+    const reconnectedAction: GameAction = {
+      type: ActionType.RECONNECTED,
+      player: player,
+    }
+    return this.addGameActionToLog(reconnectedAction)
   }
 
   addGameActionToLog(data: GameAction): this {

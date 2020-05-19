@@ -207,6 +207,7 @@ class Game extends React.Component {
     window.onpopstate = () => { } // TODO: This is a hack. Figure out a way to register back button properly in WaitingRoom.jsx
     this.socket.on('UpdateGame', this.onGameUpdate)
     this.socket.on('PlayerLeft', this.onPlayerLeft)
+    this.socket.on('PlayerReconnected', this.onPlayerLeft)
     this.socket.on('ClientRequestError', this.onClientRequestError)
     this.socket.emit('RequestGameUpdate', { gameID: this.state.gameID, playerID: this.state.playerID })
   }
@@ -214,6 +215,8 @@ class Game extends React.Component {
   componentWillUnmount() {
     this.onLeaveGame();
     this.socket.off('UpdateGame', this.onGameUpdate)
+    this.socket.off('PlayerLeft', this.onPlayerLeft)
+    this.socket.off('PlayerReconnected', this.onPlayerLeft)
     this.socket.off('ClientRequestError', this.onClientRequestError)
   }
 

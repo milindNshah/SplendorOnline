@@ -12,5 +12,6 @@ export const ActionType = {
   SKIP_TURN: "SkipTurn",
   LEAVE_GAME: "LeaveGame",
   DISCONNECTED: "Disconnected",
+  RECONNECTED: "Reconnected",
   GAME_ENDED: "GameEnded",
 }

@@ -40,9 +40,20 @@ export class SocketEvents {
         );
         const room: Room = playerRoom.room;
         const player: Player = playerRoom.player;
+        const joinedExisting: boolean = playerRoom.joinedExisting;
 
         socket.join(room.code);
-        io.to(socket.id).emit("LoadWaitingRoom", { playerID: player.id, roomCode: room.code });
+        if(joinedExisting) {
+          if(!room.gameStarted || !room.gameID) {
+            throw new InvalidGameError(`Game hasn't started yet but has open spots. This shouldn't happen.`)
+          }
+          const game: Game = await GameManager.getGameByID(room.gameID);
+          game.addPlayerReconnectedAction(player);
+          io.to(socket.id).emit("ReconnectedToGame", { playerID: player.id, roomCode: room.code, gameID: game.id });
+          io.sockets.in(room.code).emit("PlayerReconnected", serialize(game));
+        } else {
+          io.to(socket.id).emit("LoadWaitingRoom", { playerID: player.id, roomCode: room.code });
+        }
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);
       }

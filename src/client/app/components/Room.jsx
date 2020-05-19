@@ -51,6 +51,7 @@ class Room extends React.Component {
     this.onJoinRoom = this.onJoinRoom.bind(this)
     this.onLeaveRoom = this.onLeaveRoom.bind(this)
     this.onGameStart = this.onGameStart.bind(this)
+    this.onReconnectToGame = this.onReconnectToGame.bind(this)
     this.onLoadWaitingRoom = this.onLoadWaitingRoom.bind(this)
     this.renderCreateRoom = this.renderCreateRoom.bind(this)
     this.renderJoinRoom = this.renderJoinRoom.bind(this)
@@ -77,6 +78,7 @@ class Room extends React.Component {
     this.socket.on('ClientRequestError', this.onClientRequestError);
     this.socket.on('LoadWaitingRoom', this.onLoadWaitingRoom);
     this.socket.on('GameStarted', this.onGameStart);
+    this.socket.on('ReconnectedToGame', this.onReconnectToGame);
   }
 
   componentWillUnmount() {
@@ -103,6 +105,15 @@ class Room extends React.Component {
     this.setState({
       gameStarted: true,
       gameID: data.gameID,
+    })
+  }
+
+  onReconnectToGame(data) {
+    this.setState({
+      playerID: data.playerID,
+      roomCode: data.roomCode,
+      gameID: data.gameID,
+      gameStarted: true,
     })
   }
 

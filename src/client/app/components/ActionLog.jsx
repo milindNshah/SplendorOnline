@@ -147,6 +147,8 @@ class ActionLog extends React.Component {
         return <TurnContainer key={`turn${index}`}>{this.renderLeaveGame(index, playerName)}</TurnContainer>
       case ActionType.DISCONNECTED:
         return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnected(index, playerName)}</TurnContainer>
+      case ActionType.RECONNECTED:
+        return <TurnContainer key={`turn${index}`}>{this.renderPlayerReconnected(index, playerName)}</TurnContainer>
       case ActionType.GAME_ENDED:
         return <TurnContainer key={`turn${index}`}>{this.renderGameEnded(index, actionLine)}</TurnContainer>
     }
@@ -285,7 +287,19 @@ class ActionLog extends React.Component {
   renderPlayerDisconnected(index, playerName) {
     return (
       <ActionLineContainer key={`disconnected${index}`}>
-        <PlayerName>{playerName}</PlayerName>{'\u00A0'}disconnected from the game. They have 2 minutes to reconnect before they are removed from the game. Their tokens will be returned to the board after they are removed.
+        <PlayerName>{playerName}</PlayerName>
+        {'\u00A0'}
+        disconnected from the game. They have 2 minutes to reconnect before they are removed from the game. Their tokens will be returned to the board after they are removed.
+      </ActionLineContainer>
+    )
+  }
+
+  renderPlayerReconnected(index, playerName) {
+    return (
+      <ActionLineContainer key={`reconnected${index}`}>
+        <PlayerName>{playerName}</PlayerName>
+        {'\u00A0'}
+        reconnected to the game.
       </ActionLineContainer>
     )
   }

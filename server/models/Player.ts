@@ -48,12 +48,16 @@ export class Player {
 
   setDisconnected(): this {
     this.isConnected = false;
+    this.isHost = false;
     return this;
   }
 
-  reconnect(newUser: User): this {
-    this.isConnected = true;
+  reconnect(newUser: User, socketID: string): this {
+    this.isHost = false;
+    this.isReady = true;
+    this.socketID = socketID;
     this.user = newUser;
+    this.isConnected = true;
     return this;
   }
 }

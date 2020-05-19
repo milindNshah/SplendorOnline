@@ -2,6 +2,7 @@
 import { GlobalUtils } from '../utils/GlobalUtils';
 import { Player } from './Player';
 import { UserServiceError } from './Errors';
+import { User } from './User';
 
 export interface JoinRoomParams {
   userName: string,
@@ -22,6 +23,7 @@ export interface ReadyRoomParams {
 export interface PlayerRoom {
   player: Player,
   room: Room,
+  joinedExisting?: boolean,
 }
 
 export class Room {
@@ -49,12 +51,11 @@ export class Room {
   }
 
   async addPlayer(newPlayer: Player): Promise<this> {
-    if (this.gameStarted) {
-      throw new UserServiceError(`Game has already started for Room: ${this.code}.`);
-    }
-
     if (!this.canAddPlayer()) {
       throw new UserServiceError(`Room ${this.code} is full (${this.players.size}/4.)`);
+    }
+    if (this.gameStarted) {
+      throw new UserServiceError(`Game has already started and is full for Room: ${this.code}.`);
     }
 
     const nameExists = Array.from(this.players.values())
@@ -69,6 +70,18 @@ export class Room {
 
     this.players.set(newPlayer.id, newPlayer);
     return this;
+  }
+
+  async reconnectUser(user: User, socketID: string) {
+    try {
+      const disconnectedPlayer: Player = Array.from(this.players.values())
+      .filter((player: Player) => !player.isConnected)
+      .pop()
+    disconnectedPlayer.reconnect(user, socketID)
+    return disconnectedPlayer;
+    } catch (err) {
+      throw err;
+    }
   }
 
   hasPlayer(playerID: string): boolean {
