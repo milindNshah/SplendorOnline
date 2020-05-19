@@ -14,6 +14,7 @@ import RulesModal from './modals/RulesModal.jsx'
 import Actionlog from './ActionLog.jsx'
 import Timer from './Timer.jsx'
 import GemStoneTokens from './GemStoneTokens.jsx'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const GameContainer = styled.div`
   margin: 1rem 0.5rem 2rem 0.5rem;
@@ -21,6 +22,39 @@ const GameContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`
+
+const CopyCodeContainer = styled.div`
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+
+  @media (max-width: 42rem) {
+    display: none;
+  }
+`
+const ClipBoard = styled.span`
+  margin-left: 0.5rem;
+`
+const Rules = styled.div`
+  position: absolute;
+  top: 3.75rem;
+  right: 1rem;
+  color: ${ props => props.theme.color.tertiary};
+  background-color: ${ props => props.theme.color.white};
+  border: 1px solid ${ props => props.theme.color.tertiary};
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+  cursor: pointer;
+  text-align: center;
+  &:hover {
+    color: ${ props => props.theme.color.white};
+    background-color: ${ props => props.theme.color.tertiary};
+  }
+
+  @media (max-width: 42rem) {
+    display: none;
+  }
 `
 
 const PlayerTurnContainer = styled.div`
@@ -41,28 +75,6 @@ const TurnDiv = styled.div`
 const TurnName = styled.span`
   color: ${ props => props.theme.color.secondary};
   font-weight: bold;
-`
-const Rules = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  color: ${ props => props.theme.color.tertiary};
-  background-color: ${ props => props.theme.color.white};
-  border: 1px solid ${ props => props.theme.color.tertiary};
-  padding: 0.25rem 0.5rem;
-  width: 5rem;
-  cursor: pointer;
-  text-align: center;
-  &:hover {
-    color: ${ props => props.theme.color.white};
-    background-color: ${ props => props.theme.color.tertiary};
-  }
-
-  @media (max-width: 40rem) {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-  }
 `
 
 const TokenSelectionContainer = styled.div`
@@ -167,6 +179,7 @@ class Game extends React.Component {
       curPlayer: null,
       playerID: this.props.playerID,
       players: [],
+      roomCode: null,
       tieBreakerMoreRounds: false,
       turnOrder: [],
       winner: null,
@@ -242,6 +255,7 @@ class Game extends React.Component {
       serverError: null,
       selectedGemStones: {},
       returningTokensPhase: false,
+      roomCode: game.room.code,
     });
 
     if(isMyTurn) {
@@ -650,6 +664,16 @@ class Game extends React.Component {
           ? <Overlay></Overlay>
           : null
         }
+        <CopyCodeContainer>
+          <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
+            <Button
+              color={theme.color.primary}
+              fontFamily={theme.fontFamily.secondary}>
+              {this.state.roomCode}
+              <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
+            </Button>
+          </CopyToClipboard>
+        </CopyCodeContainer>
         <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         <PlayerTurnContainer>
           <Turn />
