@@ -264,7 +264,7 @@ class Game extends React.Component {
     const curPlayer = players[game.turnOrder[game.curTurnIndex]];
     const isMyTurn = curPlayer.id === this.state.playerID;
 
-    //TODO: Bug when someone disconnects or reconnects, the curPlayer's hand and board resets if they're purchasing tokens. (Will need to redo their actions)
+    // TODO: Bug when someone disconnects or reconnects, the curPlayer's hand and board resets if they're purchasing tokens. (Will need to redo their actions)
     this.setState({
       actionLog: game.actionLog,
       board: board,

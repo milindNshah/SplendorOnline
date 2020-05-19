@@ -87,6 +87,10 @@ class ActionLog extends React.Component {
     this.renderPlayerCardAction = this.renderPlayerCardAction.bind(this)
     this.renderObtainNoble = this.renderObtainNoble.bind(this)
     this.renderSkipTurn = this.renderSkipTurn.bind(this)
+    this.renderPlayerDisconnected = this.renderPlayerDisconnected.bind(this)
+    this.renderPlayerDisconnectedTimeout = this.renderPlayerDisconnectedTimeout.bind(this)
+    this.renderPlayerReconnected = this.renderPlayerReconnected.bind(this)
+    this.renderGameEnded = this.renderGameEnded.bind(this)
     this.renderLeaveGame = this.renderLeaveGame.bind(this)
     this.renderTakenGems = this.renderTakenGems.bind(this)
     this.renderReturnedGems = this.renderReturnedGems.bind(this)
@@ -148,7 +152,7 @@ class ActionLog extends React.Component {
       case ActionType.DISCONNECTED:
         return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnected(index, playerName)}</TurnContainer>
       case ActionType.DISCONNECTED_TIMEOUT:
-        return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnectedTimeout(index, playerName)}</TurnContainer>
+        return <TurnContainer key={`turn${index}`}>{this.renderPlayerDisconnectedTimeout(index, playerName, actionLine.transferredGems)}</TurnContainer>
       case ActionType.RECONNECTED:
         return <TurnContainer key={`turn${index}`}>{this.renderPlayerReconnected(index, playerName)}</TurnContainer>
       case ActionType.GAME_ENDED:
@@ -288,11 +292,12 @@ class ActionLog extends React.Component {
     )
   }
 
-  renderPlayerDisconnectedTimeout(index, playerName) {
+  renderPlayerDisconnectedTimeout(index, playerName, transferredGems) {
     return (
       <ActionLineContainer key={`reconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>'s tokens have been returned.
-        They may still reconnect.
+        {this.renderReturnedGems(index, playerName, new Map(Object.entries(transferredGems)))}
+        The player can still reconnect.
       </ActionLineContainer>
     )
   }

@@ -484,8 +484,8 @@ export class Game {
       if(player.isConnected) {
         return;
       }
-      this.board.takeAllGemStonesFromDisconnectedPlayer(player);
-      this.addPlayerDisconnectedTimeoutAction(player);
+      const returnedGemStones: Map<GemStone, number> = this.board.takeAllGemStonesFromDisconnectedPlayer(player);
+      this.addPlayerDisconnectedTimeoutAction(player, returnedGemStones);
       const io: SocketIO.Server = Socket.getIO();
       io.sockets.in(this.room.code).emit("UpdateRoom", serialize(this.room));
       io.sockets.in(this.room.code).emit("PlayerLeft", serialize(this));
@@ -602,10 +602,11 @@ export class Game {
     return this.addGameActionToLog(disconnectedAction);
   }
 
-  addPlayerDisconnectedTimeoutAction(player: Player): this {
+  addPlayerDisconnectedTimeoutAction(player: Player, returnedGemStones: Map<GemStone, number>): this {
     const disconnectedTimeoutAction: GameAction = {
       type: ActionType.DISCONNECTED_TIMEOUT,
       player: player,
+      transferredGems: returnedGemStones,
     }
     return this.addGameActionToLog(disconnectedTimeoutAction)
   }
