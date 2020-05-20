@@ -28,6 +28,18 @@ const CopyCodeContainer = styled.div`
   position: absolute;
   top: 0.5rem;
   right: 1rem;
+  color: ${ props => props.theme.color.secondary};
+  background-color: ${ props => props.theme.color.white};
+  border: 1px solid ${ props => props.theme.color.secondary};
+  padding: 0.25rem 0.5rem;
+  width: 5rem;
+  cursor: pointer;
+  text-align: center;
+  font-family: ${ props => props.theme.fontFamily.secondary};
+  &:hover {
+    color: ${ props => props.theme.color.white};
+    background-color: ${ props => props.theme.color.secondary};
+  }
 
   @media (max-width: 42rem) {
     display: none;
@@ -38,7 +50,7 @@ const ClipBoard = styled.span`
 `
 const Rules = styled.div`
   position: absolute;
-  top: 3.75rem;
+  top: 3rem;
   right: 1rem;
   color: ${ props => props.theme.color.tertiary};
   background-color: ${ props => props.theme.color.white};
@@ -665,13 +677,11 @@ class Game extends React.Component {
           : null
         }
         <CopyCodeContainer>
-          <CopyToClipboard text={this.state.roomCode} onCopy={this.onCopyCode}>
-            <Button
-              color={theme.color.primary}
-              fontFamily={theme.fontFamily.secondary}>
+          <CopyToClipboard text={this.state.roomCode}>
+            <div>
               {this.state.roomCode}
               <ClipBoard><i className="fa fa-clipboard"></i></ClipBoard>
-            </Button>
+            </div>
           </CopyToClipboard>
         </CopyCodeContainer>
         <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
