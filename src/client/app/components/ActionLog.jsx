@@ -295,7 +295,9 @@ class ActionLog extends React.Component {
     return (
       <ActionLineContainer key={`reconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>'s tokens have been returned.
-        {this.renderReturnedGems(index, playerName, new Map(Object.entries(transferredGems)))}
+        {'\u00A0'}
+        {this.renderReturnedGems(index, playerName, new Map(Object.entries(transferredGems)))}.
+        {'\u00A0'}
         <PlayerName>{playerName}</PlayerName>{'\u00A0'}can still reconnect.
       </ActionLineContainer>
     )
