@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import CardToken from '../styledcomponents/card-token.jsx'
 import theme from '../styledcomponents/theme.jsx'
 import GemStoneToken from './GemStoneToken.jsx'
-import { GemStone, getColorFromGemStone } from '../enums/gemstones.js'
+import { GemStone, getColorFromGemStone, getGemStoneOrder } from '../enums/gemstones.js'
 import { GemStoneBase } from './GemStone.jsx'
 import { getPurchasedCardsByTypes } from '../utils';
 
@@ -45,6 +45,7 @@ class GemStoneTokens extends React.Component {
         {
           Array.from(this.props.gemStones.keys())
             .filter((gemStone) => !(gemStone === GemStone.GOLD && this.props.filterOutGold))
+            .sort((a,b) => getGemStoneOrder(a) - getGemStoneOrder(b))
             .map((gemStone) => this.renderGemStoneToken(gemStone, this.props.gemStones.get(gemStone), purchasedCardsByTypes.get(gemStone)))
         }
       </Row>

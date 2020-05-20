@@ -34,3 +34,20 @@ export function getColorFromGemStone(gemStone) {
       return theme.color.gold
   }
 }
+
+export function getGemStoneOrder(gemStone) {
+  switch (gemStone) {
+    case GemStone.DIAMOND:
+      return 1;
+    case GemStone.SAPPHIRE:
+      return 2;
+    case GemStone.EMERALD:
+      return 3;
+    case GemStone.RUBY:
+      return 4;
+    case GemStone.CHOCOLATE:
+      return 5;
+    case GemStone.GOLD:
+      return 6;
+  }
+}
