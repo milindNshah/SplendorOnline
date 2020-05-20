@@ -286,7 +286,6 @@ class ActionLog extends React.Component {
     return (
       <ActionLineContainer key={`disconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>
-        {'\u00A0'}
         disconnected from the game. They have 2 minutes to reconnect before their tokens will be returned to the board.
       </ActionLineContainer>
     )
@@ -297,7 +296,7 @@ class ActionLog extends React.Component {
       <ActionLineContainer key={`reconnected${index}`}>
         <PlayerName>{playerName}</PlayerName>'s tokens have been returned.
         {this.renderReturnedGems(index, playerName, new Map(Object.entries(transferredGems)))}
-        The player can still reconnect.
+        <PlayerName>{playerName}</PlayerName> can still reconnect.
       </ActionLineContainer>
     )
   }
