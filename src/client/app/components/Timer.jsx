@@ -54,9 +54,6 @@ class Timer extends React.Component {
     this.setState({
       timeleft: data,
     })
-    if (data.seconds === 0 && data.minutes === 0 && this.props.isMyTurn) {
-      this.props.handleSkipTurn();
-    }
   }
 
   render() {

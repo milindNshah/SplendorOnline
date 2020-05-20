@@ -24,11 +24,11 @@ const PlayerHeader = styled.div`
 `
 const NameCol = styled.div`
   width: ${ props => `${props.width * 4 / 6}rem`};
-  color: ${ props => props.isTurn
-    ? props.theme.color.tertiary
-    : props.isDisconnected
+  color: ${ props => props.isDisconnected
       ? props.theme.color.lightgrey
-      : props.theme.color.secondary};
+      : props.isTurn
+        ? props.theme.color.tertiary
+        : props.theme.color.secondary};
   align-self: flex-start;
   font-size: 1.5rem;
   text-decoration: ${ props => props.isTurn ? "underline" : null};

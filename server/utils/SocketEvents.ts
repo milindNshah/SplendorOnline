@@ -166,16 +166,6 @@ export class SocketEvents {
         //   game.hackForNobles(player)
         // }
         game.finishTurn(player);
-        if(!game.winner) {
-          game.resetTimer();
-        } else {
-          const gameEndedAction: GameAction = {
-            type: ActionType.GAME_ENDED,
-            player: game.winner,
-          }
-          game.addGameActionToLog(gameEndedAction);
-          game.stopTimer();
-        }
         io.sockets.in(room.code).emit("UpdateGame", serialize(game))
       } catch (err) {
         await ErrorHandler.handleError(err, io, socket.id);

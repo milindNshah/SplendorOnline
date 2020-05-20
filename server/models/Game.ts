@@ -111,6 +111,10 @@ export class Game {
           if (this.currentMinutes === 0) {
             GameManager.clearIntervalByID(this.id)
             this.timerStarted = false;
+            const player: Player = this.room.getPlayer(this.turnOrder[this.curTurnIndex])
+            this.addSkipTurnAction(player);
+            this.finishTurn(player);
+            io.sockets.in(this.room.code).emit("UpdateGame", serialize(this))
           } else {
             this.currentMinutes -= 1
             this.currentSeconds = 59
@@ -443,7 +447,18 @@ export class Game {
     const nextPlayer: Player = this.room.getPlayer(this.turnOrder[this.curTurnIndex]);
     if(!nextPlayer.isConnected) {
       this.addSkipTurnAction(nextPlayer)
-      this.finishTurn(nextPlayer);
+      this.finishTurn(nextPlayer)
+    }
+
+    if(!this.winner) {
+      this.resetTimer();
+    } else {
+      const gameEndedAction: GameAction = {
+        type: ActionType.GAME_ENDED,
+        player: this.winner,
+      }
+      this.addGameActionToLog(gameEndedAction);
+      this.stopTimer();
     }
     return this;
   }
@@ -451,14 +466,6 @@ export class Game {
   async handlePlayerTempDisconnected(player: Player): Promise<this> {
     try {
       player.setDisconnected();
-      if (player.id === this.turnOrder[this.curTurnIndex]) {
-        this.finishTurn(player);
-        if (!this.winner) {
-          this.resetTimer();
-        } else {
-          this.stopTimer();
-        }
-      }
       this.addPlayerDisconnectedAction(player);
 
       const promise = new Promise((resolve, reject) => {
@@ -469,7 +476,7 @@ export class Game {
           } catch (err) {
             reject(err)
           }
-        }, 60000)
+        }, 120000)
       })
       promise
         .catch(err => { throw err })

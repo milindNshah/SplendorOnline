@@ -677,7 +677,7 @@ class Game extends React.Component {
         <Rules onClick={this.onRulesClick}>Rules <span><i className="fa fa-info-circle"></i></span></Rules>
         <PlayerTurnContainer>
           <Turn />
-          <Timer handleSkipTurn={this.onSkipTurn} isMyTurn={this.state.isMyTurn} />
+          <Timer isMyTurn={this.state.isMyTurn} />
         </PlayerTurnContainer>
         {this.state.isMyTurn && this.state.flashingTurn
           ? <FlashTurn />
