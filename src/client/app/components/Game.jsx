@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Button from '../styledcomponents/button.jsx'
 import Board from './Board.jsx'
 import Player from './Player.jsx'
+import { Buffer } from 'buffer';
 import { deserialize } from 'bson'
 import { socket } from '../socket'
 import { ActionType } from '../enums/actiontype'

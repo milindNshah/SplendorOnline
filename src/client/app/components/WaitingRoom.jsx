@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '../styledcomponents/button.jsx'
 import FilledButton from '../styledcomponents/filled-button.jsx'
 import styled from "styled-components";
+import { Buffer } from 'buffer';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { deserialize } from 'bson';
 import { socket } from '../socket';
