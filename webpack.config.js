@@ -15,27 +15,30 @@ var config = {
       {
         test: /\.jsx?/,
         include: APP_DIR,
-        use: ['babel-loader']
+        use: [{ loader: 'babel-loader' }]
       },
       {
         test: /\.css$/,
-        use: ['style-loader, css-loader']
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+        ]
       },
       {
         test: /\.(png|jpg|gif)$/,
-        use: [{ loader: 'url-loader', options: { limit: 10000}}],
+        use: [{ loader: 'url-loader', options: { limit: 10000 } }],
       },
       {
         test: /\.woff2(\?\S*)?$/,
-        use: ['url-loader?limit=100000&mimetype=application/font-woff2']
+        use: [{ loader: 'url-loader?limit=100000&mimetype=application/font-woff2' }]
       },
       {
         test: /\.woff(\?\S*)?$/,
-        use: ['url-loader?limit=100000&mimetype=application/font-woff']
+        use: [{ loader: 'url-loader?limit=100000&mimetype=application/font-woff' }]
       },
       {
         test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-        use: ['file-loader'],
+        use: [{ loader: 'file-loader' }],
       },
     ]
   },
